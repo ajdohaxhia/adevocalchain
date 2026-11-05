@@ -61,6 +61,7 @@ VocalRackEditor::VocalRackEditor (VocalRackAudioProcessor& processorRef)
     noticeLabel.setFont (VocalRackLookAndFeel::font (10.0f));
     noticeLabel.setColour (juce::Label::textColourId, VocalRackLookAndFeel::dimText());
     noticeLabel.setJustificationType (juce::Justification::centredLeft);
+    noticeLabel.setMinimumHorizontalScale (0.85f);
 
     qualityHintLabel.setFont (VocalRackLookAndFeel::font (7.5f, true));
     qualityHintLabel.setColour (juce::Label::textColourId, VocalRackLookAndFeel::dimText());
@@ -115,11 +116,13 @@ void VocalRackEditor::configureTopBar()
     presetNameLabel.setFont (VocalRackLookAndFeel::font (15.0f, true));
     presetNameLabel.setColour (juce::Label::textColourId, VocalRackLookAndFeel::text());
     presetNameLabel.setJustificationType (juce::Justification::centredLeft);
+    presetNameLabel.setMinimumHorizontalScale (0.6f);
     addAndMakeVisible (presetNameLabel);
 
     presetMetaLabel.setFont (VocalRackLookAndFeel::font (8.5f, true));
     presetMetaLabel.setColour (juce::Label::textColourId, VocalRackLookAndFeel::dimText());
     presetMetaLabel.setJustificationType (juce::Justification::centredLeft);
+    presetMetaLabel.setMinimumHorizontalScale (0.65f);
     addAndMakeVisible (presetMetaLabel);
 
     latencyLabel.setFont (VocalRackLookAndFeel::font (9.0f));
@@ -534,9 +537,10 @@ void VocalRackEditor::refreshFromProcessor()
         return state.getRawParameterValue (id)->load();
     };
 
-    presetNameLabel.setText (processor.getPresetName()
-                                 + (processor.isEdited() ? "  *" : ""),
+    const auto fullPresetName = processor.getPresetName();
+    presetNameLabel.setText (fullPresetName + (processor.isEdited() ? "  *" : ""),
                              juce::dontSendNotification);
+    presetNameLabel.setTooltip (fullPresetName + (processor.isEdited() ? " (edited)" : ""));
 
     const bool track = processor.getQuality() == QualityMode::track;
     const bool spectralOff = track
@@ -549,9 +553,10 @@ void VocalRackEditor::refreshFromProcessor()
 
     presetMetaLabel.setText (meta, juce::dontSendNotification);
     presetMetaLabel.setColour (juce::Label::textColourId, VocalRackLookAndFeel::dimText());
-    presetMetaLabel.setTooltip (spectralOff
-                                    ? "This preset uses spectral cleanup, which is unavailable in Track. Switch Quality to Mix to hear it."
-                                    : "Preset bank and configuration.");
+    presetMetaLabel.setTooltip (meta
+                                    + (spectralOff
+                                           ? "\nThis preset uses spectral cleanup, which is unavailable in Track. Switch Quality to Mix to hear it."
+                                           : "\nPreset bank and configuration."));
     spectralLabel.setVisible (spectralOff);
     spectralLabel.setText (spectralOff
                                ? "SPECTRAL CLEANUP NEEDS MIX (TRACK ACTIVE)"

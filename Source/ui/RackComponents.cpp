@@ -340,18 +340,21 @@ void PitchPanel::paint (juce::Graphics& g)
                 juce::Justification::centredLeft);
 
     auto confidenceRow = area.removeFromTop (12);
+    constexpr int confidenceTextWidth = 70;
+    auto confidenceBar = confidenceRow.withTrimmedRight (confidenceTextWidth);
     g.setColour (juce::Colour (0xff2b2f36));
-    g.fillRoundedRectangle (confidenceRow.toFloat().withTrimmedRight (52), 3.0f);
+    g.fillRoundedRectangle (confidenceBar.toFloat(), 3.0f);
     g.setColour (VocalRackLookAndFeel::accent().withAlpha (0.8f));
-    g.fillRoundedRectangle (confidenceRow.toFloat()
-                                .withWidth ((confidenceRow.getWidth() - 52) * juce::jlimit (0.0f, 1.0f, status.confidence))
-                                .withTrimmedRight (52),
+    g.fillRoundedRectangle (confidenceBar.toFloat().withWidth (
+                                confidenceBar.getWidth()
+                                    * juce::jlimit (0.0f, 1.0f, status.confidence)),
                             3.0f);
 
     g.setColour (VocalRackLookAndFeel::dimText());
-    g.setFont (VocalRackLookAndFeel::font (9.0f));
-    g.drawText ("conf " + juce::String (status.confidence * 100.0f, 0) + "%",
-                confidenceRow.removeFromRight (50), juce::Justification::centredRight);
+    g.setFont (VocalRackLookAndFeel::font (8.5f));
+    g.drawText ("conf " + juce::String (juce::roundToInt (status.confidence * 100.0f)) + "%",
+                confidenceRow.removeFromRight (confidenceTextWidth),
+                juce::Justification::centredRight);
 }
 
 NoteKeyboard::NoteKeyboard (juce::AudioProcessorValueTreeState& state) : apvts (state)
@@ -466,7 +469,7 @@ PresetBrowser::PresetBrowser (VocalRackAudioProcessor& processorIn,
     searchLabel.setColour (juce::Label::textColourId, VocalRackLookAndFeel::dimText());
     addAndMakeVisible (searchLabel);
 
-    searchEditor.setTextToShowWhenEmpty ("name, bank, description…", VocalRackLookAndFeel::dimText());
+    searchEditor.setTextToShowWhenEmpty ("Search name, bank, notes", VocalRackLookAndFeel::dimText());
     searchEditor.onTextChange = [this] { rebuildVisibleList(); };
     searchEditor.setTitle ("Search presets");
     searchEditor.setWantsKeyboardFocus (true);

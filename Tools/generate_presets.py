@@ -167,7 +167,7 @@ PRESETS = [
     preset(
         BANK_RAP, "Midnight Rap Lead",
         "Close, darker rap lead with even dynamics and a short stereo slap.",
-        "A conversational drake-style close rap lead in a dark, late-night pocket.",
+        "A conversational, close rap lead in a dark, late-night pocket.",
         "For a quieter take, raise comp.threshold 4 dB and lower delay level 2 dB.",
         **{
             "exp.bypass": 0, "exp.threshold": -55.0, "exp.range": 10.0, "exp.hold": 60.0,
@@ -491,7 +491,7 @@ PRESETS = [
     preset(
         BANK_RNB, "Late Night Falsetto",
         "Airy falsetto lead with gentle tuning, a filtered dotted delay and a dark plate.",
-        "A Weeknd-style airy falsetto that needs space and a long, dark tail.",
+        "An airy falsetto lead that needs space and a long, dark tail.",
         "For a brighter take, raise teq.highGain 2 dB and rev.highCut to 8 kHz; for a quieter take, lower rev.level 3 dB.",
         **{
             "pitch.bypass": 0, "pitch.amount": 70.0, "pitch.retune": 90.0,

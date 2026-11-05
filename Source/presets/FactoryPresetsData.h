@@ -575,7 +575,7 @@ inline constexpr const char* kFactoryPresetJson = R"VRJSON([
     "name": "Midnight Rap Lead",
     "bank": "Rap and Trap",
     "description": "Close, darker rap lead with even dynamics and a short stereo slap.",
-    "useCase": "A conversational drake-style close rap lead in a dark, late-night pocket.",
+    "useCase": "A conversational, close rap lead in a dark, late-night pocket.",
     "firstAdjustment": "For a quieter take, raise comp.threshold 4 dB and lower delay level 2 dB.",
     "parameters": {
       "global.input": 0.0,
@@ -1703,7 +1703,7 @@ inline constexpr const char* kFactoryPresetJson = R"VRJSON([
     "name": "Late Night Falsetto",
     "bank": "R&B and Melodic",
     "description": "Airy falsetto lead with gentle tuning, a filtered dotted delay and a dark plate.",
-    "useCase": "A Weeknd-style airy falsetto that needs space and a long, dark tail.",
+    "useCase": "An airy falsetto lead that needs space and a long, dark tail.",
     "firstAdjustment": "For a brighter take, raise teq.highGain 2 dB and rev.highCut to 8 kHz; for a quieter take, lower rev.level 3 dB.",
     "parameters": {
       "global.input": 0.0,

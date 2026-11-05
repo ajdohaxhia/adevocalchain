@@ -1,0 +1,14 @@
+TONE 110 track bypass=0.10000 shift=0.10000 bypassRms=0.07072 shiftRms=0.07072
+TONE 110 mix bypass=0.10000 shift=0.10000 bypassRms=0.07071 shiftRms=0.07071
+TONE 220 track bypass=0.10000 shift=0.10000 bypassRms=0.07071 shiftRms=0.07071
+TONE 220 mix bypass=0.10000 shift=0.10000 bypassRms=0.07071 shiftRms=0.07071
+TONE 440 track bypass=0.10000 shift=0.09831 bypassRms=0.07071 shiftRms=0.07068
+TONE 440 mix bypass=0.10000 shift=0.09811 bypassRms=0.07071 shiftRms=0.07060
+TONE 1000 track bypass=0.10000 shift=0.00020 bypassRms=0.07071 shiftRms=0.06722
+TONE 1000 mix bypass=0.10000 shift=0.00035 bypassRms=0.07071 shiftRms=0.06394
+SIGNAL pitch-track latency=720 corr=-0.03132 inRms=0.10817 outRms=0.09868 100=0.00782 1000=0.00159 5000=0.00020 10000=0.00010
+SIGNAL sat0-track latency=720 corr=1.00000 inRms=0.10817 outRms=0.10817 100=0.10000 1000=0.10000 5000=0.05000 10000=0.03000
+SIGNAL sat50-track latency=720 corr=0.99980 inRms=0.10817 outRms=0.14280 100=0.13212 1000=0.13213 5000=0.06564 10000=0.03933
+SIGNAL pitch-mix latency=3716 corr=-0.03881 inRms=0.10817 outRms=0.10198 100=0.00887 1000=0.00158 5000=0.00015 10000=0.00009
+SIGNAL sat0-mix latency=3716 corr=1.00000 inRms=0.10817 outRms=0.10817 100=0.10000 1000=0.10000 5000=0.05000 10000=0.03000
+SIGNAL sat50-mix latency=3716 corr=0.98824 inRms=0.10817 outRms=0.14181 100=0.13212 1000=0.13193 5000=0.06348 10000=0.03615

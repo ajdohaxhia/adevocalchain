@@ -1,4 +1,4 @@
-BENCH quality=track block=128 latency_ms=15.000 avg_ms=0.0783 p99_ms=0.1972 avg_budget_pct=2.94 p99_budget_pct=7.40
-BENCH quality=track block=256 latency_ms=15.000 avg_ms=0.1320 p99_ms=0.2622 avg_budget_pct=2.48 p99_budget_pct=4.92
-BENCH quality=mix block=128 latency_ms=77.417 avg_ms=0.0724 p99_ms=0.2299 avg_budget_pct=2.72 p99_budget_pct=8.62
-BENCH quality=mix block=256 latency_ms=77.417 avg_ms=0.1423 p99_ms=0.3113 avg_budget_pct=2.67 p99_budget_pct=5.84
+BENCH quality=track block=128 latency_ms=15.000 avg_ms=0.1149 p99_ms=0.2401 avg_budget_pct=4.31 p99_budget_pct=9.00
+BENCH quality=track block=256 latency_ms=15.000 avg_ms=0.2286 p99_ms=0.3695 avg_budget_pct=4.29 p99_budget_pct=6.93
+BENCH quality=mix block=128 latency_ms=77.417 avg_ms=0.1414 p99_ms=0.5312 avg_budget_pct=5.30 p99_budget_pct=19.92
+BENCH quality=mix block=256 latency_ms=77.417 avg_ms=0.2728 p99_ms=0.5475 avg_budget_pct=5.12 p99_budget_pct=10.27

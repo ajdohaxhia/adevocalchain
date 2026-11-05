@@ -34,6 +34,11 @@ void PitchShifter::buildFftState (int frameSize, int numChannels)
     state.magnitude.assign ((size_t) frameSize / 2 + 2, 0.0f);
     state.omega.assign ((size_t) frameSize / 2 + 2, 0.0f);
     state.phase.assign ((size_t) frameSize / 2 + 2, 0.0f);
+    state.targetMagnitude.assign ((size_t) frameSize / 2 + 2, 0.0f);
+    state.targetPhase.assign ((size_t) frameSize / 2 + 2, 0.0f);
+    state.targetSource.assign ((size_t) frameSize / 2 + 2, -1);
+    state.targetActive.assign ((size_t) frameSize / 2 + 2, 0);
+    state.peaks.reserve ((size_t) frameSize / 8 + 8);
 
     const double twoPiDouble = juce::MathConstants<double>::twoPi;
 
@@ -216,6 +221,46 @@ void PitchShifter::processFrame (int centre, float ratio) noexcept
     const int halfSize = size / 2;
     const int64_t frameStart = (int64_t) centre - (int64_t) halfSize;
 
+    // Unity is special: use a time-domain overlap-add of the windowed input.
+    // The phase vocoder is excellent for real shifts but its analysis/synthesis
+    // phase can still dull an in-tune note. Direct OLA is bit-transparent there.
+    if (std::abs (ratio - 1.0f) < 1.0e-4f)
+    {
+        const int64_t outputStart = (int64_t) centre + (int64_t) delaySamples - (int64_t) halfSize;
+
+        for (int channel = 0; channel < channels; ++channel)
+        {
+            for (int i = 0; i < size; ++i)
+            {
+                const int64_t position = outputStart + (int64_t) i;
+
+                if (position < outputReadPos)
+                    continue;
+
+                if (position - outputReadPos >= (int64_t) olaRingSize - 8)
+                    break;
+
+                const float window = state.window[(size_t) i];
+                const int index = (int) (position & olaRingMask);
+                olaRing[(size_t) channel * (size_t) olaRingSize + (size_t) index]
+                    += readInputSample (channel, frameStart + i) * window * window;
+
+                if (channel == 0)
+                    windowSum[(size_t) index] += window * window;
+            }
+        }
+
+        // The next shifted frame starts a fresh phase track.
+        for (auto& valid : state.previousPhaseValid)
+            valid = 0;
+
+        for (auto& active : state.phaseActive)
+            std::fill (active.begin(), active.end(), 0);
+
+        ++processedFrames;
+        return;
+    }
+
     for (int i = 0; i < size; ++i)
     {
         state.fftRe[(size_t) i] = readInputSample (0, frameStart + i) * state.window[(size_t) i];
@@ -275,6 +320,8 @@ void PitchShifter::processFrame (int centre, float ratio) noexcept
 
         std::fill (state.fftRe.begin(), state.fftRe.end(), 0.0f);
         std::fill (state.fftIm.begin(), state.fftIm.end(), 0.0f);
+        std::fill (state.targetMagnitude.begin(), state.targetMagnitude.end(), 0.0f);
+        std::fill (state.targetActive.begin(), state.targetActive.end(), 0);
 
         const float limitedRatio = juce::jlimit (minimumRatio, maximumRatio, ratio);
 
@@ -307,19 +354,75 @@ void PitchShifter::processFrame (int centre, float ratio) noexcept
             float outputPhase = accumulator[(size_t) target];
 
             if (active[(size_t) target] == 0)
-            {
                 outputPhase = state.phase[(size_t) source0];
-                active[(size_t) target] = 1;
-            }
             else
-            {
                 outputPhase = wrapPhase (outputPhase + omega * limitedRatio * (float) state.hop);
-            }
 
             accumulator[(size_t) target] = outputPhase;
+            state.targetMagnitude[(size_t) target] = magnitude;
+            state.targetPhase[(size_t) target] = outputPhase;
+            state.targetSource[(size_t) target] = source0;
+            state.targetActive[(size_t) target] = 1;
+            active[(size_t) target] = 1;
+        }
 
-            state.fftRe[(size_t) target] = magnitude * std::cos (outputPhase);
-            state.fftIm[(size_t) target] = magnitude * std::sin (outputPhase);
+        // Identity phase locking: the strongest bin in each peak region
+        // supplies the synthesis phase, and the bins around it keep their
+        // analysis-phase relationship. This removes much of the hollow,
+        // "flanged" character of an independent-bin phase vocoder.
+        state.peaks.clear();
+        float peakFloor = 1.0e-6f;
+
+        for (int k = 1; k < halfSize; ++k)
+            peakFloor = juce::jmax (peakFloor, state.targetMagnitude[(size_t) k] * 0.005f);
+
+        for (int k = 1; k < halfSize; ++k)
+        {
+            if (state.targetActive[(size_t) k] == 0
+                || state.targetMagnitude[(size_t) k] < peakFloor)
+                continue;
+
+            const float previous = state.targetMagnitude[(size_t) (k - 1)];
+            const float next = state.targetMagnitude[(size_t) (k + 1)];
+
+            if (state.targetMagnitude[(size_t) k] > previous
+                && state.targetMagnitude[(size_t) k] >= next)
+                state.peaks.push_back (k);
+        }
+
+        for (size_t peakIndex = 0; peakIndex < state.peaks.size(); ++peakIndex)
+        {
+            const int peak = state.peaks[peakIndex];
+            const int previousPeak = peakIndex > 0 ? state.peaks[peakIndex - 1] : -1;
+            const int nextPeak = peakIndex + 1 < state.peaks.size()
+                                     ? state.peaks[peakIndex + 1] : -1;
+            const int start = previousPeak < 0 ? 1 : (previousPeak + peak) / 2 + 1;
+            const int end = nextPeak < 0 ? halfSize - 1 : (peak + nextPeak) / 2;
+            const int peakSource = state.targetSource[(size_t) peak];
+            const float peakPhase = state.targetPhase[(size_t) peak];
+            const float sourcePeakPhase = state.phase[(size_t) peakSource];
+
+            for (int k = start; k <= end; ++k)
+            {
+                if (state.targetActive[(size_t) k] == 0)
+                    continue;
+
+                const int source = state.targetSource[(size_t) k];
+                const float locked = peakPhase
+                                     + wrapPhase (state.phase[(size_t) source] - sourcePeakPhase);
+                state.targetPhase[(size_t) k] = locked;
+                accumulator[(size_t) k] = locked;
+            }
+        }
+
+        for (int k = 1; k < halfSize; ++k)
+        {
+            if (state.targetActive[(size_t) k] == 0)
+                continue;
+
+            const float phase = state.targetPhase[(size_t) k];
+            state.fftRe[(size_t) k] = state.targetMagnitude[(size_t) k] * std::cos (phase);
+            state.fftIm[(size_t) k] = state.targetMagnitude[(size_t) k] * std::sin (phase);
         }
 
         for (int k = 1; k < halfSize; ++k)

@@ -962,6 +962,111 @@ void testModules()
     }
 }
 
+static double probeAmplitudeAt (const std::vector<float>& v, double sampleRate, double hz,
+                              int start, int count)
+{
+    double re = 0.0;
+    double im = 0.0;
+
+    for (int i = 0; i < count; ++i)
+    {
+        const double phase = juce::MathConstants<double>::twoPi * hz * (double) i / sampleRate;
+        re += (double) v[(size_t) (start + i)] * std::cos (phase);
+        im += (double) v[(size_t) (start + i)] * std::sin (phase);
+    }
+
+    return 2.0 * std::sqrt (re * re + im * im) / (double) count;
+}
+
+void testCleanSignalPath()
+{
+    constexpr double sr = 48000.0;
+    const int length = (int) (2.0 * sr);
+    std::vector<float> tone ((size_t) length, 0.0f);
+
+    for (int i = 0; i < length; ++i)
+    {
+        const double t = (double) i / sr;
+        tone[(size_t) i] = (float) (0.10 * std::sin (juce::MathConstants<double>::twoPi * 100.0 * t)
+                                  + 0.10 * std::sin (juce::MathConstants<double>::twoPi * 1000.0 * t)
+                                  + 0.05 * std::sin (juce::MathConstants<double>::twoPi * 5000.0 * t)
+                                  + 0.03 * std::sin (juce::MathConstants<double>::twoPi * 10000.0 * t));
+    }
+
+    auto correlation = [] (const std::vector<float>& input, const std::vector<float>& output,
+                           int latency)
+    {
+        double corr = 0.0;
+        double inSum = 0.0;
+        double outSum = 0.0;
+        const int skip = 4800;
+        const int count = juce::jmin ((int) input.size() - latency - skip, (int) 40000);
+
+        for (int i = 0; i < count; ++i)
+        {
+            const double a = input[(size_t) (skip + i)];
+            const double b = output[(size_t) (skip + latency + i)];
+            corr += a * b;
+            inSum += a * a;
+            outSum += b * b;
+        }
+
+        return corr / std::sqrt (juce::jmax (1.0e-12, inSum * outSum));
+    };
+
+    for (auto quality : { vr::QualityMode::track, vr::QualityMode::mix })
+    {
+        auto p = bypassAllParams();
+        p.pitchBypass = true;
+        p.satBypass = false;
+        p.satBlend = 0.0f;
+        p.satDrive = 12.0f;
+        auto out = runEngine (p, tone, tone, sr, 512, quality);
+        check (correlation (tone, out.left, out.latency) > 0.9999,
+               "bypassed tuning/saturation dry path is phase clean");
+
+        p = bypassAllParams();
+        p.dnBypass = false;
+        p.dnAmount = 0.0f;
+        p.dnMaxReduction = 12.0f;
+        out = runEngine (p, tone, tone, sr, 512, vr::QualityMode::mix);
+        check (correlation (tone, out.left, out.latency) > 0.999,
+               "zero-amount spectral cleanup is effectively transparent");
+
+        p = bypassAllParams();
+        p.pitchBypass = false;
+        p.pitchAmount = 100.0f;
+        p.pitchRetune = 1.0f;
+        p.pitchScale = 0;
+        p.pitchTonic = 0;
+        p.pitchHumanize = 0.0f;
+
+        for (double hz : { 110.0, 220.0 })
+        {
+            std::vector<float> sine ((size_t) length, 0.0f);
+
+            for (int i = 0; i < length; ++i)
+                sine[(size_t) i] = 0.1f * (float) std::sin (juce::MathConstants<double>::twoPi * hz
+                                                            * (double) i / sr);
+
+            out = runEngine (p, sine, sine, sr, 512, quality);
+            const auto amplitude = probeAmplitudeAt (out.left, sr, hz, 12000 + out.latency, 24000);
+            check (amplitude > 0.099,
+                   "unity correction preserves level at " + juce::String (hz, 0) + " Hz");
+        }
+
+        std::vector<float> a440 ((size_t) length, 0.0f);
+
+        for (int i = 0; i < length; ++i)
+            a440[(size_t) i] = 0.1f * (float) std::sin (juce::MathConstants<double>::twoPi * 440.0
+                                                        * (double) i / sr);
+
+        out = runEngine (p, a440, a440, sr, 512, quality);
+        check (probeAmplitudeAt (out.left, sr, 440.0, 12000 + out.latency, 24000) > 0.095,
+               "phase-locked A440 correction keeps level");
+    }
+}
+
 void testNoiseAndUnity()
 {
     const double sampleRate = 48000.0;
@@ -1624,6 +1729,147 @@ void renderUserVocal (const juce::File& inputFile, const juce::File& outputDirec
     check (rendered == 96, "local vocal rendered through all 96 factory presets");
 }
 
+static double rmsOf (const std::vector<float>& v, int start = 0)
+{
+    double sum = 0.0;
+    int count = 0;
+
+    for (int i = juce::jmax (0, start); i < (int) v.size(); ++i)
+    {
+        sum += (double) v[(size_t) i] * (double) v[(size_t) i];
+        ++count;
+    }
+
+    return std::sqrt (sum / (double) juce::jmax (1, count));
+}
+
+
+
+static void printSignalDiagram (const juce::String& label, const std::vector<float>& input,
+                                const EngineOutput& output, double sampleRate)
+{
+    const int skip = (int) (0.15 * sampleRate);
+    const int latency = output.latency;
+    const int count = juce::jmin ((int) input.size() - latency - skip, (int) (1.0 * sampleRate));
+
+    if (count <= 0)
+        return;
+
+    double corr = 0.0;
+    double inputSum = 0.0;
+    double outputSum = 0.0;
+
+    for (int i = 0; i < count; ++i)
+    {
+        const double a = input[(size_t) (skip + i)];
+        const double b = output.left[(size_t) (skip + latency + i)];
+        corr += a * b;
+        inputSum += a * a;
+        outputSum += b * b;
+    }
+
+    corr /= std::sqrt (juce::jmax (1.0e-12, inputSum * outputSum));
+
+    std::cout << "SIGNAL " << label
+              << " latency=" << latency
+              << " corr=" << juce::String (corr, 5)
+              << " inRms=" << juce::String (rmsOf (input, skip), 5)
+              << " outRms=" << juce::String (rmsOf (output.left, skip + latency), 5);
+
+    for (double hz : { 100.0, 1000.0, 5000.0, 10000.0 })
+        std::cout << " " << juce::String (hz, 0)
+                  << "=" << juce::String (probeAmplitudeAt (output.left, sampleRate, hz,
+                                                        skip + latency, count), 5);
+
+    std::cout << std::endl;
+}
+
+static void printToneDiagnostics()
+{
+    constexpr double sr = 48000.0;
+    const int length = (int) (2.0 * sr);
+
+    for (double hz : { 110.0, 220.0, 440.0, 1000.0 })
+    {
+        std::vector<float> sine ((size_t) length, 0.0f);
+
+        for (int i = 0; i < length; ++i)
+            sine[(size_t) i] = 0.1f * (float) std::sin (juce::MathConstants<double>::twoPi * hz
+                                                        * (double) i / sr);
+
+        for (auto quality : { vr::QualityMode::track, vr::QualityMode::mix })
+        {
+            auto p = bypassAllParams();
+            p.pitchBypass = true;
+            const auto bypassed = runEngine (p, sine, sine, sr, 512, quality);
+            const int start = (int) (0.25 * sr);
+            const int count = (int) (1.0 * sr);
+            const auto out = probeAmplitudeAt (bypassed.left, sr, hz, start + bypassed.latency, count);
+
+            p.pitchBypass = false;
+            p.pitchAmount = 100.0f;
+            p.pitchRetune = 1.0f;
+            p.pitchScale = 0;
+            p.pitchTonic = 0;
+            p.pitchHumanize = 0.0f;
+            const auto shifted = runEngine (p, sine, sine, sr, 512, quality);
+            const auto shiftedOut = probeAmplitudeAt (shifted.left, sr, hz, start + shifted.latency, count);
+
+            std::cout << "TONE " << juce::String (hz, 0)
+                      << " " << (quality == vr::QualityMode::track ? "track" : "mix")
+                      << " bypass=" << juce::String (out, 5)
+                      << " shift=" << juce::String (shiftedOut, 5)
+                      << " bypassRms=" << juce::String (rmsOf (bypassed.left, start + bypassed.latency), 5)
+                      << " shiftRms=" << juce::String (rmsOf (shifted.left, start + shifted.latency), 5)
+                      << std::endl;
+        }
+    }
+}
+
+static void runSignalDiagnostics()
+{
+    printToneDiagnostics();
+    constexpr double sr = 48000.0;
+    const int length = (int) (2.0 * sr);
+    std::vector<float> tone ((size_t) length, 0.0f);
+
+    for (int i = 0; i < length; ++i)
+    {
+        const double t = (double) i / sr;
+        tone[(size_t) i] = (float) (0.10 * std::sin (juce::MathConstants<double>::twoPi * 100.0 * t)
+                                  + 0.10 * std::sin (juce::MathConstants<double>::twoPi * 1000.0 * t)
+                                  + 0.05 * std::sin (juce::MathConstants<double>::twoPi * 5000.0 * t)
+                                  + 0.03 * std::sin (juce::MathConstants<double>::twoPi * 10000.0 * t));
+    }
+
+    for (auto quality : { vr::QualityMode::track, vr::QualityMode::mix })
+    {
+        auto p = bypassAllParams();
+        p.pitchBypass = false;
+        p.pitchAmount = 100.0f;
+        p.pitchRetune = 1.0f;
+        p.pitchScale = 0;
+        p.pitchTonic = 0;
+        p.pitchHumanize = 0.0f;
+        printSignalDiagram (quality == vr::QualityMode::track ? "pitch-track" : "pitch-mix",
+                            tone, runEngine (p, tone, tone, sr, 512, quality), sr);
+
+        p = bypassAllParams();
+        p.satBypass = false;
+        p.satBlend = 0.0f;
+        p.satDrive = 12.0f;
+        printSignalDiagram (quality == vr::QualityMode::track ? "sat0-track" : "sat0-mix",
+                            tone, runEngine (p, tone, tone, sr, 512, quality), sr);
+
+        p = bypassAllParams();
+        p.satBypass = false;
+        p.satBlend = 50.0f;
+        p.satDrive = 6.0f;
+        printSignalDiagram (quality == vr::QualityMode::track ? "sat50-track" : "sat50-mix",
+                            tone, runEngine (p, tone, tone, sr, 512, quality), sr);
+    }
+}
+
 void printLatencyTable()
 {
     for (double sampleRate : { 44100.0, 48000.0, 88200.0, 96000.0 })
@@ -1671,6 +1917,12 @@ int main (int argc, char** argv)
         return 0;
     }
 
+    if (args.contains ("--signal"))
+    {
+        runSignalDiagnostics();
+        return 0;
+    }
+
     if (args.contains ("--bench"))
     {
         runBenchmark();
@@ -1702,6 +1954,7 @@ int main (int argc, char** argv)
     testDetector();
     testRenderedPitch();
     testModules();
+    testCleanSignalPath();
     testNoiseAndUnity();
     testPresetsAndState();
     testAutomationAndBypass();

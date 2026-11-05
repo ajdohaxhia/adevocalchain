@@ -124,6 +124,7 @@ private:
 
     DelayLine dryRaw[2];
     DelayLine dryTrimmed[2];
+    DelayLine shifterDry[2];
 
     juce::SmoothedValue<float, juce::ValueSmoothingTypes::Linear> inputGain;
     juce::SmoothedValue<float, juce::ValueSmoothingTypes::Linear> outputGain;

@@ -68,6 +68,9 @@ void Engine::prepare (double newSampleRate, int maximumBlockSize, int inputChann
     for (auto& line : dryTrimmed)
         line.prepare (prelimiterLatency + maximumBlock + 8);
 
+    for (auto& line : shifterDry)
+        line.prepare (shifterDelay + maximumBlock + 8);
+
     workBuffer.setSize (2, maximumBlock, false, true, false);
     denoiseBuffer.setSize (2, maximumBlock, false, true, false);
     shifterWet.setSize (2, maximumBlock, false, true, false);
@@ -115,6 +118,9 @@ void Engine::reset()
         line.reset();
 
     for (auto& line : dryTrimmed)
+        line.reset();
+
+    for (auto& line : shifterDry)
         line.reset();
 
     inputGain.setCurrentAndTargetValue (1.0f);
@@ -452,11 +458,32 @@ void Engine::processChunk (int numSamples, const RackParams& params, const Trans
     if (pitchActive)
         pushDetectorFeed (workBuffer, n);
 
+    // Keep a latency-aligned dry path. When tuning is inactive the phase
+    // vocoder is bypassed completely; this avoids its low-frequency smearing
+    // and "flanged" character on tracks that are not being corrected.
+    for (int ch = 0; ch < 2; ++ch)
+    {
+        auto* work = workBuffer.getWritePointer (ch);
+
+        for (int i = 0; i < n; ++i)
+            shifterDry[ch].write (work[i]);
+    }
+
     shifter.pushInput (workBuffer, 0, n);
     shifter.renderNextBlock (shifterWet, n);
 
     for (int ch = 0; ch < 2; ++ch)
-        workBuffer.copyFrom (ch, 0, shifterWet, ch, 0, n);
+    {
+        auto* work = workBuffer.getWritePointer (ch);
+
+        for (int i = 0; i < n; ++i)
+        {
+            if (pitchActive)
+                work[i] = shifterWet.getReadPointer (ch)[i];
+            else
+                work[i] = shifterDry[ch].read ((float) shifterDelay + (float) (n - i));
+        }
+    }
 
     cleanupEq.process (workBuffer, n, params);
     compressor.process (workBuffer, n, params);

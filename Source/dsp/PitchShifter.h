@@ -71,6 +71,12 @@ private:
         std::vector<float> omega;
         std::vector<float> phase;
 
+        std::vector<float> targetMagnitude;
+        std::vector<float> targetPhase;
+        std::vector<int> targetSource;
+        std::vector<uint8_t> targetActive;
+        std::vector<int> peaks;
+
         std::vector<std::vector<float>> previousPhase;
         std::vector<std::vector<float>> phaseAccumulator;
         std::vector<std::vector<uint8_t>> phaseActive;

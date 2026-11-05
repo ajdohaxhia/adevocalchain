@@ -7,6 +7,22 @@ and versioned full-state recall.
 
 ![ademusic Vocal Rack editor](docs/vocal-rack-editor.png)
 
+## Download the first release
+
+**[First Release - ademusic Vocal Rack 1.0.0 (VST3 + AU)](https://github.com/ajdohaxhia/adevocalchain/releases/tag/v1.0.0)**
+
+| Asset | Contents |
+|---|---|
+| [Combined ZIP](https://github.com/ajdohaxhia/adevocalchain/releases/download/v1.0.0/ademusic-vocal-rack-1.0.0-macOS-arm64.zip) | VST3 + AU + presets + install docs + verification logs |
+| [VST3 ZIP](https://github.com/ajdohaxhia/adevocalchain/releases/download/v1.0.0/ademusic-vocal-rack-1.0.0-VST3-macOS-arm64.zip) | `ademusic Vocal Rack.vst3` |
+| [AU ZIP](https://github.com/ajdohaxhia/adevocalchain/releases/download/v1.0.0/ademusic-vocal-rack-1.0.0-AU-macOS-arm64.zip) | `ademusic Vocal Rack.component` |
+| [Factory presets](https://github.com/ajdohaxhia/adevocalchain/releases/download/v1.0.0/ademusic-vocal-rack-1.0.0-factory-presets.json) | Versioned JSON preset bank |
+| [SHA-256 sums](https://github.com/ajdohaxhia/adevocalchain/releases/download/v1.0.0/SHA256SUMS.txt) | Asset checksums |
+
+macOS arm64. The bundles are ad-hoc signed, not notarized; see
+[INSTALL.txt](INSTALL.txt) for the user-level plug-in paths and the quarantine
+command.
+
 ## What is in the chain
 
 ```

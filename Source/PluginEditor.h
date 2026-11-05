@@ -17,6 +17,11 @@ class ControlGrid final : public juce::Component
 {
 public:
     void setColumns (int newColumns) noexcept { columns = juce::jmax (1, newColumns); }
+    void setTitle (const juce::String& newTitle) { title = newTitle; repaint(); }
+    void setModuleStrip (bool shouldBeStrip) { moduleStrip = shouldBeStrip; repaint(); }
+
+    void paint (juce::Graphics&) override;
+    void paintOverChildren (juce::Graphics&) override;
 
     void addHeaderControl (juce::Component* control)
     {
@@ -38,20 +43,43 @@ public:
 
     void resized() override
     {
-        auto area = getLocalBounds().reduced (10);
+        auto area = getLocalBounds().reduced (18);
+
+        if (title.isNotEmpty())
+        {
+            area.removeFromTop (42);
+        }
 
         if (! headerControls.empty())
         {
-            auto header = area.removeFromTop (30);
-            const int width = juce::jmin (130, header.getWidth() / (int) headerControls.size());
+            auto header = area.removeFromTop (moduleStrip ? 42 : 38);
 
-            for (size_t i = 0; i < headerControls.size(); ++i)
+            if (moduleStrip)
             {
-                auto cell = header.removeFromLeft (juce::jmin (width, header.getWidth()));
-                headerControls[i]->setBounds (cell.reduced (2, 2));
+                const int width = header.getWidth() / juce::jmax (1, (int) headerControls.size());
+
+                for (size_t i = 0; i < headerControls.size(); ++i)
+                {
+                    auto cell = header.removeFromLeft (juce::jmin (width, header.getWidth()));
+                    headerControls[i]->setBounds (cell.reduced (8, 3));
+                }
+            }
+            else
+            {
+                const int count = juce::jmax (1, (int) headerControls.size());
+                const int itemWidth = juce::jmin (count <= 2 ? 136 : 128,
+                                                  (header.getWidth() - (count - 1) * 8) / count);
+                const int total = count * itemWidth + (count - 1) * 8;
+                int x = juce::jmax (header.getX(), header.getRight() - total);
+
+                for (auto* control : headerControls)
+                {
+                    control->setBounds (x, header.getY() + 2, itemWidth, header.getHeight() - 5);
+                    x += itemWidth + 8;
+                }
             }
 
-            area.removeFromTop (4);
+            area.removeFromTop (6);
         }
 
         if (gridControls.empty())
@@ -65,7 +93,8 @@ public:
         {
             const int row = (int) i / columns;
             const int column = (int) i % columns;
-            const int height = juce::jmin (juce::jmax (60, cellHeight - 8), 126);
+            const int height = juce::jmin (juce::jmax (82, cellHeight - 8),
+                                           rows == 1 ? 300 : 190);
             juce::Rectangle<int> cell (area.getX() + column * cellWidth,
                                        area.getY() + row * cellHeight + 4,
                                        juce::jmax (40, cellWidth - 4),
@@ -76,6 +105,8 @@ public:
 
 private:
     int columns = 7;
+    juce::String title;
+    bool moduleStrip = false;
     std::vector<juce::Component*> headerControls;
     std::vector<juce::Component*> gridControls;
 };
@@ -103,9 +134,9 @@ private:
     void setView (bool detail);
     void showNotice (const juce::String& message);
 
-    void addQuickKnob (const char* parameterId);
+    void addQuickKnob (const char* parameterId, const char* displayName = nullptr);
     void addQuickPower (const char* parameterId, const char* label);
-    void addKnob (ControlGrid& grid, const char* parameterId);
+    void addKnob (ControlGrid& grid, const char* parameterId, const char* subLabel = nullptr);
     void addPower (ControlGrid& grid, const char* parameterId, const char* label);
     void addToggle (ControlGrid& grid, const char* parameterId, const char* label);
     void addCombo (ControlGrid& grid, const char* parameterId, const char* label);
@@ -119,6 +150,8 @@ private:
     juce::Label presetNameLabel;
     juce::Label presetMetaLabel;
     juce::Label latencyLabel;
+    juce::Label sampleRateLabel;
+    juce::Label ceilingLabel;
     juce::TextButton previousButton { "<" };
     juce::TextButton nextButton { ">" };
     juce::TextButton browseButton { "BROWSE" };
@@ -136,6 +169,7 @@ private:
     PitchPanel pitchPanel;
     NoteKeyboard keyboard;
     juce::Label keyLabel;
+    juce::Label maskLabel;
     juce::ComboBox tonicBox;
     juce::ComboBox scaleBox;
 

@@ -19,16 +19,19 @@ class VocalRackAudioProcessor;
 class Knob final : public juce::Component
 {
 public:
-    Knob (juce::AudioProcessorValueTreeState& state, const juce::String& parameterId);
+    Knob (juce::AudioProcessorValueTreeState& state, const juce::String& parameterId,
+          const juce::String& displayName = {});
 
     void resized() override;
     void paint (juce::Graphics&) override;
+    void setSubLabel (const juce::String& text);
 
     juce::Slider& getSlider() noexcept { return slider; }
 
 private:
     const ParamSpec* spec = nullptr;
     juce::Label nameLabel;
+    juce::Label subLabel;
     juce::Slider slider;
     std::unique_ptr<juce::AudioProcessorValueTreeState::SliderAttachment> attachment;
 
@@ -114,6 +117,20 @@ private:
     int lastTonic = -1;
 };
 
+class BankListModel final : public juce::ListBoxModel
+{
+public:
+    std::function<int()> getRowCount;
+    std::function<juce::String (int)> getRowName;
+    std::function<int()> getSelectedRow;
+    std::function<void (int)> onRowSelected;
+
+    int getNumRows() override { return getRowCount ? getRowCount() : 0; }
+    void paintListBoxItem (int row, juce::Graphics&, int width, int height,
+                           bool rowIsSelected) override;
+    void selectedRowsChanged (int lastRowSelected) override;
+};
+
 class PresetBrowser final : public juce::Component,
                             private juce::ListBoxModel
 {
@@ -135,6 +152,8 @@ public:
 private:
     void reloadBanks();
     void updateDetails();
+    void selectBank (int row);
+    void rebuildBankList();
     const PresetEntry* selectedEntry() const;
     void loadSelected();
     void saveAs();
@@ -156,12 +175,29 @@ private:
     std::function<void()> onChanged;
 
     juce::Label titleLabel;
+    juce::Label countLabel;
     juce::Label bankLabel;
     juce::Label searchLabel;
     juce::TextEditor searchEditor;
+    juce::TextButton clearSearchButton { "X" };
     juce::ComboBox bankBox;
+    juce::ListBox bankList;
+    BankListModel bankModel;
     juce::ListBox listBox;
     juce::Label detailsLabel;
+
+    juce::Label detailBadge;
+    juce::Label detailName;
+    juce::Label detailBank;
+    juce::Label descriptionHeader;
+    juce::Label descriptionLabel;
+    juce::Label useCaseHeader;
+    juce::Label useCaseLabel;
+    juce::Label firstHeader;
+    juce::Label firstLabel;
+    juce::ToggleButton browserKeepKey { "Keep Song Key" };
+    juce::TextButton factoryButton { "Factory" };
+    juce::TextButton userButton { "User" };
     juce::TextButton loadButton { "Load" };
     juce::TextButton saveButton { "Save As" };
     juce::TextButton duplicateButton { "Duplicate" };
@@ -172,6 +208,12 @@ private:
     juce::TextButton closeButton { "Close" };
 
     std::vector<int> visibleEntries;
+    std::vector<juce::String> banks;
+    juce::Rectangle<int> leftPanel;
+    juce::Rectangle<int> centerPanel;
+    juce::Rectangle<int> rightPanel;
+    int selectedBank = 0;
+    bool userOnly = false;
     std::unique_ptr<juce::FileChooser> fileChooser;
 
     JUCE_DECLARE_NON_COPYABLE_WITH_LEAK_DETECTOR (PresetBrowser)

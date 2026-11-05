@@ -19,7 +19,8 @@ juce::String shortUnit (const ParamSpec& spec)
 }
 } // namespace
 
-Knob::Knob (juce::AudioProcessorValueTreeState& state, const juce::String& parameterId)
+Knob::Knob (juce::AudioProcessorValueTreeState& state, const juce::String& parameterId,
+            const juce::String& displayName)
 {
     spec = findParamSpec (parameterId);
     jassert (spec != nullptr);
@@ -27,15 +28,22 @@ Knob::Knob (juce::AudioProcessorValueTreeState& state, const juce::String& param
     if (spec == nullptr)
         return;
 
-    nameLabel.setText (juce::String (spec->name).toUpperCase(), juce::dontSendNotification);
+    nameLabel.setText (displayName.isNotEmpty() ? displayName : juce::String (spec->name),
+                       juce::dontSendNotification);
     nameLabel.setJustificationType (juce::Justification::centred);
-    nameLabel.setColour (juce::Label::textColourId, VocalRackLookAndFeel::dimText());
-    nameLabel.setFont (VocalRackLookAndFeel::font (10.5f, true));
+    nameLabel.setColour (juce::Label::textColourId, VocalRackLookAndFeel::text());
+    nameLabel.setFont (VocalRackLookAndFeel::font (12.5f));
     nameLabel.setInterceptsMouseClicks (false, false);
     addAndMakeVisible (nameLabel);
 
+    subLabel.setJustificationType (juce::Justification::centred);
+    subLabel.setColour (juce::Label::textColourId, VocalRackLookAndFeel::dimText());
+    subLabel.setFont (VocalRackLookAndFeel::font (10.0f));
+    subLabel.setInterceptsMouseClicks (false, false);
+    addChildComponent (subLabel);
+
     slider.setSliderStyle (juce::Slider::RotaryHorizontalVerticalDrag);
-    slider.setTextBoxStyle (juce::Slider::TextBoxBelow, false, 78, 16);
+    slider.setTextBoxStyle (juce::Slider::TextBoxBelow, false, 96, 22);
     slider.setRange (spec->minValue, spec->maxValue);
     slider.setNumDecimalPlacesToDisplay (spec->maxValue - spec->minValue <= 4.0f ? 2
                                       : spec->maxValue - spec->minValue <= 40.0f ? 1
@@ -47,7 +55,9 @@ Knob::Knob (juce::AudioProcessorValueTreeState& state, const juce::String& param
     slider.setTooltip (juce::String (spec->name) + " — " + spec->description);
     slider.setWantsKeyboardFocus (true);
     slider.setScrollWheelEnabled (true);
-    slider.setColour (juce::Slider::textBoxTextColourId, VocalRackLookAndFeel::dimText());
+    slider.setColour (juce::Slider::textBoxTextColourId, VocalRackLookAndFeel::text());
+    slider.setColour (juce::Slider::textBoxBackgroundColourId, juce::Colours::transparentBlack);
+    slider.setColour (juce::Slider::textBoxOutlineColourId, juce::Colours::transparentBlack);
     addAndMakeVisible (slider);
 
     attachment = std::make_unique<juce::AudioProcessorValueTreeState::SliderAttachment> (
@@ -78,9 +88,23 @@ Knob::Knob (juce::AudioProcessorValueTreeState& state, const juce::String& param
 void Knob::resized()
 {
     auto area = getLocalBounds();
-    nameLabel.setBounds (area.removeFromTop (14));
+    nameLabel.setBounds (area.removeFromTop (22));
+
+    if (subLabel.isVisible())
+    {
+        subLabel.setBounds (area.removeFromBottom (18));
+        area.removeFromBottom (2);
+    }
+
     area.removeFromTop (2);
     slider.setBounds (area);
+}
+
+void Knob::setSubLabel (const juce::String& text)
+{
+    subLabel.setText (text, juce::dontSendNotification);
+    subLabel.setVisible (text.isNotEmpty());
+    resized();
 }
 
 void Knob::paint (juce::Graphics& g)
@@ -104,33 +128,41 @@ PowerButton::PowerButton (juce::AudioProcessorValueTreeState& state,
 
 void PowerButton::paintButton (juce::Graphics& g, bool isMouseOver, bool isButtonDown)
 {
-    auto bounds = getLocalBounds().toFloat().reduced (0.5f);
+    auto bounds = getLocalBounds().toFloat().reduced (1.0f);
     const bool on = parameter != nullptr && parameter->getValue() < 0.5f;
-    auto fill = on ? VocalRackLookAndFeel::accentSoft().withAlpha (0.32f)
+    auto fill = on ? VocalRackLookAndFeel::panelLight()
                    : VocalRackLookAndFeel::panel();
 
     if (isButtonDown)
-        fill = fill.brighter (0.08f);
+        fill = fill.brighter (0.07f);
     else if (isMouseOver)
-        fill = fill.brighter (0.04f);
+        fill = fill.brighter (0.035f);
 
     g.setColour (fill);
-    g.fillRoundedRectangle (bounds, 4.0f);
-    g.setColour (on ? VocalRackLookAndFeel::accent() : juce::Colour (0xff3a4048));
-    g.drawRoundedRectangle (bounds, 4.0f, on ? 1.2f : 1.0f);
+    g.fillRoundedRectangle (bounds, 7.0f);
+    g.setColour (on ? VocalRackLookAndFeel::accent().withAlpha (0.75f)
+                    : VocalRackLookAndFeel::line());
+    g.drawRoundedRectangle (bounds, 7.0f, on ? 1.2f : 1.0f);
 
+    const auto centre = juce::Point<float> (bounds.getX() + 15.0f, bounds.getCentreY());
+    juce::Path power;
+    power.addCentredArc (centre.x, centre.y, 5.0f, 5.0f, 0.0f,
+                         juce::MathConstants<float>::pi * 0.75f,
+                         juce::MathConstants<float>::pi * 2.25f, true);
     g.setColour (on ? VocalRackLookAndFeel::accent() : VocalRackLookAndFeel::dimText());
-    g.fillEllipse (bounds.getX() + 6.0f, bounds.getCentreY() - 2.5f, 5.0f, 5.0f);
+    g.strokePath (power, juce::PathStrokeType (1.5f, juce::PathStrokeType::curved,
+                                               juce::PathStrokeType::rounded));
+    g.drawLine (centre.x, centre.y - 7.0f, centre.x, centre.y + 1.0f, 1.5f);
 
     g.setColour (on ? VocalRackLookAndFeel::text() : VocalRackLookAndFeel::dimText());
-    g.setFont (VocalRackLookAndFeel::font (9.5f, on));
-    g.drawFittedText (label, bounds.toNearestInt().withTrimmedLeft (16).withTrimmedRight (4),
+    g.setFont (VocalRackLookAndFeel::font (11.0f, on));
+    g.drawFittedText (label, bounds.toNearestInt().withTrimmedLeft (28).withTrimmedRight (7),
                       juce::Justification::centredLeft, 1);
 
     if (hasKeyboardFocus (true))
     {
         g.setColour (VocalRackLookAndFeel::accent().withAlpha (0.8f));
-        g.drawRoundedRectangle (bounds.reduced (1.0f), 4.0f, 1.0f);
+        g.drawRoundedRectangle (bounds.reduced (1.0f), 7.0f, 1.0f);
     }
 }
 
@@ -197,24 +229,24 @@ float MeterPanel::meterPosition (float db) noexcept
 
 void MeterPanel::paint (juce::Graphics& g)
 {
-    auto area = getLocalBounds().reduced (8, 6);
+    auto area = getLocalBounds().reduced (14, 10);
 
     g.setColour (VocalRackLookAndFeel::dimText());
-    g.setFont (VocalRackLookAndFeel::font (9.5f, true));
-    g.drawText ("LEVELS", area.removeFromTop (14), juce::Justification::centredLeft);
+    g.setFont (VocalRackLookAndFeel::font (9.0f, true));
+    g.drawText ("LEVELS", area.removeFromTop (16), juce::Justification::centredLeft);
 
     auto drawMeter = [&g] (juce::Rectangle<int> row, const juce::String& label, float db,
                            float peakDb, juce::Colour colour, bool hold)
     {
-        auto labelArea = row.removeFromLeft (30);
-        auto valueArea = row.removeFromRight (46);
-        auto bar = row.reduced (2, 5);
+        auto labelArea = row.removeFromLeft (34);
+        auto valueArea = row.removeFromRight (52);
+        auto bar = row.reduced (2, 6);
 
         g.setColour (VocalRackLookAndFeel::dimText());
-        g.setFont (VocalRackLookAndFeel::font (9.5f, true));
+        g.setFont (VocalRackLookAndFeel::font (10.0f, true));
         g.drawText (label, labelArea, juce::Justification::centredLeft);
 
-        g.setColour (juce::Colour (0xff2b2f36));
+        g.setColour (juce::Colour (0xff2b302b));
         g.fillRoundedRectangle (bar.toFloat(), 2.0f);
 
         const float position = meterPosition (db);
@@ -225,7 +257,7 @@ void MeterPanel::paint (juce::Graphics& g)
         if (hold && peakDb > kMinDb)
         {
             const int x = bar.getX() + (int) (bar.getWidth() * meterPosition (peakDb));
-            g.setColour (VocalRackLookAndFeel::text().withAlpha (0.75f));
+            g.setColour (VocalRackLookAndFeel::text().withAlpha (0.7f));
             g.fillRect (x, bar.getY(), 1, bar.getHeight());
         }
 
@@ -236,26 +268,25 @@ void MeterPanel::paint (juce::Graphics& g)
                     valueArea, juce::Justification::centredRight);
     };
 
-    auto inputRow = area.removeFromTop (24);
-    drawMeter (inputRow, "IN", inputDb, -60.0f, VocalRackLookAndFeel::accent().withAlpha (0.7f), false);
+    drawMeter (area.removeFromTop (27), "IN", inputDb, -60.0f,
+               VocalRackLookAndFeel::accent().withAlpha (0.68f), false);
+    drawMeter (area.removeFromTop (27), "OUT", outputDb, peakHoldDb,
+               VocalRackLookAndFeel::accent(), true);
 
-    auto outputRow = area.removeFromTop (24);
-    drawMeter (outputRow, "OUT", outputDb, peakHoldDb, VocalRackLookAndFeel::accent(), true);
+    area.removeFromTop (6);
 
-    area.removeFromTop (4);
-    auto grRow = area.removeFromTop (18);
     auto drawGr = [&g] (juce::Rectangle<int> row, const juce::String& label, float reduction,
                         juce::Colour colour)
     {
-        auto labelArea = row.removeFromLeft (30);
-        auto valueArea = row.removeFromRight (46);
+        auto labelArea = row.removeFromLeft (34);
+        auto valueArea = row.removeFromRight (52);
         auto bar = row.reduced (2, 4);
 
         g.setColour (VocalRackLookAndFeel::dimText());
         g.setFont (VocalRackLookAndFeel::font (9.0f, true));
         g.drawText (label, labelArea, juce::Justification::centredLeft);
 
-        g.setColour (juce::Colour (0xff2b2f36));
+        g.setColour (juce::Colour (0xff2b302b));
         g.fillRoundedRectangle (bar.toFloat(), 2.0f);
 
         const float amount = juce::jlimit (0.0f, 1.0f, -reduction / 24.0f);
@@ -269,8 +300,8 @@ void MeterPanel::paint (juce::Graphics& g)
                     juce::Justification::centredRight);
     };
 
-    drawGr (grRow, "GR", compGr, juce::Colour (0xffffb15c));
-    drawGr (area.removeFromTop (18), "LIM", limiterGr, VocalRackLookAndFeel::danger());
+    drawGr (area.removeFromTop (19), "GR", compGr, juce::Colour (0xffffb15c));
+    drawGr (area.removeFromTop (19), "LIM", limiterGr, VocalRackLookAndFeel::danger());
 }
 
 PitchPanel::PitchPanel (Engine& engineIn) : engine (engineIn)
@@ -287,10 +318,10 @@ void PitchPanel::timerCallback()
 
 void PitchPanel::paint (juce::Graphics& g)
 {
-    auto area = getLocalBounds().reduced (8, 6);
+    auto area = getLocalBounds().reduced (14, 10);
 
     g.setColour (VocalRackLookAndFeel::dimText());
-    g.setFont (VocalRackLookAndFeel::font (9.5f, true));
+    g.setFont (VocalRackLookAndFeel::font (9.0f, true));
     g.drawText ("PITCH", area.removeFromTop (14), juce::Justification::centredLeft);
 
     if (! status.active)
@@ -301,48 +332,53 @@ void PitchPanel::paint (juce::Graphics& g)
         return;
     }
 
-    auto row = area.removeFromTop (44);
+    const auto detectedName = status.voiced && status.detectedMidi > 0.0f
+                                  ? midiNoteName ((int) std::lround (status.detectedMidi))
+                                  : "--";
+    const auto targetName = status.targetMidi >= 0.0f
+                                ? midiNoteName ((int) std::lround (status.targetMidi))
+                                : "--";
+    const auto hz = status.detectedMidi > 0.0f
+                        ? 440.0f * std::pow (2.0f, (status.detectedMidi - 69.0f) / 12.0f)
+                        : 0.0f;
 
-    const juce::String detected = status.voiced && status.detectedMidi > 0.0f
-                                      ? midiNoteName ((int) std::lround (status.detectedMidi))
-                                      : "--";
-    const juce::String target = status.targetMidi >= 0.0f
-                                    ? midiNoteName ((int) std::lround (status.targetMidi))
-                                    : "--";
-
-    g.setColour (VocalRackLookAndFeel::text());
-    g.setFont (VocalRackLookAndFeel::font (30.0f, true));
-    g.drawText (detected, row.removeFromLeft (96), juce::Justification::centredLeft);
-
-    g.setColour (VocalRackLookAndFeel::dimText());
-    g.setFont (VocalRackLookAndFeel::font (14.0f));
-    g.drawText ("->", row.removeFromLeft (30), juce::Justification::centred);
-
-    g.setColour (status.voiced ? VocalRackLookAndFeel::accent()
-                               : VocalRackLookAndFeel::dimText());
-    g.setFont (VocalRackLookAndFeel::font (30.0f, true));
-    g.drawText (target, row, juce::Justification::centredLeft);
-
-    auto centsRow = area.removeFromTop (20);
+    auto main = area.removeFromTop (48);
+    auto noteArea = main.removeFromLeft (82);
     g.setColour (status.voiced ? VocalRackLookAndFeel::text()
                                : VocalRackLookAndFeel::dimText());
-    g.setFont (VocalRackLookAndFeel::font (12.0f));
+    g.setFont (VocalRackLookAndFeel::font (38.0f, true));
+    g.drawText (detectedName, noteArea, juce::Justification::centredLeft);
+
+    auto hzArea = main.removeFromLeft (86);
+    g.setColour (VocalRackLookAndFeel::dimText());
+    g.setFont (VocalRackLookAndFeel::font (11.5f));
+    g.drawText (hz > 0.0f ? juce::String (hz, 1) + " Hz" : "-- Hz",
+                hzArea, juce::Justification::centredLeft);
+
+    g.setColour (VocalRackLookAndFeel::dimText());
+    g.setFont (VocalRackLookAndFeel::font (13.0f));
+    g.drawText ("-> " + targetName, main, juce::Justification::centredRight);
+
+    auto centsRow = area.removeFromTop (22);
+    g.setColour (status.voiced ? VocalRackLookAndFeel::text()
+                               : VocalRackLookAndFeel::dimText());
+    g.setFont (VocalRackLookAndFeel::font (15.0f));
     g.drawText (status.voiced ? juce::String (status.cents, 1) + " cents"
-                              : "listening…",
-                centsRow.removeFromLeft (140), juce::Justification::centredLeft);
+                              : "listening...",
+                centsRow.removeFromLeft (135), juce::Justification::centredLeft);
 
     g.setColour (status.voiced ? VocalRackLookAndFeel::accent()
                                : VocalRackLookAndFeel::dimText());
     g.fillEllipse ((float) centsRow.getX() + 2.0f, (float) centsRow.getCentreY() - 3.0f, 6.0f, 6.0f);
+    g.setFont (VocalRackLookAndFeel::font (9.0f, true));
     g.setColour (VocalRackLookAndFeel::dimText());
-    g.setFont (VocalRackLookAndFeel::font (9.5f, true));
     g.drawText (status.voiced ? "VOICED" : "UNVOICED", centsRow.withTrimmedLeft (16),
                 juce::Justification::centredLeft);
 
-    auto confidenceRow = area.removeFromTop (12);
+    auto confidenceRow = area.removeFromTop (14);
     constexpr int confidenceTextWidth = 70;
     auto confidenceBar = confidenceRow.withTrimmedRight (confidenceTextWidth);
-    g.setColour (juce::Colour (0xff2b2f36));
+    g.setColour (juce::Colour (0xff2b302b));
     g.fillRoundedRectangle (confidenceBar.toFloat(), 3.0f);
     g.setColour (VocalRackLookAndFeel::accent().withAlpha (0.8f));
     g.fillRoundedRectangle (confidenceBar.toFloat().withWidth (
@@ -447,6 +483,37 @@ void NoteKeyboard::paint (juce::Graphics& g)
     g.fillRoundedRectangle (getLocalBounds().toFloat(), 4.0f);
 }
 
+void BankListModel::paintListBoxItem (int row, juce::Graphics& g, int width, int height,
+                                      bool rowIsSelected)
+{
+    if (rowIsSelected)
+    {
+        g.setColour (VocalRackLookAndFeel::accent());
+        g.fillRoundedRectangle (juce::Rectangle<float> (0.0f, 2.0f, (float) width, (float) height - 4.0f), 6.0f);
+    }
+
+    g.setColour (rowIsSelected ? VocalRackLookAndFeel::background()
+                               : VocalRackLookAndFeel::text());
+    g.setFont (VocalRackLookAndFeel::font (12.5f, rowIsSelected));
+    g.drawFittedText (getRowName ? getRowName (row) : juce::String(),
+                      juce::Rectangle<int> (12, 0, width - 28, height),
+                      juce::Justification::centredLeft, 1);
+
+    if (! rowIsSelected)
+    {
+        g.setColour (VocalRackLookAndFeel::dimText().withAlpha (0.55f));
+        g.setFont (VocalRackLookAndFeel::font (12.0f));
+        g.drawText (">", juce::Rectangle<int> (width - 22, 0, 14, height),
+                    juce::Justification::centredRight);
+    }
+}
+
+void BankListModel::selectedRowsChanged (int lastRowSelected)
+{
+    if (onRowSelected)
+        onRowSelected (lastRowSelected);
+}
+
 PresetBrowser::PresetBrowser (VocalRackAudioProcessor& processorIn,
                               std::function<void()> changedCallback)
     : processor (processorIn), onChanged (std::move (changedCallback))
@@ -454,43 +521,139 @@ PresetBrowser::PresetBrowser (VocalRackAudioProcessor& processorIn,
     setTitle ("Preset browser");
     setFocusContainerType (FocusContainerType::keyboardFocusContainer);
 
-    titleLabel.setText ("PRESET BROWSER", juce::dontSendNotification);
-    titleLabel.setFont (VocalRackLookAndFeel::font (14.0f, true));
-    titleLabel.setColour (juce::Label::textColourId, VocalRackLookAndFeel::accent());
+    titleLabel.setText ("Presets", juce::dontSendNotification);
+    titleLabel.setFont (VocalRackLookAndFeel::font (23.0f, true));
+    titleLabel.setColour (juce::Label::textColourId, VocalRackLookAndFeel::text());
     addAndMakeVisible (titleLabel);
 
-    bankLabel.setText ("BANK", juce::dontSendNotification);
-    bankLabel.setFont (VocalRackLookAndFeel::font (9.5f, true));
-    bankLabel.setColour (juce::Label::textColourId, VocalRackLookAndFeel::dimText());
-    addAndMakeVisible (bankLabel);
+    countLabel.setFont (VocalRackLookAndFeel::font (11.0f));
+    countLabel.setColour (juce::Label::textColourId, VocalRackLookAndFeel::dimText());
+    addAndMakeVisible (countLabel);
 
-    searchLabel.setText ("SEARCH", juce::dontSendNotification);
-    searchLabel.setFont (VocalRackLookAndFeel::font (9.5f, true));
-    searchLabel.setColour (juce::Label::textColourId, VocalRackLookAndFeel::dimText());
-    addAndMakeVisible (searchLabel);
-
-    searchEditor.setTextToShowWhenEmpty ("Search name, bank, notes", VocalRackLookAndFeel::dimText());
+    searchEditor.setTextToShowWhenEmpty ("Search presets...", VocalRackLookAndFeel::dimText());
+    searchEditor.setBorder (juce::BorderSize<int> (0, 26, 0, 0));
     searchEditor.onTextChange = [this] { rebuildVisibleList(); };
     searchEditor.setTitle ("Search presets");
     searchEditor.setWantsKeyboardFocus (true);
     addAndMakeVisible (searchEditor);
 
-    bankBox.setTextWhenNothingSelected ("All banks");
-    bankBox.onChange = [this] { rebuildVisibleList(); };
-    bankBox.setTitle ("Preset bank filter");
-    addAndMakeVisible (bankBox);
+    clearSearchButton.setTitle ("Clear search");
+    clearSearchButton.setTooltip ("Clear the preset search");
+    clearSearchButton.onClick = [this] { searchEditor.clear(); rebuildVisibleList(); };
+    addAndMakeVisible (clearSearchButton);
+
+    bankLabel.setVisible (false);
+    bankBox.setVisible (false);
+    searchLabel.setVisible (false);
+    addChildComponent (bankLabel);
+    addChildComponent (bankBox);
+    addChildComponent (searchLabel);
+
+    bankList.setModel (&bankModel);
+    bankList.setRowHeight (36);
+    bankList.setColour (juce::ListBox::backgroundColourId, juce::Colours::transparentBlack);
+    bankList.setColour (juce::ListBox::outlineColourId, juce::Colours::transparentBlack);
+    bankList.setTitle ("Preset banks");
+    addAndMakeVisible (bankList);
+
+    bankModel.getRowCount = [this] { return (int) banks.size(); };
+    bankModel.getRowName = [this] (int row)
+    {
+        return row >= 0 && row < (int) banks.size() ? banks[(size_t) row] : juce::String();
+    };
+    bankModel.getSelectedRow = [this] { return bankList.getSelectedRow(); };
+    bankModel.onRowSelected = [this] (int row) { selectBank (row); };
+
+    factoryButton.setClickingTogglesState (false);
+    userButton.setClickingTogglesState (false);
+    factoryButton.setColour (juce::TextButton::buttonColourId, VocalRackLookAndFeel::accent());
+    factoryButton.setColour (juce::TextButton::textColourOffId, VocalRackLookAndFeel::background());
+    userButton.setColour (juce::TextButton::buttonColourId, VocalRackLookAndFeel::panelLight());
+    userButton.setColour (juce::TextButton::textColourOffId, VocalRackLookAndFeel::text());
+    factoryButton.onClick = [this]
+    {
+        userOnly = false;
+        factoryButton.setColour (juce::TextButton::buttonColourId, VocalRackLookAndFeel::accent());
+        factoryButton.setColour (juce::TextButton::textColourOffId, VocalRackLookAndFeel::background());
+        userButton.setColour (juce::TextButton::buttonColourId, VocalRackLookAndFeel::panelLight());
+        userButton.setColour (juce::TextButton::textColourOffId, VocalRackLookAndFeel::text());
+        rebuildVisibleList();
+    };
+    userButton.onClick = [this]
+    {
+        userOnly = true;
+        userButton.setColour (juce::TextButton::buttonColourId, VocalRackLookAndFeel::accent());
+        userButton.setColour (juce::TextButton::textColourOffId, VocalRackLookAndFeel::background());
+        factoryButton.setColour (juce::TextButton::buttonColourId, VocalRackLookAndFeel::panelLight());
+        factoryButton.setColour (juce::TextButton::textColourOffId, VocalRackLookAndFeel::text());
+        rebuildVisibleList();
+    };
+    addAndMakeVisible (factoryButton);
+    addAndMakeVisible (userButton);
 
     listBox.setModel (this);
-    listBox.setRowHeight (46);
-    listBox.setColour (juce::ListBox::backgroundColourId, juce::Colour (0xff1a1d21));
+    listBox.setRowHeight (50);
+    listBox.setColour (juce::ListBox::backgroundColourId, juce::Colours::transparentBlack);
+    listBox.setColour (juce::ListBox::outlineColourId, juce::Colours::transparentBlack);
     listBox.setTitle ("Presets");
     addAndMakeVisible (listBox);
 
-    detailsLabel.setJustificationType (juce::Justification::topLeft);
-    detailsLabel.setMinimumHorizontalScale (1.0f);
-    detailsLabel.setFont (VocalRackLookAndFeel::font (12.0f));
-    detailsLabel.setColour (juce::Label::textColourId, VocalRackLookAndFeel::dimText());
-    addAndMakeVisible (detailsLabel);
+    auto setupHeader = [this] (juce::Label& label, const juce::String& text)
+    {
+        label.setText (text, juce::dontSendNotification);
+        label.setFont (VocalRackLookAndFeel::font (8.5f, true));
+        label.setColour (juce::Label::textColourId, VocalRackLookAndFeel::dimText());
+        label.setJustificationType (juce::Justification::centredLeft);
+        addAndMakeVisible (label);
+    };
+
+    setupHeader (descriptionHeader, "DESCRIPTION");
+    setupHeader (useCaseHeader, "USE CASE");
+    setupHeader (firstHeader, "FIRST MOVE");
+
+    detailBadge.setFont (VocalRackLookAndFeel::font (8.0f, true));
+    detailBadge.setColour (juce::Label::textColourId, VocalRackLookAndFeel::accent());
+    detailBadge.setJustificationType (juce::Justification::centred);
+    detailBadge.setColour (juce::Label::backgroundColourId, VocalRackLookAndFeel::accentSoft().withAlpha (0.22f));
+    addAndMakeVisible (detailBadge);
+
+    detailName.setFont (VocalRackLookAndFeel::font (21.0f, true));
+    detailName.setColour (juce::Label::textColourId, VocalRackLookAndFeel::text());
+    detailName.setJustificationType (juce::Justification::centredLeft);
+    detailName.setMinimumHorizontalScale (0.65f);
+    addAndMakeVisible (detailName);
+
+    detailBank.setFont (VocalRackLookAndFeel::font (10.0f));
+    detailBank.setColour (juce::Label::textColourId, VocalRackLookAndFeel::dimText());
+    detailBank.setJustificationType (juce::Justification::centredLeft);
+    addAndMakeVisible (detailBank);
+
+    auto setupBody = [this] (juce::Label& label, float size)
+    {
+        label.setFont (VocalRackLookAndFeel::font (size));
+        label.setColour (juce::Label::textColourId, VocalRackLookAndFeel::text().withAlpha (0.88f));
+        label.setJustificationType (juce::Justification::topLeft);
+        label.setMinimumHorizontalScale (1.0f);
+        addAndMakeVisible (label);
+    };
+
+    setupBody (descriptionLabel, 12.0f);
+    setupBody (useCaseLabel, 11.5f);
+    setupBody (firstLabel, 11.5f);
+
+    browserKeepKey.setButtonText ("Keep Song Key");
+    browserKeepKey.setTitle ("Keep Song Key");
+    browserKeepKey.setTooltip ("Factory browsing preserves the current tonic, scale and note mask.");
+    browserKeepKey.onClick = [this]
+    {
+        processor.setKeepSongKey (browserKeepKey.getToggleState());
+        if (onChanged)
+            onChanged();
+    };
+    addAndMakeVisible (browserKeepKey);
+
+    detailsLabel.setVisible (false);
+    addChildComponent (detailsLabel);
 
     auto setupButton = [this] (juce::TextButton& button)
     {
@@ -506,6 +669,10 @@ PresetBrowser::PresetBrowser (VocalRackAudioProcessor& processorIn,
     setupButton (importButton);
     setupButton (exportButton);
     setupButton (closeButton);
+
+    loadButton.setButtonText ("Load preset");
+    closeButton.setButtonText ("Close");
+    closeButton.setTooltip ("Close preset browser");
 
     loadButton.onClick = [this] { loadSelected(); };
     saveButton.onClick = [this] { saveAs(); };
@@ -523,26 +690,35 @@ PresetBrowser::~PresetBrowser() = default;
 
 void PresetBrowser::reloadBanks()
 {
-    const auto current = bankBox.getText();
-    bankBox.clear (juce::dontSendNotification);
-    bankBox.addItem ("All banks", 1);
+    const auto previous = selectedBank >= 0 && selectedBank < (int) banks.size()
+                              ? banks[(size_t) selectedBank] : juce::String ("All Presets");
 
-    int itemId = 2;
+    banks.clear();
+    banks.push_back ("All Presets");
 
     for (const auto& bank : processor.getPresets().getBanks())
-        bankBox.addItem (bank, itemId++);
+        banks.push_back (bank);
 
-    if (current.isNotEmpty())
-        bankBox.setText (current, juce::dontSendNotification);
-    else
-        bankBox.setSelectedId (1, juce::dontSendNotification);
+    selectedBank = 0;
+
+    for (int i = 0; i < (int) banks.size(); ++i)
+    {
+        if (banks[(size_t) i] == previous)
+            selectedBank = i;
+    }
+
+    bankList.updateContent();
+    bankList.selectRow (selectedBank, juce::dontSendNotification);
 }
 
 void PresetBrowser::refresh()
 {
     reloadBanks();
     rebuildVisibleList();
-    updateDetails();
+    browserKeepKey.setToggleState (processor.getKeepSongKey(), juce::dontSendNotification);
+    countLabel.setText (juce::String (processor.getPresets().getEntries().size())
+                            + " factory presets",
+                        juce::dontSendNotification);
 }
 
 void PresetBrowser::showForCurrentPreset()
@@ -550,12 +726,36 @@ void PresetBrowser::showForCurrentPreset()
     refresh();
     setVisible (true);
     toFront (true);
+    searchEditor.grabKeyboardFocus();
+}
+
+void PresetBrowser::selectBank (int row)
+{
+    if (row < 0 || row >= (int) banks.size() || row == selectedBank)
+        return;
+
+    selectedBank = row;
+    rebuildVisibleList();
 }
 
 void PresetBrowser::rebuildVisibleList()
 {
-    const auto bank = bankBox.getText().isEmpty() ? juce::String ("All banks") : bankBox.getText();
+    const auto bank = selectedBank == 0 ? juce::String ("All banks")
+                                        : banks[(size_t) selectedBank];
     visibleEntries = processor.getPresets().filteredIndices (bank, searchEditor.getText());
+
+    if (userOnly)
+    {
+        const auto& entries = processor.getPresets().getEntries();
+        visibleEntries.erase (std::remove_if (visibleEntries.begin(), visibleEntries.end(),
+                                              [&entries] (int index)
+                                              {
+                                                  return index < 0 || index >= (int) entries.size()
+                                                         || entries[(size_t) index].factory;
+                                              }),
+                              visibleEntries.end());
+    }
+
     listBox.updateContent();
 
     const auto current = processor.getPresetId();
@@ -580,6 +780,132 @@ int PresetBrowser::getNumRows()
     return (int) visibleEntries.size();
 }
 
+void PresetBrowser::paint (juce::Graphics& g)
+{
+    auto bounds = getLocalBounds().toFloat();
+    g.fillAll (VocalRackLookAndFeel::background());
+    g.setColour (VocalRackLookAndFeel::background());
+    g.fillRoundedRectangle (bounds, 12.0f);
+    g.setColour (VocalRackLookAndFeel::accent().withAlpha (0.55f));
+    g.drawRoundedRectangle (bounds.reduced (0.5f), 12.0f, 1.2f);
+
+    auto drawPanel = [&g] (juce::Rectangle<int> panel)
+    {
+        g.setColour (VocalRackLookAndFeel::card());
+        g.fillRoundedRectangle (panel.toFloat(), 9.0f);
+        g.setColour (VocalRackLookAndFeel::line());
+        g.drawRoundedRectangle (panel.toFloat(), 9.0f, 1.0f);
+    };
+
+    drawPanel (leftPanel);
+    drawPanel (centerPanel);
+    drawPanel (rightPanel);
+
+    auto lens = searchEditor.getBounds().toFloat();
+    const auto centre = juce::Point<float> (lens.getX() + 14.0f, lens.getCentreY() - 1.0f);
+    g.setColour (VocalRackLookAndFeel::dimText());
+    g.drawEllipse (centre.x - 5.0f, centre.y - 5.0f, 10.0f, 10.0f, 1.4f);
+    g.drawLine (centre.x + 3.8f, centre.y + 3.8f, centre.x + 8.0f, centre.y + 8.0f, 1.4f);
+
+    auto tableHeader = juce::Rectangle<int> (listBox.getX() + 15, listBox.getY() - 22,
+                                             listBox.getWidth() - 30, 20);
+    g.setColour (VocalRackLookAndFeel::dimText());
+    g.setFont (VocalRackLookAndFeel::font (8.5f, true));
+    g.drawText ("PRESET", tableHeader.removeFromLeft (juce::jmax (120, tableHeader.getWidth() * 3 / 5)),
+                juce::Justification::centredLeft);
+    g.drawText ("BANK", tableHeader, juce::Justification::centredLeft);
+
+    g.setColour (VocalRackLookAndFeel::dimText());
+    g.setFont (VocalRackLookAndFeel::font (8.5f, true));
+    g.drawText ("BANKS", leftPanel.getX() + 14, leftPanel.getY() + 13, 120, 18,
+                juce::Justification::centredLeft);
+
+    g.setColour (VocalRackLookAndFeel::line());
+    g.fillRect (rightPanel.getX() + 22, detailName.getBottom() + 12, rightPanel.getWidth() - 44, 1);
+}
+
+void PresetBrowser::resized()
+{
+    auto area = getLocalBounds().reduced (24);
+    auto titleRow = area.removeFromTop (48);
+    titleLabel.setBounds (titleRow.removeFromLeft (170));
+    titleRow.removeFromLeft (8);
+    countLabel.setBounds (titleRow.removeFromLeft (190).reduced (0, 8));
+
+    auto searchArea = titleRow.removeFromRight (390);
+    closeButton.setBounds (searchArea.removeFromRight (52).reduced (0, 6));
+    searchArea.removeFromRight (8);
+    clearSearchButton.setBounds (searchArea.removeFromRight (30).reduced (0, 6));
+    searchArea.removeFromRight (4);
+    searchEditor.setBounds (searchArea.reduced (0, 4));
+
+    area.removeFromTop (12);
+    auto content = area.removeFromTop (area.getHeight() - 12);
+
+    const int leftWidth = juce::jlimit (190, 250, content.getWidth() / 4);
+    const int rightWidth = juce::jlimit (300, 380, content.getWidth() / 3);
+    leftPanel = content.removeFromLeft (leftWidth);
+    content.removeFromLeft (14);
+    rightPanel = content.removeFromRight (rightWidth);
+    content.removeFromRight (14);
+    centerPanel = content;
+
+    auto leftInner = leftPanel.reduced (12);
+    leftInner.removeFromTop (24);
+    auto bankButtons = leftInner.removeFromBottom (34);
+    leftInner.removeFromBottom (8);
+    bankList.setBounds (leftInner);
+    factoryButton.setBounds (bankButtons.removeFromLeft (bankButtons.getWidth() / 2 - 4));
+    bankButtons.removeFromLeft (8);
+    userButton.setBounds (bankButtons);
+
+    auto centerInner = centerPanel.reduced (12);
+    centerInner.removeFromTop (24);
+    listBox.setBounds (centerInner);
+
+    auto rightInner = rightPanel.reduced (22);
+    auto detailHead = rightInner.removeFromTop (52);
+    detailBadge.setBounds (detailHead.removeFromRight (84).reduced (0, 6));
+    detailName.setBounds (detailHead);
+    detailBank.setBounds (rightInner.removeFromTop (20));
+
+    rightInner.removeFromTop (12);
+    descriptionHeader.setBounds (rightInner.removeFromTop (18));
+    descriptionLabel.setBounds (rightInner.removeFromTop (50));
+    rightInner.removeFromTop (8);
+    useCaseHeader.setBounds (rightInner.removeFromTop (18));
+    useCaseLabel.setBounds (rightInner.removeFromTop (38));
+    rightInner.removeFromTop (8);
+    firstHeader.setBounds (rightInner.removeFromTop (18));
+    firstLabel.setBounds (rightInner.removeFromTop (44));
+
+    auto actions = rightInner.removeFromBottom (112);
+    browserKeepKey.setBounds (actions.removeFromTop (24));
+    actions.removeFromTop (6);
+
+    auto actionRow = actions.removeFromTop (32);
+    const int gap = 6;
+    const int loadWidth = (actionRow.getWidth() - 2 * gap) / 2;
+    loadButton.setBounds (actionRow.removeFromLeft (loadWidth));
+    actionRow.removeFromLeft (gap);
+    saveButton.setBounds (actionRow.removeFromLeft ((actionRow.getWidth() - gap) / 2));
+    actionRow.removeFromLeft (gap);
+    exportButton.setBounds (actionRow);
+
+    actions.removeFromTop (6);
+    auto secondRow = actions.removeFromTop (30);
+    const int smallGap = 4;
+    const int smallWidth = (secondRow.getWidth() - 3 * smallGap) / 4;
+    duplicateButton.setBounds (secondRow.removeFromLeft (smallWidth));
+    secondRow.removeFromLeft (smallGap);
+    renameButton.setBounds (secondRow.removeFromLeft (smallWidth));
+    secondRow.removeFromLeft (smallGap);
+    deleteButton.setBounds (secondRow.removeFromLeft (smallWidth));
+    secondRow.removeFromLeft (smallGap);
+    importButton.setBounds (secondRow);
+}
+
+
 void PresetBrowser::paintListBoxItem (int rowNumber, juce::Graphics& g, int width, int height,
                                       bool rowIsSelected)
 {
@@ -597,23 +923,22 @@ void PresetBrowser::paintListBoxItem (int rowNumber, juce::Graphics& g, int widt
 
     if (rowIsSelected)
     {
-        g.setColour (VocalRackLookAndFeel::accent().withAlpha (0.14f));
-        g.fillRect (area);
         g.setColour (VocalRackLookAndFeel::accent());
-        g.fillRect (area.removeFromLeft (2));
+        g.fillRoundedRectangle (area.toFloat().reduced (5.0f, 3.0f), 7.0f);
     }
 
-    g.setColour (rowIsSelected ? VocalRackLookAndFeel::text()
-                               : VocalRackLookAndFeel::text().withAlpha (0.9f));
-    g.setFont (VocalRackLookAndFeel::font (13.0f, rowIsSelected));
-    g.drawText (entry.name, area.reduced (12, 4).removeFromTop (20),
-                juce::Justification::centredLeft);
+    g.setColour (rowIsSelected ? VocalRackLookAndFeel::background()
+                               : VocalRackLookAndFeel::text());
+    g.setFont (VocalRackLookAndFeel::font (12.5f, rowIsSelected));
+    g.drawFittedText (entry.name, area.reduced (15, 3).withTrimmedBottom (14),
+                      juce::Justification::centredLeft, 1);
 
-    g.setColour (VocalRackLookAndFeel::dimText());
-    g.setFont (VocalRackLookAndFeel::font (9.5f));
-    g.drawText ((entry.factory ? "FACTORY  ·  " : "USER  ·  ") + entry.bank,
-                area.reduced (12, 4).withTrimmedTop (21),
-                juce::Justification::centredLeft);
+    g.setColour (rowIsSelected ? VocalRackLookAndFeel::background().withAlpha (0.72f)
+                               : VocalRackLookAndFeel::dimText());
+    g.setFont (VocalRackLookAndFeel::font (10.5f));
+    auto bankArea = area.reduced (15, 3).withTrimmedTop (24);
+    bankArea.removeFromLeft ((int) (width * 0.58f));
+    g.drawFittedText (entry.bank, bankArea, juce::Justification::centredLeft, 1);
 }
 
 void PresetBrowser::selectedRowsChanged (int)
@@ -647,20 +972,37 @@ void PresetBrowser::updateDetails()
     duplicateButton.setEnabled (entry != nullptr);
     exportButton.setEnabled (entry != nullptr);
     loadButton.setEnabled (entry != nullptr);
+    browserKeepKey.setToggleState (processor.getKeepSongKey(), juce::dontSendNotification);
 
     if (entry == nullptr)
     {
-        detailsLabel.setText ("Select a preset to see its description, use case and first move.",
-                              juce::dontSendNotification);
+        detailName.setText ("No preset selected", juce::dontSendNotification);
+        detailBank.setText ({}, juce::dontSendNotification);
+        detailBadge.setText ({}, juce::dontSendNotification);
+        descriptionLabel.setText ({}, juce::dontSendNotification);
+        useCaseLabel.setText ({}, juce::dontSendNotification);
+        firstLabel.setText ({}, juce::dontSendNotification);
+        countLabel.setText (juce::String (processor.getPresets().getEntries().size())
+                                + " factory presets",
+                            juce::dontSendNotification);
         return;
     }
 
-    juce::String text;
-    text << entry->description << "\n\n"
-         << "USE  " << entry->useCase << "\n\n"
-         << "FIRST MOVE  " << entry->firstAdjustment;
+    detailBadge.setText (entry->factory ? "FACTORY" : "USER", juce::dontSendNotification);
+    detailName.setText (entry->name, juce::dontSendNotification);
+    detailName.setTooltip (entry->name);
+    detailBank.setText ("Bank: " + entry->bank, juce::dontSendNotification);
+    descriptionLabel.setText (entry->description, juce::dontSendNotification);
+    useCaseLabel.setText (entry->useCase, juce::dontSendNotification);
+    firstLabel.setText (entry->firstAdjustment, juce::dontSendNotification);
 
-    detailsLabel.setText (text, juce::dontSendNotification);
+    int shown = 0;
+
+    for (const auto& candidate : processor.getPresets().getEntries())
+        if (candidate.factory)
+            ++shown;
+
+    countLabel.setText (juce::String (shown) + " factory presets", juce::dontSendNotification);
 }
 
 void PresetBrowser::loadSelected()
@@ -914,52 +1256,6 @@ void PresetBrowser::showError (const juce::String& message)
 {
     juce::AlertWindow::showMessageBoxAsync (juce::MessageBoxIconType::WarningIcon,
                                             "Preset", message, "OK", this);
-}
-
-void PresetBrowser::paint (juce::Graphics& g)
-{
-    auto bounds = getLocalBounds().toFloat();
-    g.setColour (VocalRackLookAndFeel::background().withAlpha (0.97f));
-    g.fillRoundedRectangle (bounds, 8.0f);
-    g.setColour (VocalRackLookAndFeel::accent().withAlpha (0.55f));
-    g.drawRoundedRectangle (bounds.reduced (0.5f), 8.0f, 1.2f);
-
-    g.setColour (VocalRackLookAndFeel::panel().withAlpha (0.7f));
-    g.fillRoundedRectangle (20.0f, 78.0f, (float) getWidth() - 40.0f, 286.0f, 5.0f);
-}
-
-void PresetBrowser::resized()
-{
-    auto area = getLocalBounds().reduced (20);
-
-    auto titleRow = area.removeFromTop (26);
-    titleLabel.setBounds (titleRow.removeFromLeft (220));
-    closeButton.setBounds (titleRow.removeFromRight (64).reduced (0, 1));
-
-    area.removeFromTop (6);
-    auto filterRow = area.removeFromTop (26);
-    bankLabel.setBounds (filterRow.removeFromLeft (34));
-    bankBox.setBounds (filterRow.removeFromLeft (190));
-    filterRow.removeFromLeft (10);
-    searchLabel.setBounds (filterRow.removeFromLeft (48));
-    searchEditor.setBounds (filterRow.removeFromLeft (260));
-    area.removeFromTop (8);
-
-    auto browserArea = area.removeFromTop (286);
-    listBox.setBounds (browserArea.removeFromLeft (400));
-    browserArea.removeFromLeft (12);
-    detailsLabel.setBounds (browserArea.reduced (6));
-
-    area.removeFromTop (10);
-    auto buttonsRow1 = area.removeFromTop (28);
-    loadButton.setBounds (buttonsRow1.removeFromLeft (72).reduced (1));
-    saveButton.setBounds (buttonsRow1.removeFromLeft (78).reduced (1));
-    duplicateButton.setBounds (buttonsRow1.removeFromLeft (84).reduced (1));
-    renameButton.setBounds (buttonsRow1.removeFromLeft (78).reduced (1));
-    deleteButton.setBounds (buttonsRow1.removeFromLeft (70).reduced (1));
-    buttonsRow1.removeFromLeft (8);
-    importButton.setBounds (buttonsRow1.removeFromLeft (70).reduced (1));
-    exportButton.setBounds (buttonsRow1.removeFromLeft (70).reduced (1));
 }
 
 } // namespace vr

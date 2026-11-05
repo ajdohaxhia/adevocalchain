@@ -1427,6 +1427,11 @@ void writeSnapshot (const juce::File& file)
             detail->triggerClick();
 
         juce::MessageManager::getInstance()->runDispatchLoopUntil (120);
+
+        const auto tabText = juce::SystemStats::getEnvironmentVariable ("VR_SNAPSHOT_TAB", {});
+        if (tabText.isNotEmpty())
+            if (auto* tabs = dynamic_cast<juce::TabbedComponent*> (editor->findChildWithID ("DetailTabs")))
+                tabs->setCurrentTabIndex (tabText.getIntValue());
     }
 
     if (juce::SystemStats::getEnvironmentVariable ("VR_SNAPSHOT_BROWSER", {}) == "1")

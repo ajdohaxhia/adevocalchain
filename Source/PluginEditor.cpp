@@ -27,6 +27,41 @@ int countBits (int value)
 }
 } // namespace
 
+void ControlGrid::paint (juce::Graphics& g)
+{
+    auto bounds = getLocalBounds().toFloat().reduced (1.0f);
+    g.setColour (VocalRackLookAndFeel::card());
+    g.fillRoundedRectangle (bounds, 10.0f);
+    g.setColour (VocalRackLookAndFeel::line());
+    g.drawRoundedRectangle (bounds, 10.0f, 1.0f);
+
+    if (title.isNotEmpty())
+    {
+        auto titleArea = getLocalBounds().reduced (18);
+        titleArea.setHeight (32);
+        g.setColour (VocalRackLookAndFeel::text());
+        g.setFont (VocalRackLookAndFeel::font (20.0f, true));
+        g.drawText (title, titleArea, juce::Justification::centredLeft);
+
+        g.setColour (VocalRackLookAndFeel::line().withAlpha (0.7f));
+        g.fillRect (18, 40, getWidth() - 36, 1);
+    }
+}
+
+void ControlGrid::paintOverChildren (juce::Graphics& g)
+{
+    if (! moduleStrip || headerControls.size() < 2)
+        return;
+
+    const int cellWidth = (getWidth() - 36) / (int) headerControls.size();
+    g.setColour (VocalRackLookAndFeel::dimText().withAlpha (0.7f));
+    g.setFont (VocalRackLookAndFeel::font (12.0f));
+
+    for (size_t i = 1; i < headerControls.size(); ++i)
+        g.drawText (">", 18 + (int) i * cellWidth - 8, 30, 16, 18,
+                    juce::Justification::centred);
+}
+
 VocalRackEditor::VocalRackEditor (VocalRackAudioProcessor& processorRef)
     : AudioProcessorEditor (&processorRef),
       processor (processorRef),
@@ -63,21 +98,12 @@ VocalRackEditor::VocalRackEditor (VocalRackAudioProcessor& processorRef)
     noticeLabel.setJustificationType (juce::Justification::centredLeft);
     noticeLabel.setMinimumHorizontalScale (0.85f);
 
-    qualityHintLabel.setFont (VocalRackLookAndFeel::font (7.5f, true));
+    qualityHintLabel.setFont (VocalRackLookAndFeel::font (9.0f));
     qualityHintLabel.setColour (juce::Label::textColourId, VocalRackLookAndFeel::dimText());
-    qualityHintLabel.setJustificationType (juce::Justification::centredRight);
-    qualityHintLabel.setText ("STOP TRANSPORT TO CHANGE QUALITY", juce::dontSendNotification);
+    qualityHintLabel.setJustificationType (juce::Justification::centredLeft);
+    qualityHintLabel.setText ("QUALITY", juce::dontSendNotification);
     qualityHintLabel.setTooltip ("Track and Mix use different internal resources and latency. Stop the transport before switching if the host cannot re-align live.");
-    addAndMakeVisible (qualityHintLabel);
 
-    addAndMakeVisible (quickButton);
-    addAndMakeVisible (detailButton);
-    quickButton.setComponentID ("QuickButton");
-    detailButton.setComponentID ("DetailButton");
-    quickButton.setClickingTogglesState (false);
-    detailButton.setClickingTogglesState (false);
-    quickButton.onClick = [this] { setView (false); };
-    detailButton.onClick = [this] { setView (true); };
 
     addAndMakeVisible (browser);
     browser.setVisible (false);
@@ -102,34 +128,44 @@ VocalRackEditor::~VocalRackEditor()
 void VocalRackEditor::configureTopBar()
 {
     logoLabel.setText ("ademusic", juce::dontSendNotification);
-    logoLabel.setFont (VocalRackLookAndFeel::font (25.0f, true));
+    logoLabel.setFont (VocalRackLookAndFeel::font (27.0f, true));
     logoLabel.setColour (juce::Label::textColourId, VocalRackLookAndFeel::text());
     logoLabel.setJustificationType (juce::Justification::centredLeft);
     addAndMakeVisible (logoLabel);
 
     productLabel.setText ("VOCAL RACK", juce::dontSendNotification);
-    productLabel.setFont (VocalRackLookAndFeel::font (9.5f, true));
-    productLabel.setColour (juce::Label::textColourId, VocalRackLookAndFeel::accent());
+    productLabel.setFont (VocalRackLookAndFeel::font (17.0f, true));
+    productLabel.setColour (juce::Label::textColourId, VocalRackLookAndFeel::text());
     productLabel.setJustificationType (juce::Justification::centredLeft);
     addAndMakeVisible (productLabel);
 
-    presetNameLabel.setFont (VocalRackLookAndFeel::font (15.0f, true));
+    presetNameLabel.setFont (VocalRackLookAndFeel::font (17.0f, true));
     presetNameLabel.setColour (juce::Label::textColourId, VocalRackLookAndFeel::text());
     presetNameLabel.setJustificationType (juce::Justification::centredLeft);
     presetNameLabel.setMinimumHorizontalScale (0.6f);
     addAndMakeVisible (presetNameLabel);
 
-    presetMetaLabel.setFont (VocalRackLookAndFeel::font (8.5f, true));
+    presetMetaLabel.setFont (VocalRackLookAndFeel::font (8.5f));
     presetMetaLabel.setColour (juce::Label::textColourId, VocalRackLookAndFeel::dimText());
     presetMetaLabel.setJustificationType (juce::Justification::centredLeft);
     presetMetaLabel.setMinimumHorizontalScale (0.65f);
     addAndMakeVisible (presetMetaLabel);
 
-    latencyLabel.setFont (VocalRackLookAndFeel::font (9.0f));
+    latencyLabel.setFont (VocalRackLookAndFeel::font (10.0f));
     latencyLabel.setColour (juce::Label::textColourId, VocalRackLookAndFeel::dimText());
-    latencyLabel.setJustificationType (juce::Justification::centredRight);
+    latencyLabel.setJustificationType (juce::Justification::centredLeft);
     latencyLabel.setTooltip ("Plugin-reported latency. Track is pinned at or below 15 ms at 48 kHz; Mix adds the spectral path.");
     addAndMakeVisible (latencyLabel);
+
+    sampleRateLabel.setFont (VocalRackLookAndFeel::font (10.0f));
+    sampleRateLabel.setColour (juce::Label::textColourId, VocalRackLookAndFeel::dimText());
+    sampleRateLabel.setJustificationType (juce::Justification::centredLeft);
+    addAndMakeVisible (sampleRateLabel);
+
+    ceilingLabel.setFont (VocalRackLookAndFeel::font (10.0f));
+    ceilingLabel.setColour (juce::Label::textColourId, VocalRackLookAndFeel::dimText());
+    ceilingLabel.setJustificationType (juce::Justification::centredLeft);
+    addAndMakeVisible (ceilingLabel);
 
     spectralLabel.setFont (VocalRackLookAndFeel::font (8.5f, true));
     spectralLabel.setColour (juce::Label::textColourId, VocalRackLookAndFeel::danger());
@@ -150,6 +186,7 @@ void VocalRackEditor::configureTopBar()
     abAButton.setTooltip ("Recall A/B slot A");
     abBButton.setTooltip ("Recall A/B slot B");
     copyABButton.setTooltip ("Copy the active A/B slot to the other slot");
+    browseButton.setButtonText ("Browse");
 
     previousButton.onClick = [this] { loadRelativePreset (-1); };
     nextButton.onClick = [this] { loadRelativePreset (1); };
@@ -190,6 +227,25 @@ void VocalRackEditor::configureTopBar()
 
     globalBypass.setTooltip ("Global bypass. When off, returns the latency-aligned original input.");
     addAndMakeVisible (globalBypass);
+
+    qualityHintLabel.setFont (VocalRackLookAndFeel::font (9.0f));
+    qualityHintLabel.setColour (juce::Label::textColourId, VocalRackLookAndFeel::dimText());
+    qualityHintLabel.setJustificationType (juce::Justification::centredLeft);
+    qualityHintLabel.setText ("QUALITY", juce::dontSendNotification);
+    qualityHintLabel.setTooltip ("Stop transport before switching quality if the host cannot re-align live.");
+    qualityHintLabel.setVisible (true);
+    addAndMakeVisible (qualityHintLabel);
+
+    quickButton.setButtonText ("QUICK");
+    detailButton.setButtonText ("DETAIL");
+    addAndMakeVisible (quickButton);
+    addAndMakeVisible (detailButton);
+    quickButton.setComponentID ("QuickButton");
+    detailButton.setComponentID ("DetailButton");
+    quickButton.setClickingTogglesState (false);
+    detailButton.setClickingTogglesState (false);
+    quickButton.onClick = [this] { setView (false); };
+    detailButton.onClick = [this] { setView (true); };
 }
 
 void VocalRackEditor::configureStatusBar()
@@ -199,9 +255,15 @@ void VocalRackEditor::configureStatusBar()
     addAndMakeVisible (keyboard);
     addAndMakeVisible (keyLabel);
 
-    keyLabel.setFont (VocalRackLookAndFeel::font (8.5f, true));
+    keyLabel.setFont (VocalRackLookAndFeel::font (9.0f, true));
     keyLabel.setColour (juce::Label::textColourId, VocalRackLookAndFeel::dimText());
     keyLabel.setJustificationType (juce::Justification::centredLeft);
+    keyLabel.setText ("KEY", juce::dontSendNotification);
+
+    maskLabel.setFont (VocalRackLookAndFeel::font (9.5f, true));
+    maskLabel.setColour (juce::Label::textColourId, VocalRackLookAndFeel::dimText());
+    maskLabel.setJustificationType (juce::Justification::centredLeft);
+    addAndMakeVisible (maskLabel);
 
     tonicBox.setTitle ("Tonic");
     tonicBox.setTooltip ("Song tonic used for target-note selection.");
@@ -222,9 +284,10 @@ void VocalRackEditor::configureStatusBar()
     keyboard.onToggle = [this] (int pitchClass) { toggleMaskNote (pitchClass); };
 }
 
-void VocalRackEditor::addQuickKnob (const char* parameterId)
+void VocalRackEditor::addQuickKnob (const char* parameterId, const char* displayName)
 {
-    auto* knob = new Knob (processor.getAPVTS(), parameterId);
+    auto* knob = new Knob (processor.getAPVTS(), parameterId,
+                           displayName != nullptr ? juce::String (displayName) : juce::String());
     quickView.addGridControl (knob);
 }
 
@@ -234,9 +297,13 @@ void VocalRackEditor::addQuickPower (const char* parameterId, const char* label)
     quickView.addHeaderControl (power);
 }
 
-void VocalRackEditor::addKnob (ControlGrid& grid, const char* parameterId)
+void VocalRackEditor::addKnob (ControlGrid& grid, const char* parameterId, const char* subLabel)
 {
     auto* knob = new Knob (processor.getAPVTS(), parameterId);
+
+    if (subLabel != nullptr)
+        knob->setSubLabel (subLabel);
+
     grid.addGridControl (knob);
 }
 
@@ -280,144 +347,148 @@ void VocalRackEditor::configureQuickView()
 {
     quickView.setComponentID ("QuickView");
     quickView.setColumns (6);
+    quickView.setModuleStrip (true);
 
-    addQuickPower ("exp.bypass", "EXP");
-    addQuickPower ("dn.bypass", "NOISE");
-    addQuickPower ("pitch.bypass", "PITCH");
-    addQuickPower ("comp.bypass", "COMP");
-    addQuickPower ("ds.bypass", "DE-ESS");
-    addQuickPower ("sat.bypass", "COLOR");
-    addQuickPower ("dly.bypass", "DELAY");
-    addQuickPower ("rev.bypass", "VERB");
-    addQuickPower ("lim.bypass", "LIMIT");
+    addQuickPower ("exp.bypass", "Cleanup");
+    addQuickPower ("dn.bypass", "Noise");
+    addQuickPower ("pitch.bypass", "Pitch");
+    addQuickPower ("comp.bypass", "Comp");
+    addQuickPower ("ds.bypass", "De-ess");
+    addQuickPower ("sat.bypass", "Color");
+    addQuickPower ("dly.bypass", "Delay");
+    addQuickPower ("rev.bypass", "Space");
+    addQuickPower ("lim.bypass", "Limit");
 
-    addQuickKnob ("global.input");
-    addQuickKnob ("dn.amount");
-    addQuickKnob ("pitch.amount");
-    addQuickKnob ("pitch.retune");
-    addQuickKnob ("comp.threshold");
-    addQuickKnob ("ds.range");
-    addQuickKnob ("teq.presGain");
-    addQuickKnob ("sat.drive");
-    addQuickKnob ("dly.level");
-    addQuickKnob ("rev.level");
-    addQuickKnob ("global.mix");
-    addQuickKnob ("global.output");
+    addQuickKnob ("global.input", "Input");
+    addQuickKnob ("dn.amount", "Noise");
+    addQuickKnob ("pitch.amount", "Tune");
+    addQuickKnob ("pitch.retune", "Retune");
+    addQuickKnob ("comp.threshold", "Comp");
+    addQuickKnob ("ds.range", "De-ess");
+    addQuickKnob ("teq.presGain", "Presence");
+    addQuickKnob ("sat.drive", "Drive");
+    addQuickKnob ("dly.level", "Delay");
+    addQuickKnob ("rev.level", "Reverb");
+    addQuickKnob ("global.mix", "Mix");
+    addQuickKnob ("global.output", "Output");
 
     addAndMakeVisible (quickView);
 }
 
 void VocalRackEditor::configureDetailTabs()
 {
-    detailTabs.setTabBarDepth (30);
+    detailTabs.setTabBarDepth (44);
     detailTabs.setOutline (0);
     detailTabs.setColour (juce::TabbedButtonBar::tabTextColourId, VocalRackLookAndFeel::dimText());
     detailTabs.setColour (juce::TabbedButtonBar::frontTextColourId, VocalRackLookAndFeel::text());
-    detailTabs.setColour (juce::TabbedButtonBar::tabOutlineColourId, juce::Colour (0xff2a2e35));
-    detailTabs.setColour (juce::TabbedButtonBar::frontOutlineColourId, VocalRackLookAndFeel::accent());
+    detailTabs.setColour (juce::TabbedButtonBar::tabOutlineColourId, juce::Colours::transparentBlack);
+    detailTabs.setColour (juce::TabbedButtonBar::frontOutlineColourId, juce::Colours::transparentBlack);
     detailTabs.setColour (juce::TabbedComponent::backgroundColourId, juce::Colours::transparentBlack);
     detailTabs.setColour (juce::TabbedComponent::outlineColourId, juce::Colours::transparentBlack);
 
-    auto makeGrid = [this] (const juce::String& name, int columns)
+    auto makeGrid = [this] (const juce::String& name, const juce::String& title, int columns)
     {
         auto* grid = new ControlGrid();
         grid->setColumns (columns);
+        grid->setTitle (title);
         detailTabs.addTab (name, VocalRackLookAndFeel::panel(), grid, true);
         return grid;
     };
 
-    auto* cleanup = makeGrid ("CLEANUP", 7);
-    addPower (*cleanup, "exp.bypass", "EXP");
-    addPower (*cleanup, "dn.bypass", "NOISE");
-    addKnob (*cleanup, "exp.threshold");
-    addKnob (*cleanup, "exp.range");
-    addKnob (*cleanup, "exp.attack");
-    addKnob (*cleanup, "exp.hold");
-    addKnob (*cleanup, "exp.release");
-    addKnob (*cleanup, "dn.amount");
-    addKnob (*cleanup, "dn.maxReduction");
+    auto* cleanup = makeGrid ("Cleanup", "CLEANUP", 7);
+    addPower (*cleanup, "exp.bypass", "Expander");
+    addPower (*cleanup, "dn.bypass", "Noise");
+    addKnob (*cleanup, "exp.threshold", "Open point");
+    addKnob (*cleanup, "exp.range", "Depth");
+    addKnob (*cleanup, "exp.attack", "Speed");
+    addKnob (*cleanup, "exp.hold", "Pause");
+    addKnob (*cleanup, "exp.release", "Recovery");
+    addKnob (*cleanup, "dn.amount", "Reduction");
+    addKnob (*cleanup, "dn.maxReduction", "Ceiling");
 
-    auto* pitch = makeGrid ("PITCH", 5);
-    addPower (*pitch, "pitch.bypass", "PITCH");
-    addCombo (*pitch, "pitch.range", "RANGE");
-    addKnob (*pitch, "pitch.amount");
-    addKnob (*pitch, "pitch.retune");
-    addKnob (*pitch, "pitch.humanize");
-    addKnob (*pitch, "pitch.a4");
+    auto* pitch = makeGrid ("Pitch", "PITCH CORRECTION", 4);
+    addPower (*pitch, "pitch.bypass", "Enabled");
+    addCombo (*pitch, "pitch.range", "Range");
+    addKnob (*pitch, "pitch.amount", "Correction amount");
+    addKnob (*pitch, "pitch.retune", "Retune time");
+    addKnob (*pitch, "pitch.humanize", "Natural movement");
+    addKnob (*pitch, "pitch.a4", "A4 reference");
 
-    auto* eq = makeGrid ("EQ", 7);
-    addPower (*eq, "ceq.bypass", "CLEAN EQ");
-    addPower (*eq, "teq.bypass", "TONE EQ");
-    addKnob (*eq, "ceq.hpf");
-    addKnob (*eq, "ceq.cut1Freq");
-    addKnob (*eq, "ceq.cut1Gain");
-    addKnob (*eq, "ceq.cut1Q");
-    addKnob (*eq, "ceq.cut2Freq");
-    addKnob (*eq, "ceq.cut2Gain");
-    addKnob (*eq, "ceq.cut2Q");
-    addKnob (*eq, "teq.lowFreq");
-    addKnob (*eq, "teq.lowGain");
-    addKnob (*eq, "teq.presFreq");
-    addKnob (*eq, "teq.presGain");
-    addKnob (*eq, "teq.presQ");
-    addKnob (*eq, "teq.highFreq");
-    addKnob (*eq, "teq.highGain");
+    auto* cleanEq = makeGrid ("Clean EQ", "CLEAN EQ", 7);
+    addPower (*cleanEq, "ceq.bypass", "Enabled");
+    addKnob (*cleanEq, "ceq.hpf");
+    addKnob (*cleanEq, "ceq.cut1Freq");
+    addKnob (*cleanEq, "ceq.cut1Gain");
+    addKnob (*cleanEq, "ceq.cut1Q");
+    addKnob (*cleanEq, "ceq.cut2Freq");
+    addKnob (*cleanEq, "ceq.cut2Gain");
+    addKnob (*cleanEq, "ceq.cut2Q");
 
-    auto* dynamics = makeGrid ("DYNAMICS", 7);
-    addPower (*dynamics, "comp.bypass", "COMP");
-    addPower (*dynamics, "ds.bypass", "DE-ESS");
-    addToggle (*dynamics, "ds.audition", "AUDITION");
-    addKnob (*dynamics, "comp.threshold");
-    addKnob (*dynamics, "comp.ratio");
-    addKnob (*dynamics, "comp.attack");
-    addKnob (*dynamics, "comp.release");
-    addKnob (*dynamics, "comp.knee");
-    addKnob (*dynamics, "comp.makeup");
-    addKnob (*dynamics, "comp.mix");
-    addKnob (*dynamics, "comp.detHPF");
-    addKnob (*dynamics, "ds.freq");
-    addKnob (*dynamics, "ds.threshold");
-    addKnob (*dynamics, "ds.range");
-    addKnob (*dynamics, "ds.release");
+    auto* comp = makeGrid ("Comp", "COMPRESSOR", 8);
+    addPower (*comp, "comp.bypass", "Enabled");
+    addKnob (*comp, "comp.threshold", "Gain reduction");
+    addKnob (*comp, "comp.ratio", "Ratio");
+    addKnob (*comp, "comp.attack", "Speed");
+    addKnob (*comp, "comp.release", "Recovery");
+    addKnob (*comp, "comp.knee", "Softness");
+    addKnob (*comp, "comp.makeup", "Makeup");
+    addKnob (*comp, "comp.mix", "Parallel");
+    addKnob (*comp, "comp.detHPF", "Detector");
 
-    auto* color = makeGrid ("COLOR", 4);
-    addPower (*color, "sat.bypass", "SAT");
-    addCombo (*color, "sat.mode", "MODE");
-    addKnob (*color, "sat.drive");
-    addKnob (*color, "sat.blend");
-    addKnob (*color, "sat.output");
+    auto* deess = makeGrid ("De-ess", "DE-ESSER", 4);
+    addPower (*deess, "ds.bypass", "Enabled");
+    addToggle (*deess, "ds.audition", "Audition");
+    addKnob (*deess, "ds.freq", "Detection band");
+    addKnob (*deess, "ds.threshold", "Threshold");
+    addKnob (*deess, "ds.range", "Max reduction");
+    addKnob (*deess, "ds.release", "Recovery");
 
-    auto* delay = makeGrid ("DELAY", 7);
-    addPower (*delay, "dly.bypass", "DELAY");
-    addToggle (*delay, "dly.sync", "SYNC");
-    addToggle (*delay, "dly.pingpong", "PING-PONG");
-    addCombo (*delay, "dly.division", "DIVISION");
-    addCombo (*delay, "dly.feel", "FEEL");
-    addKnob (*delay, "dly.ms");
-    addKnob (*delay, "dly.feedback");
-    addKnob (*delay, "dly.level");
-    addKnob (*delay, "dly.lowCut");
-    addKnob (*delay, "dly.highCut");
-    addKnob (*delay, "dly.duck");
-    addKnob (*delay, "dly.manualBpm");
+    auto* toneEq = makeGrid ("Tone EQ", "TONE EQ", 7);
+    addPower (*toneEq, "teq.bypass", "Enabled");
+    addKnob (*toneEq, "teq.lowFreq");
+    addKnob (*toneEq, "teq.lowGain");
+    addKnob (*toneEq, "teq.presFreq");
+    addKnob (*toneEq, "teq.presGain");
+    addKnob (*toneEq, "teq.presQ");
+    addKnob (*toneEq, "teq.highFreq");
+    addKnob (*toneEq, "teq.highGain");
 
-    auto* reverb = makeGrid ("REVERB", 7);
-    addPower (*reverb, "rev.bypass", "REVERB");
-    addCombo (*reverb, "rev.type", "TYPE");
-    addKnob (*reverb, "rev.predelay");
-    addKnob (*reverb, "rev.decay");
-    addKnob (*reverb, "rev.damping");
-    addKnob (*reverb, "rev.lowCut");
-    addKnob (*reverb, "rev.highCut");
-    addKnob (*reverb, "rev.level");
-    addKnob (*reverb, "rev.duck");
+    auto* color = makeGrid ("Color", "COLOR", 3);
+    addPower (*color, "sat.bypass", "Enabled");
+    addCombo (*color, "sat.mode", "Mode");
+    addKnob (*color, "sat.drive", "Drive");
+    addKnob (*color, "sat.blend", "Blend");
+    addKnob (*color, "sat.output", "Output");
 
-    auto* limiter = makeGrid ("LIMITER", 4);
-    addPower (*limiter, "lim.bypass", "LIMITER");
-    addKnob (*limiter, "lim.ceiling");
-    addKnob (*limiter, "lim.release");
-    addKnob (*limiter, "global.mix");
-    addKnob (*limiter, "global.output");
+    auto* space = makeGrid ("Space", "SPACE", 7);
+    addPower (*space, "dly.bypass", "Delay");
+    addPower (*space, "rev.bypass", "Reverb");
+    addCombo (*space, "rev.type", "Type");
+    addToggle (*space, "dly.sync", "Sync");
+    addToggle (*space, "dly.pingpong", "Ping-pong");
+    addCombo (*space, "dly.division", "Division");
+    addCombo (*space, "dly.feel", "Feel");
+    addKnob (*space, "dly.ms");
+    addKnob (*space, "dly.feedback");
+    addKnob (*space, "dly.level");
+    addKnob (*space, "dly.lowCut");
+    addKnob (*space, "dly.highCut");
+    addKnob (*space, "dly.duck");
+    addKnob (*space, "dly.manualBpm");
+    addKnob (*space, "rev.predelay");
+    addKnob (*space, "rev.decay");
+    addKnob (*space, "rev.damping");
+    addKnob (*space, "rev.lowCut");
+    addKnob (*space, "rev.highCut");
+    addKnob (*space, "rev.level");
+    addKnob (*space, "rev.duck");
+
+    auto* limiter = makeGrid ("Limit", "LIMITER", 4);
+    addPower (*limiter, "lim.bypass", "Enabled");
+    addKnob (*limiter, "lim.ceiling", "Ceiling");
+    addKnob (*limiter, "lim.release", "Release");
+    addKnob (*limiter, "global.mix", "Global mix");
+    addKnob (*limiter, "global.output", "Output");
 
     detailTabs.setCurrentTabIndex (0);
     detailTabs.setVisible (false);
@@ -432,12 +503,20 @@ void VocalRackEditor::setView (bool detail)
     detailTabs.setVisible (detailMode);
     quickButton.setToggleState (! detailMode, juce::dontSendNotification);
     detailButton.setToggleState (detailMode, juce::dontSendNotification);
-    quickButton.setColour (juce::TextButton::buttonColourId,
-                           ! detailMode ? VocalRackLookAndFeel::accentSoft()
-                                        : VocalRackLookAndFeel::panel());
-    detailButton.setColour (juce::TextButton::buttonColourId,
-                            detailMode ? VocalRackLookAndFeel::accentSoft()
-                                       : VocalRackLookAndFeel::panel());
+
+    const auto styleViewButton = [this] (juce::TextButton& button, bool active)
+    {
+        button.setColour (juce::TextButton::buttonColourId,
+                          active ? VocalRackLookAndFeel::accent()
+                                 : VocalRackLookAndFeel::panelLight());
+        button.setColour (juce::TextButton::textColourOffId,
+                          active ? VocalRackLookAndFeel::background()
+                                 : VocalRackLookAndFeel::text());
+        button.repaint();
+    };
+
+    styleViewButton (quickButton, ! detailMode);
+    styleViewButton (detailButton, detailMode);
     resized();
 }
 
@@ -513,6 +592,18 @@ void VocalRackEditor::showNotice (const juce::String& message)
 
 void VocalRackEditor::timerCallback()
 {
+    if (browseButton.getToggleState() != browser.isVisible())
+    {
+        browseButton.setToggleState (browser.isVisible(), juce::dontSendNotification);
+        browseButton.setColour (juce::TextButton::buttonColourId,
+                                browser.isVisible() ? VocalRackLookAndFeel::accent()
+                                                    : VocalRackLookAndFeel::panelLight());
+        browseButton.setColour (juce::TextButton::textColourOffId,
+                                browser.isVisible() ? VocalRackLookAndFeel::background()
+                                                    : VocalRackLookAndFeel::text());
+        browseButton.repaint();
+    }
+
     if (stateDirty)
     {
         refreshFromProcessor();
@@ -565,7 +656,7 @@ void VocalRackEditor::refreshFromProcessor()
 
     const int latency = processor.getReportedLatencySamples();
     const double sampleRate = processor.getSampleRate() > 1000.0 ? processor.getSampleRate() : 48000.0;
-    latencyLabel.setText ("LATENCY  " + juce::String (latency) + " smp  ·  "
+    latencyLabel.setText ("Latency  " + juce::String (latency) + " samples  ·  "
                               + juce::String (latency / sampleRate * 1000.0, 2) + " ms",
                           juce::dontSendNotification);
 
@@ -582,118 +673,123 @@ void VocalRackEditor::refreshFromProcessor()
     if (scale != 3)
         mask = maskForScale (scale, tonic);
 
-    keyLabel.setText ("KEY " + pitchClassName (tonic) + "  ·  " + scaleName (scale)
-                          + "  ·  " + juce::String (countBits (mask)) + " NOTES",
-                      juce::dontSendNotification);
-    keyLabel.setTooltip ("Key " + pitchClassName (tonic) + ", " + scaleName (scale)
-                             + ", " + juce::String (countBits (mask)) + " enabled notes.");
+    keyLabel.setText ("KEY", juce::dontSendNotification);
+    maskLabel.setText ("NOTE MASK  ·  " + pitchClassName (tonic) + " " + scaleName (scale)
+                           + "  ·  " + juce::String (countBits (mask)) + " NOTES",
+                       juce::dontSendNotification);
+    maskLabel.setTooltip ("Key " + pitchClassName (tonic) + ", " + scaleName (scale)
+                              + ", " + juce::String (countBits (mask)) + " enabled notes.");
+
+    auto rateText = juce::String (sampleRate / 1000.0, 1);
+
+    if (rateText.endsWith (".0"))
+        rateText = rateText.dropLastCharacters (2);
+
+    sampleRateLabel.setText (rateText + " kHz", juce::dontSendNotification);
+    ceilingLabel.setText ("Limiter ceiling  " + juce::String (raw ("lim.ceiling"), 1) + " dB",
+                          juce::dontSendNotification);
 }
 
 void VocalRackEditor::paint (juce::Graphics& g)
 {
     g.fillAll (VocalRackLookAndFeel::background());
 
+    auto header = juce::Rectangle<float> (8.0f, 8.0f, (float) getWidth() - 16.0f, 84.0f);
+    auto status = juce::Rectangle<float> (8.0f, 98.0f, (float) getWidth() - 16.0f, 144.0f);
+
     g.setColour (VocalRackLookAndFeel::panel());
-    g.fillRoundedRectangle (juce::Rectangle<float> (8.0f, 6.0f, (float) getWidth() - 16.0f, 68.0f), 6.0f);
-    g.fillRoundedRectangle (juce::Rectangle<float> (8.0f, 80.0f, (float) getWidth() - 16.0f, 142.0f), 6.0f);
+    g.fillRoundedRectangle (header, 10.0f);
+    g.fillRoundedRectangle (status, 10.0f);
 
-    g.setColour (VocalRackLookAndFeel::accent().withAlpha (0.9f));
-    g.fillRect (0, 0, 3, getHeight());
+    g.setColour (VocalRackLookAndFeel::line().withAlpha (0.8f));
+    g.drawRoundedRectangle (header, 10.0f, 1.0f);
+    g.drawRoundedRectangle (status, 10.0f, 1.0f);
 
-    g.setColour (juce::Colour (0xff2b2f36));
-    g.fillRect (8, 76, getWidth() - 16, 1);
+    g.setColour (VocalRackLookAndFeel::accent());
+    g.fillRoundedRectangle (8.0f, 8.0f, 3.0f, 84.0f, 2.0f);
 
-    g.setColour (VocalRackLookAndFeel::accent().withAlpha (0.16f));
-    g.fillEllipse ((float) getWidth() - 240.0f, -100.0f, 320.0f, 240.0f);
+    g.setColour (VocalRackLookAndFeel::line());
+    g.fillRect (20, 50, getWidth() - 40, 1);
+    g.fillRect (20, getHeight() - 44, getWidth() - 40, 1);
 }
 
 void VocalRackEditor::resized()
 {
     auto area = getLocalBounds();
-    area.removeFromTop (76);
 
-    auto status = area.removeFromTop (146).reduced (12, 6);
-    auto footer = area.removeFromBottom (28).reduced (12, 0);
-    auto body = area.reduced (12, 0);
+    // Header, row one: identity, preset navigation, A/B and global power.
+    const int headerX = 20;
+    const int topY = 12;
+    logoLabel.setBounds (headerX, 8, 150, 32);
+    productLabel.setBounds (headerX + 166, 13, 150, 28);
 
-    // Top bar
-    int x = 12;
-    logoLabel.setBounds (x, 6, 150, 32);
-    productLabel.setBounds (x + 1, 38, 150, 16);
-    x += 158;
+    const int rightRail = 108;
+    const int globalX = getWidth() - rightRail - 14;
+    const int copyX = globalX - 70;
+    const int bX = copyX - 40;
+    const int aX = bX - 40;
+    const int presetEnd = aX - 18;
 
-    previousButton.setBounds (x, 11, 24, 28);
-    x += 26;
-    presetNameLabel.setBounds (x, 6, 236, 24);
-    presetMetaLabel.setBounds (x, 31, 236, 15);
-    x += 240;
-    nextButton.setBounds (x, 11, 24, 28);
-    x += 28;
-    browseButton.setBounds (x, 11, 70, 28);
-    x += 78;
+    globalBypass.setBounds (globalX, topY, 92, 36);
+    copyABButton.setBounds (copyX, topY + 2, 62, 32);
+    abBButton.setBounds (bX, topY + 2, 32, 32);
+    abAButton.setBounds (aX, topY + 2, 32, 32);
 
-    abAButton.setBounds (x, 11, 26, 28);
-    x += 28;
-    abBButton.setBounds (x, 11, 26, 28);
-    x += 28;
-    copyABButton.setBounds (x, 11, 54, 28);
-    x += 62;
+    const int presetStart = headerX + 300;
+    previousButton.setBounds (presetStart, topY, 30, 32);
+    browseButton.setBounds (presetEnd - 82, topY + 2, 82, 32);
+    nextButton.setBounds (presetEnd - 82 - 38, topY, 30, 32);
+    const int nameX = presetStart + 38;
+    const int nameWidth = juce::jmax (120, nextButton.getX() - 8 - nameX);
+    presetNameLabel.setBounds (nameX, 9, nameWidth, 26);
+    presetMetaLabel.setBounds (nameX, 33, nameWidth, 14);
 
-    keepKeyButton.setBounds (x, 12, 108, 26);
-    x += 114;
-    qualityBox.setBounds (x, 11, 86, 28);
-    x += 92;
-    globalBypass.setBounds (x, 11, 76, 28);
+    // Header, row two: view, quality, key, scale, keep.
+    quickButton.setBounds (headerX, 58, 66, 28);
+    detailButton.setBounds (headerX + 70, 58, 72, 28);
+    qualityHintLabel.setBounds (headerX + 166, 63, 58, 18);
+    qualityBox.setBounds (headerX + 226, 58, 96, 28);
+    keyLabel.setBounds (headerX + 344, 63, 26, 18);
+    tonicBox.setBounds (headerX + 372, 58, 62, 28);
+    scaleBox.setBounds (headerX + 442, 58, 126, 28);
+    keepKeyButton.setBounds (headerX + 588, 60, 146, 24);
 
-    latencyLabel.setBounds (getWidth() - 210, 48, 198, 16);
-    spectralLabel.setBounds (196, 49, 440, 16);
-
-    // Status strip. Rebalance at narrower widths so the 12-key mask stays readable.
-    const int statusWidth = status.getWidth();
-    const int meterWidth = statusWidth >= 1050 ? 300 : 250;
-    const int pitchWidth = statusWidth >= 1050 ? 330 : 306;
-    meters.setBounds (status.removeFromLeft (meterWidth));
-    status.removeFromLeft (8);
+    // Status: pitch, note mask, meters.
+    auto status = juce::Rectangle<int> (20, 108, getWidth() - 40, 124);
+    const int meterWidth = getWidth() >= 1050 ? 250 : 226;
+    const int pitchWidth = getWidth() >= 1050 ? 320 : 292;
     pitchPanel.setBounds (status.removeFromLeft (pitchWidth));
-    status.removeFromLeft (8);
+    status.removeFromLeft (14);
+    meters.setBounds (status.removeFromRight (meterWidth));
+    status.removeFromRight (14);
 
-    auto keyboardArea = status;
-    auto header = keyboardArea.removeFromTop (22);
-    const int combosWidth = 170;
+    maskLabel.setBounds (status.removeFromTop (22));
+    keyboard.setBounds (status.withHeight (juce::jmin (62, status.getHeight())).reduced (2, 0));
 
-    if (header.getWidth() > combosWidth + 40)
-    {
-        keyLabel.setBounds (header.removeFromLeft (header.getWidth() - combosWidth));
-        header.removeFromLeft (4);
-        tonicBox.setBounds (header.removeFromLeft (64));
-        header.removeFromLeft (4);
-        scaleBox.setBounds (header);
-    }
-    else
-    {
-        keyLabel.setBounds (header);
-    }
+    // Body card. The card itself is drawn by ControlGrid / detail content.
+    const int bodyTop = 252;
+    const int footerTop = getHeight() - 44;
+    quickView.setBounds (8, bodyTop, getWidth() - 16, footerTop - bodyTop - 4);
+    detailTabs.setBounds (8, bodyTop, getWidth() - 16, footerTop - bodyTop - 4);
 
-    keyboardArea.removeFromTop (2);
-    keyboard.setBounds (keyboardArea.withHeight (juce::jmin (64, keyboardArea.getHeight())));
-
-    // Footer view toggles and notice
-    quickButton.setBounds (footer.removeFromLeft (54));
-    footer.removeFromLeft (4);
-    detailButton.setBounds (footer.removeFromLeft (58));
-    footer.removeFromLeft (10);
-    qualityHintLabel.setBounds (footer.removeFromRight (180));
-    footer.removeFromRight (8);
+    // Footer status rail.
+    auto footer = juce::Rectangle<int> (20, footerTop + 10, getWidth() - 40, 24);
+    sampleRateLabel.setBounds (footer.removeFromLeft (92));
+    footer.removeFromLeft (12);
+    latencyLabel.setBounds (footer.removeFromLeft (250));
+    footer.removeFromLeft (12);
+    ceilingLabel.setBounds (footer.removeFromLeft (190));
+    footer.removeFromLeft (12);
     noticeLabel.setBounds (footer);
+    if (getWidth() >= 1050)
+        spectralLabel.setBounds (getWidth() - 360, 58, 336, 28);
+    else
+        spectralLabel.setBounds (20, footerTop - 18, getWidth() - 40, 16);
 
-    quickView.setBounds (body);
-    detailTabs.setBounds (body);
+    spectralLabel.toFront (false);
 
-    const int browserWidth = juce::jmin (800, getWidth() - 40);
-    const int browserHeight = juce::jmin (560, getHeight() - 40);
-    juce::Rectangle<int> browserBounds (0, 0, browserWidth, browserHeight);
-    browserBounds.setCentre (getLocalBounds().getCentre());
-    browser.setBounds (browserBounds);
+    browser.setBounds (getLocalBounds());
 }
+
 
 } // namespace vr

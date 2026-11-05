@@ -1,14 +1,14 @@
-Started validating: /Users/ade/Library/Audio/Plug-Ins/Components/ademusic Vocal Rack.component
-Random seed: 0x76218c4
+Started validating: /tmp/ademusic-vocal-rack-validate.trivLz/ademusic Vocal Rack.component
+Random seed: 0x3b3f7b6
 Validation started
 Strictness level: 7
 -----------------------------------------------------------------
-Starting tests in: pluginval / Scan for plugins located in: /Users/ade/Library/Audio/Plug-Ins/Components/ademusic Vocal Rack.component...
+Starting tests in: pluginval / Scan for plugins located in: /tmp/ademusic-vocal-rack-validate.trivLz/ademusic Vocal Rack.component...
 Num plugins found: 1
 
 Testing plugin: AudioUnit-ademusic Vocal Rack-9762a958-76636860
 ademusic: ademusic Vocal Rack v1.0.0
-Completed tests in pluginval / Scan for plugins located in: /Users/ade/Library/Audio/Plug-Ins/Components/ademusic Vocal Rack.component
+Completed tests in pluginval / Scan for plugins located in: /tmp/ademusic-vocal-rack-validate.trivLz/ademusic Vocal Rack.component
 -----------------------------------------------------------------
 Starting tests in: pluginval / Open plugin (cold)...
 Completed tests in pluginval / Open plugin (cold)

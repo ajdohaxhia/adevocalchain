@@ -1,14 +1,14 @@
-Started validating: /Users/ade/Documents/deepseek-harness/default-workspace/ademusic-vocal-rack/dist/ademusic-vocal-rack-1.0.0-macOS-arm64/VST3/ademusic Vocal Rack.vst3
-Random seed: 0x2d35a6
+Started validating: /tmp/ademusic-vocal-rack-validate.trivLz/ademusic Vocal Rack.vst3
+Random seed: 0x100f569
 Validation started
 Strictness level: 7
 -----------------------------------------------------------------
-Starting tests in: pluginval / Scan for plugins located in: /Users/ade/Documents/deepseek-harness/default-workspace/ademusic-vocal-rack/dist/ademusic-vocal-rack-1.0.0-macOS-arm64/VST3/ademusic Vocal Rack.vst3...
+Starting tests in: pluginval / Scan for plugins located in: /tmp/ademusic-vocal-rack-validate.trivLz/ademusic Vocal Rack.vst3...
 Num plugins found: 1
 
-Testing plugin: VST3-ademusic Vocal Rack-b133b0e4-9003b5e2
+Testing plugin: VST3-ademusic Vocal Rack-9227a944-9003b5e2
 ademusic: ademusic Vocal Rack v1.0.0
-Completed tests in pluginval / Scan for plugins located in: /Users/ade/Documents/deepseek-harness/default-workspace/ademusic-vocal-rack/dist/ademusic-vocal-rack-1.0.0-macOS-arm64/VST3/ademusic Vocal Rack.vst3
+Completed tests in pluginval / Scan for plugins located in: /tmp/ademusic-vocal-rack-validate.trivLz/ademusic Vocal Rack.vst3
 -----------------------------------------------------------------
 Starting tests in: pluginval / Open plugin (cold)...
 Completed tests in pluginval / Open plugin (cold)

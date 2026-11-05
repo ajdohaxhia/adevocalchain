@@ -2,7 +2,7 @@
 
 A native mono/stereo vocal-chain plugin for Apple Silicon macOS, built in C++20
 with JUCE 8 and CMake. It ships as one **VST3** and one **Audio Unit v2** from the
-same processor, with real DSP, 60 editable factory presets, a resizable editor,
+same processor, with real DSP, 96 editable factory presets, a resizable editor,
 and versioned full-state recall.
 
 ![ademusic Vocal Rack editor](docs/vocal-rack-editor.png)
@@ -13,15 +13,15 @@ and versioned full-state recall.
 
 ## Download the latest release
 
-**[ademusic Vocal Rack 1.1.0 (VST3 + AU) - 60 presets](https://github.com/ajdohaxhia/adevocalchain/releases/tag/v1.1.0)**
+**[ademusic Vocal Rack 1.2.0 (VST3 + AU) - 96 presets](https://github.com/ajdohaxhia/adevocalchain/releases/tag/v1.2.0)**
 
 | Asset | Contents |
 |---|---|
-| [Combined ZIP](https://github.com/ajdohaxhia/adevocalchain/releases/download/v1.1.0/ademusic-vocal-rack-1.1.0-macOS-arm64.zip) | VST3 + AU + presets + install docs + verification logs |
-| [VST3 ZIP](https://github.com/ajdohaxhia/adevocalchain/releases/download/v1.1.0/ademusic-vocal-rack-1.1.0-VST3-macOS-arm64.zip) | `ademusic Vocal Rack.vst3` |
-| [AU ZIP](https://github.com/ajdohaxhia/adevocalchain/releases/download/v1.1.0/ademusic-vocal-rack-1.1.0-AU-macOS-arm64.zip) | `ademusic Vocal Rack.component` |
-| [Factory presets](https://github.com/ajdohaxhia/adevocalchain/releases/download/v1.1.0/ademusic-vocal-rack-1.1.0-factory-presets.json) | Versioned JSON preset bank |
-| [SHA-256 sums](https://github.com/ajdohaxhia/adevocalchain/releases/download/v1.1.0/SHA256SUMS.txt) | Asset checksums |
+| [Combined ZIP](https://github.com/ajdohaxhia/adevocalchain/releases/download/v1.2.0/ademusic-vocal-rack-1.2.0-macOS-arm64.zip) | VST3 + AU + presets + install docs + verification logs |
+| [VST3 ZIP](https://github.com/ajdohaxhia/adevocalchain/releases/download/v1.2.0/ademusic-vocal-rack-1.2.0-VST3-macOS-arm64.zip) | `ademusic Vocal Rack.vst3` |
+| [AU ZIP](https://github.com/ajdohaxhia/adevocalchain/releases/download/v1.2.0/ademusic-vocal-rack-1.2.0-AU-macOS-arm64.zip) | `ademusic Vocal Rack.component` |
+| [Factory presets](https://github.com/ajdohaxhia/adevocalchain/releases/download/v1.2.0/ademusic-vocal-rack-1.2.0-factory-presets.json) | Versioned JSON preset bank |
+| [SHA-256 sums](https://github.com/ajdohaxhia/adevocalchain/releases/download/v1.2.0/SHA256SUMS.txt) | Asset checksums |
 
 macOS arm64. The bundles are ad-hoc signed, not notarized; see
 [INSTALL.txt](INSTALL.txt) for the user-level plug-in paths and the quarantine
@@ -61,8 +61,8 @@ Input trim → Downward expander → Spectral denoiser → Pitch correction
 | VST3 CID | `ABCDEF019182FAEB41646D735672636B` |
 | Architecture | arm64 (MacBook Air M4 target) |
 | Latency | Track **720 samples / 15.00 ms** @48 kHz; Mix **3716 / 77.42 ms** |
-| CPU | Track ~2.4 %, Mix ~3.0 % of block budget average (warmed Release, M4) |
-| Validation | 358 headless checks, pluginval strictness 7 (VST3 + AU), auval PASS |
+| CPU | Track ~2.2 %, Mix ~2.6 % of block budget average (warmed Release, M4) |
+| Validation | 400 headless checks, pluginval strictness 7 (VST3 + AU), auval PASS |
 
 ## Build
 
@@ -108,9 +108,9 @@ remain environment-blocked here.
 
 ```bash
 mkdir -p ~/Library/Audio/Plug-Ins/VST3 ~/Library/Audio/Plug-Ins/Components
-cp -R "dist/ademusic-vocal-rack-1.1.0-macOS-arm64/VST3/ademusic Vocal Rack.vst3" \
+cp -R "dist/ademusic-vocal-rack-1.2.0-macOS-arm64/VST3/ademusic Vocal Rack.vst3" \
       ~/Library/Audio/Plug-Ins/VST3/
-cp -R "dist/ademusic-vocal-rack-1.1.0-macOS-arm64/Components/ademusic Vocal Rack.component" \
+cp -R "dist/ademusic-vocal-rack-1.2.0-macOS-arm64/Components/ademusic Vocal Rack.component" \
       ~/Library/Audio/Plug-Ins/Components/
 ```
 
@@ -119,10 +119,11 @@ in `INSTALL.txt` and `docs/MANUAL_CHECKLIST.md`.
 
 ## Presets
 
-- 60 factory presets in ten banks: Tracking and Cleanup, Rap and Trap, Pop and
+- 96 factory presets in sixteen banks: Tracking and Cleanup, Rap and Trap, Pop and
   Dance, R&B and Melodic, Natural and Acoustic, Effects and Throws,
-  Artist-Inspired Leads, Modern Rap Chains, Pop, Soul & Rock, and
-  Broadcast & Live. Artist references are descriptive production directions
+  Artist-Inspired Leads, Modern Rap Chains, Pop, Soul & Rock,
+  Broadcast & Live, Weeknd Studies, Dua Lipa Studies, Drake Studies,
+  Kanye Studies, Modern Pop Studies, and R&B & Hip-Hop Studies. Artist references are descriptive production directions
   only; no affiliation or endorsement is implied.
 - Embedded in the plugin and mirrored in
   `presets/ademusic-vocal-rack-factory.json`.

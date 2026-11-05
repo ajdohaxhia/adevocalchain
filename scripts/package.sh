@@ -5,7 +5,7 @@ set -o pipefail
 cd "$(dirname "$0")/.."
 
 BUILD_DIR="${BUILD_DIR:-build-release}"
-VERSION="1.1.0"
+VERSION="1.2.0"
 NAME="ademusic-vocal-rack-${VERSION}-macOS-arm64"
 STAGE="dist/${NAME}"
 VST="${BUILD_DIR}/VocalRack_artefacts/Release/VST3/ademusic Vocal Rack.vst3"
@@ -46,7 +46,7 @@ ditto --norsrc --noextattr "${SIGN_DIR}/ademusic Vocal Rack.component" "${STAGE}
 cp -R presets/. "${STAGE}/presets/"
 cp -R LICENSES/. "${STAGE}/LICENSES/"
 cp LICENSE THIRD_PARTY_NOTICES.md README.md INSTALL.txt "${STAGE}/"
-cp docs/PRESET_FORMAT.md docs/MANUAL_CHECKLIST.md docs/VERIFICATION.md docs/ARCHITECTURE.md docs/PRESET_RESEARCH.md docs/RELEASE_NOTES_v1.1.0.md "${STAGE}/docs/"
+cp docs/PRESET_FORMAT.md docs/MANUAL_CHECKLIST.md docs/VERIFICATION.md docs/ARCHITECTURE.md docs/PRESET_RESEARCH.md docs/RELEASE_NOTES_v1.2.0.md "${STAGE}/docs/"
 cp -R docs/verification "${STAGE}/docs/verification"
 cp docs/vocal-rack-editor.png docs/vocal-rack-editor-detail.png docs/vocal-rack-preset-browser.png docs/vocal-rack-spectral-warning.png "${STAGE}/docs/"
 

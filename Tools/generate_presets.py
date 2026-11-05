@@ -1,5 +1,5 @@
 #!/usr/bin/env python3
-"""Generate ademusic Vocal Rack's 36 factory presets.
+"""Generate ademusic Vocal Rack's 96 factory presets.
 
 Source of truth for IDs/ranges is Tools/params.json, extracted from
 Source/Parameters.cpp.  The same JSON schema is used by user presets, so the
@@ -64,6 +64,170 @@ BANK_ARTIST = "Artist-Inspired Leads"
 BANK_MODERN = "Modern Rap Chains"
 BANK_POPROCK = "Pop, Soul & Rock"
 BANK_BROADCAST = "Broadcast & Live"
+BANK_WEEKND = "Weeknd Studies"
+BANK_DUA = "Dua Lipa Studies"
+BANK_DRAKE = "Drake Studies"
+BANK_KANYE = "Kanye Studies"
+BANK_MODERNPOP = "Modern Pop Studies"
+BANK_RNBHIPHOP = "R&B & Hip-Hop Studies"
+
+
+def study(bank, name, description, use_case, first_adjustment, base, **overrides):
+    params = dict(base)
+    params.update(overrides)
+    return preset(bank, name, description, use_case, first_adjustment, **params)
+
+
+WEEKND_BASE = {
+    "pitch.bypass": 0, "pitch.amount": 85.0, "pitch.retune": 8.0, "pitch.humanize": 40.0,
+    "pitch.scale": 2, "pitch.tonic": 9,
+    "exp.bypass": 0, "exp.threshold": -55.0, "exp.range": 8.0, "exp.hold": 60.0,
+    "exp.release": 160.0,
+    "dn.bypass": 0, "dn.amount": 15.0, "dn.maxReduction": 6.0,
+    "ceq.hpf": 95.0, "ceq.cut1Freq": 300.0, "ceq.cut1Gain": -1.5,
+    "ceq.cut2Freq": 2800.0, "ceq.cut2Gain": -1.0,
+    "comp.threshold": -26.0, "comp.ratio": 3.5, "comp.attack": 6.0,
+    "comp.release": 100.0, "comp.knee": 8.0, "comp.makeup": 2.5,
+    "comp.detHPF": 150.0,
+    "ds.bypass": 0, "ds.freq": 6200.0, "ds.threshold": -34.0, "ds.range": 8.0,
+    "ds.release": 60.0,
+    "teq.lowFreq": 120.0, "teq.lowGain": 0.5, "teq.presFreq": 3000.0,
+    "teq.presGain": 1.0, "teq.highFreq": 10000.0, "teq.highGain": 3.5,
+    "sat.bypass": 0, "sat.mode": 0, "sat.drive": 3.0, "sat.blend": 30.0,
+    "sat.output": -0.5,
+    "dly.bypass": 0, "dly.sync": 1, "dly.division": 3, "dly.feel": 0,
+    "dly.feedback": 25.0, "dly.level": -20.0, "dly.lowCut": 300.0,
+    "dly.highCut": 6500.0, "dly.duck": 45.0,
+    "rev.bypass": 0, "rev.type": 1, "rev.predelay": 35.0, "rev.decay": 2.6,
+    "rev.damping": 35.0, "rev.lowCut": 200.0, "rev.highCut": 7500.0,
+    "rev.level": -18.0, "rev.duck": 40.0,
+    "lim.ceiling": -0.4,
+}
+
+DUA_BASE = {
+    "pitch.bypass": 0, "pitch.amount": 88.0, "pitch.retune": 15.0, "pitch.humanize": 25.0,
+    "pitch.scale": 1, "pitch.tonic": 0,
+    "exp.bypass": 0, "exp.threshold": -50.0, "exp.range": 10.0, "exp.hold": 50.0,
+    "exp.release": 140.0,
+    "dn.bypass": 0, "dn.amount": 20.0, "dn.maxReduction": 8.0,
+    "ceq.hpf": 85.0, "ceq.cut1Freq": 300.0, "ceq.cut1Gain": -2.5,
+    "ceq.cut2Freq": 2800.0, "ceq.cut2Gain": -1.0,
+    "comp.threshold": -26.0, "comp.ratio": 3.5, "comp.attack": 3.0,
+    "comp.release": 80.0, "comp.knee": 6.0, "comp.makeup": 3.0,
+    "comp.detHPF": 160.0,
+    "ds.bypass": 0, "ds.freq": 6200.0, "ds.threshold": -34.0, "ds.range": 10.0,
+    "ds.release": 60.0,
+    "teq.lowFreq": 120.0, "teq.lowGain": 0.5, "teq.presFreq": 6000.0,
+    "teq.presGain": 2.5, "teq.highFreq": 10000.0, "teq.highGain": 1.5,
+    "sat.bypass": 0, "sat.mode": 0, "sat.drive": 3.0, "sat.blend": 30.0,
+    "sat.output": -0.5,
+    "dly.bypass": 0, "dly.sync": 1, "dly.division": 2, "dly.feel": 0,
+    "dly.feedback": 15.0, "dly.level": -22.0, "dly.lowCut": 400.0,
+    "dly.highCut": 7000.0, "dly.duck": 50.0,
+    "rev.bypass": 0, "rev.type": 1, "rev.predelay": 20.0, "rev.decay": 2.2,
+    "rev.damping": 30.0, "rev.lowCut": 200.0, "rev.highCut": 8000.0,
+    "rev.level": -20.0, "rev.duck": 40.0,
+    "lim.ceiling": -0.3,
+}
+
+DRAKE_BASE = {
+    "pitch.bypass": 0, "pitch.amount": 55.0, "pitch.retune": 22.0, "pitch.humanize": 60.0,
+    "pitch.scale": 2, "pitch.tonic": 9,
+    "exp.bypass": 0, "exp.threshold": -55.0, "exp.range": 10.0, "exp.hold": 60.0,
+    "exp.release": 160.0,
+    "ceq.hpf": 80.0, "ceq.cut1Freq": 300.0, "ceq.cut1Gain": -1.5,
+    "ceq.cut2Freq": 2500.0, "ceq.cut2Gain": -1.0,
+    "comp.threshold": -24.0, "comp.ratio": 2.5, "comp.attack": 14.0,
+    "comp.release": 130.0, "comp.knee": 10.0, "comp.makeup": 2.0,
+    "comp.detHPF": 120.0,
+    "ds.bypass": 0, "ds.freq": 5800.0, "ds.threshold": -32.0, "ds.range": 8.0,
+    "ds.release": 70.0,
+    "teq.lowFreq": 100.0, "teq.lowGain": 1.0, "teq.presFreq": 2800.0,
+    "teq.presGain": 0.5, "teq.highFreq": 12000.0, "teq.highGain": 2.5,
+    "sat.bypass": 0, "sat.mode": 0, "sat.drive": 3.0, "sat.blend": 40.0,
+    "sat.output": -0.5,
+    "dly.bypass": 0, "dly.sync": 1, "dly.division": 2, "dly.feel": 1,
+    "dly.feedback": 15.0, "dly.level": -22.0, "dly.lowCut": 300.0,
+    "dly.highCut": 6000.0, "dly.pingpong": 1, "dly.duck": 40.0,
+    "rev.bypass": 0, "rev.type": 1, "rev.predelay": 15.0, "rev.decay": 2.2,
+    "rev.damping": 50.0, "rev.lowCut": 200.0, "rev.highCut": 8000.0,
+    "rev.level": -20.0, "rev.duck": 45.0,
+    "lim.ceiling": -0.4,
+}
+
+KANYE_BASE = {
+    "pitch.bypass": 0, "pitch.amount": 100.0, "pitch.retune": 1.0, "pitch.humanize": 0.0,
+    "pitch.scale": 0, "pitch.range": 1,
+    "exp.bypass": 0, "exp.threshold": -50.0, "exp.range": 12.0, "exp.hold": 40.0,
+    "exp.release": 100.0,
+    "ceq.hpf": 160.0, "ceq.cut1Freq": 300.0, "ceq.cut1Gain": -2.0,
+    "ceq.cut2Freq": 500.0, "ceq.cut2Gain": -1.0,
+    "comp.threshold": -34.0, "comp.ratio": 8.0, "comp.attack": 1.0,
+    "comp.release": 30.0, "comp.knee": 4.0, "comp.makeup": 6.0,
+    "comp.detHPF": 180.0,
+    "ds.bypass": 0, "ds.freq": 7000.0, "ds.threshold": -34.0, "ds.range": 8.0,
+    "ds.release": 40.0,
+    "teq.lowFreq": 120.0, "teq.lowGain": 1.0, "teq.presFreq": 5000.0,
+    "teq.presGain": 2.0, "teq.highFreq": 8000.0, "teq.highGain": 0.0,
+    "sat.bypass": 0, "sat.mode": 0, "sat.drive": 8.0, "sat.blend": 50.0,
+    "sat.output": -1.0,
+    "dly.bypass": 0, "dly.sync": 1, "dly.division": 3, "dly.feel": 0,
+    "dly.feedback": 35.0, "dly.level": -18.0, "dly.lowCut": 400.0,
+    "dly.highCut": 6000.0, "dly.duck": 35.0,
+    "rev.bypass": 0, "rev.type": 1, "rev.predelay": 25.0, "rev.decay": 4.0,
+    "rev.damping": 30.0, "rev.lowCut": 200.0, "rev.highCut": 7000.0,
+    "rev.level": -16.0, "rev.duck": 30.0,
+    "lim.ceiling": -0.6,
+}
+
+MODPOP_BASE = {
+    "pitch.bypass": 0, "pitch.amount": 60.0, "pitch.retune": 80.0, "pitch.humanize": 50.0,
+    "pitch.scale": 1, "pitch.tonic": 0,
+    "exp.bypass": 0, "exp.threshold": -55.0, "exp.range": 8.0, "exp.hold": 60.0,
+    "exp.release": 160.0,
+    "ceq.hpf": 95.0, "ceq.cut1Freq": 300.0, "ceq.cut1Gain": -1.5,
+    "comp.threshold": -26.0, "comp.ratio": 3.0, "comp.attack": 10.0,
+    "comp.release": 100.0, "comp.knee": 8.0, "comp.makeup": 2.5,
+    "comp.detHPF": 150.0,
+    "ds.bypass": 0, "ds.freq": 7500.0, "ds.threshold": -34.0, "ds.range": 8.0,
+    "ds.release": 60.0,
+    "teq.lowFreq": 120.0, "teq.lowGain": 0.5, "teq.presFreq": 3500.0,
+    "teq.presGain": 1.5, "teq.highFreq": 10000.0, "teq.highGain": 1.5,
+    "sat.bypass": 0, "sat.mode": 0, "sat.drive": 3.0, "sat.blend": 30.0,
+    "sat.output": -0.5,
+    "dly.bypass": 0, "dly.sync": 1, "dly.division": 2, "dly.feel": 0,
+    "dly.feedback": 18.0, "dly.level": -22.0, "dly.lowCut": 400.0,
+    "dly.highCut": 7000.0, "dly.duck": 45.0,
+    "rev.bypass": 0, "rev.type": 1, "rev.predelay": 20.0, "rev.decay": 2.0,
+    "rev.damping": 35.0, "rev.lowCut": 200.0, "rev.highCut": 8000.0,
+    "rev.level": -20.0, "rev.duck": 40.0,
+    "lim.ceiling": -0.4,
+}
+
+RNB_BASE = {
+    "pitch.bypass": 0, "pitch.amount": 70.0, "pitch.retune": 40.0, "pitch.humanize": 50.0,
+    "pitch.scale": 2, "pitch.tonic": 9,
+    "exp.bypass": 0, "exp.threshold": -55.0, "exp.range": 10.0, "exp.hold": 60.0,
+    "exp.release": 160.0,
+    "ceq.hpf": 90.0, "ceq.cut1Freq": 300.0, "ceq.cut1Gain": -1.5,
+    "comp.threshold": -26.0, "comp.ratio": 3.0, "comp.attack": 10.0,
+    "comp.release": 100.0, "comp.knee": 8.0, "comp.makeup": 2.5,
+    "comp.detHPF": 150.0,
+    "ds.bypass": 0, "ds.freq": 7000.0, "ds.threshold": -34.0, "ds.range": 8.0,
+    "ds.release": 60.0,
+    "teq.lowFreq": 120.0, "teq.lowGain": 1.0, "teq.presFreq": 3000.0,
+    "teq.presGain": 1.0, "teq.highFreq": 10000.0, "teq.highGain": 1.5,
+    "sat.bypass": 0, "sat.mode": 0, "sat.drive": 3.0, "sat.blend": 30.0,
+    "sat.output": -0.5,
+    "dly.bypass": 0, "dly.sync": 1, "dly.division": 2, "dly.feel": 0,
+    "dly.feedback": 20.0, "dly.level": -21.0, "dly.lowCut": 400.0,
+    "dly.highCut": 7000.0, "dly.duck": 45.0,
+    "rev.bypass": 0, "rev.type": 1, "rev.predelay": 20.0, "rev.decay": 2.2,
+    "rev.damping": 35.0, "rev.lowCut": 200.0, "rev.highCut": 8000.0,
+    "rev.level": -20.0, "rev.duck": 40.0,
+    "lim.ceiling": -0.4,
+}
+
 
 PRESETS = [
     # ------------------------------------------------------------------ tracking
@@ -1619,10 +1783,211 @@ PRESETS = [
 ]
 
 
+def build_studies():
+    specs = [
+        # Weeknd ---------------------------------------------------------
+        (BANK_WEEKND, "Weeknd: After Hours",
+         "A dark, airy 80s-pop study with dotted quarter echo and a long chamber, inspired by The Weeknd's After Hours era.",
+         "Nocturnal synth-pop and R&B leads that need air, width and a long tail.",
+         "For a shorter tail, lower rev.decay to 2.2 s; for a drier take, lower delay level 4 dB.",
+         WEEKND_BASE, {"pitch.retune": 10.0, "teq.highGain": 2.5, "dly.feel": 1, "rev.decay": 2.8}),
+        (BANK_WEEKND, "Weeknd: Blinding Lights",
+         "A bright, fast-tuned 80s lead with an eighth echo and a compact plate, inspired by Blinding Lights.",
+         "Upbeat synthwave and dance-pop leads that need cut and movement.",
+         "For a darker take, lower teq.highGain 2 dB; for a longer tail, raise rev.decay to 2.4 s.",
+         WEEKND_BASE, {"pitch.retune": 5.0, "teq.highGain": 4.0, "dly.division": 2, "rev.decay": 1.8, "rev.predelay": 25.0, "comp.threshold": -25.0}),
+        (BANK_WEEKND, "Weeknd: Starboy",
+         "A tighter, more saturated pop lead with dotted eighth movement, inspired by Starboy-era production.",
+         "Tight modern pop and R&B leads with a controlled, saturated center.",
+         "For a cleaner take, lower sat.drive 3 dB; for a drier take, lower rev.level 3 dB.",
+         WEEKND_BASE, {"sat.mode": 1, "sat.drive": 6.0, "sat.blend": 40.0, "comp.threshold": -28.0, "dly.division": 2, "dly.feel": 1, "rev.decay": 2.0}),
+        (BANK_WEEKND, "Weeknd: Save Your Tears",
+         "An airy, slow-tuned ballad lead with a long plate and quarter echo, inspired by Save Your Tears.",
+         "Wide, emotional pop ballads that need air and a long, polished tail.",
+         "For a darker take, lower teq.highGain 2 dB; for a quieter take, lower comp.makeup 2 dB.",
+         WEEKND_BASE, {"pitch.retune": 18.0, "teq.highGain": 4.5, "dly.division": 3, "rev.decay": 2.8, "teq.lowGain": 0.5}),
+        (BANK_WEEKND, "Weeknd: Die For You",
+         "A warm, slow-tuned R&B lead with dotted eighth echo and a vintage plate, inspired by Die For You.",
+         "Melodic R&B and slow-pop leads with a warm center.",
+         "For a brighter take, raise teq.highGain 2 dB; for a drier take, lower delay level 3 dB.",
+         WEEKND_BASE, {"pitch.retune": 25.0, "teq.lowGain": 1.0, "dly.division": 2, "dly.feel": 1, "rev.decay": 2.2}),
+        (BANK_WEEKND, "Weeknd: Dawn FM",
+         "A darker, filtered 80s lead with long chamber and tape drive, inspired by Dawn FM.",
+         "Dark synth-pop and cinematic R&B leads with a lo-fi edge.",
+         "For a brighter take, raise teq.highGain 2 dB; for a shorter tail, lower rev.decay 1 s.",
+         WEEKND_BASE, {"teq.highGain": -1.5, "sat.drive": 5.0, "sat.blend": 45.0, "dly.division": 3, "dly.lowCut": 800.0, "dly.highCut": 4500.0, "rev.decay": 3.4}),
+
+        # Dua Lipa -------------------------------------------------------
+        (BANK_DUA, "Dua Lipa: Future Nostalgia",
+         "A bright, surgical dance-pop study with a metallic plate, inspired by Future Nostalgia.",
+         "Upbeat dance-pop leads that need a solid center and glossy top.",
+         "For a warmer take, lower teq.presGain 1.5 dB; for a drier take, lower rev.level 3 dB.",
+         DUA_BASE, {"comp.threshold": -27.0, "teq.presGain": 2.5, "rev.decay": 2.2}),
+        (BANK_DUA, "Dua Lipa: Levitating",
+         "A brighter, faster dance-pop lead with dotted eighth echo, inspired by Levitating.",
+         "Nu-disco and dance-pop hooks with a bright, rhythmic tail.",
+         "For a darker take, lower teq.highGain 2 dB; for a shorter tail, lower rev.decay 0.6 s.",
+         DUA_BASE, {"teq.highGain": 2.5, "dly.feel": 1, "rev.decay": 1.8, "comp.threshold": -28.0}),
+        (BANK_DUA, "Dua Lipa: Don't Start Now",
+         "A tight, dry dance-pop lead with short plate and sixteenth movement, inspired by Don't Start Now.",
+         "Percussive pop leads that need to stay tight over a busy mix.",
+         "For more space, raise rev.decay to 1.8 s; for a darker take, lower teq.highGain 1.5 dB.",
+         DUA_BASE, {"dly.division": 1, "dly.level": -26.0, "rev.decay": 1.4, "teq.highGain": 2.0, "comp.threshold": -28.0}),
+        (BANK_DUA, "Dua Lipa: Houdini",
+         "A darker, saturated dance-pop lead with a modern plate, inspired by Houdini.",
+         "Modern dance-pop with a slightly darker, club-facing center.",
+         "For a brighter take, raise teq.highGain 2 dB; for a cleaner take, lower sat.drive 3 dB.",
+         DUA_BASE, {"sat.mode": 1, "sat.drive": 5.0, "teq.highGain": 1.0, "rev.decay": 2.0}),
+        (BANK_DUA, "Dua Lipa: Training Season",
+         "A tight, forward dance-pop lead with a very short plate, inspired by Training Season.",
+         "Contemporary pop leads that need to sit close and move quickly.",
+         "For a warmer take, raise teq.lowGain 1 dB; for more space, raise rev.decay 0.8 s.",
+         DUA_BASE, {"comp.threshold": -30.0, "rev.decay": 1.2, "teq.highGain": 2.0}),
+        (BANK_DUA, "Dua Lipa: Radical Optimism",
+         "A warm, open dance-pop lead with quarter echo and a longer plate, inspired by Radical Optimism.",
+         "Warm, optimistic pop productions with a wider, more organic tail.",
+         "For a drier take, lower delay level 4 dB; for a brighter take, raise teq.presGain 1 dB.",
+         DUA_BASE, {"teq.lowGain": 1.0, "rev.decay": 2.4, "dly.division": 3, "teq.highGain": 1.5}),
+
+        # Drake ----------------------------------------------------------
+        (BANK_DRAKE, "Drake: Take Care",
+         "A warm, close rap/R&B study with slow tuning and a vintage plate, inspired by Take Care.",
+         "Warm, introspective rap and R&B leads that should sit close.",
+         "For a brighter take, raise teq.highGain 1.5 dB; for a drier take, lower rev.level 3 dB.",
+         DRAKE_BASE, {"pitch.retune": 30.0, "teq.highGain": 1.5, "rev.decay": 2.4, "dly.feel": 0}),
+        (BANK_DRAKE, "Drake: Nothing Was The Same",
+         "A brighter, spacious rap lead with dotted eighth echo, inspired by Nothing Was The Same.",
+         "Melodic rap and R&B leads that need air and a defined space.",
+         "For a darker take, lower teq.highGain 2 dB; for a shorter tail, lower rev.decay 0.5 s.",
+         DRAKE_BASE, {"teq.highGain": 3.0, "dly.feel": 1, "rev.decay": 1.8, "comp.threshold": -26.0}),
+        (BANK_DRAKE, "Drake: Views",
+         "A dry, conversational rap lead with a short slap and tiny room, inspired by Views.",
+         "Close rap verses that should sound conversational, not produced.",
+         "For a brighter take, raise teq.highGain 1 dB; for more room, raise rev.level 2 dB.",
+         DRAKE_BASE, {"pitch.bypass": 1, "dly.sync": 0, "dly.ms": 105.0, "dly.feedback": 0.0, "dly.level": -24.0, "rev.type": 0, "rev.decay": 0.8, "rev.level": -26.0, "teq.lowGain": 1.5}),
+        (BANK_DRAKE, "Drake: Scorpion",
+         "A tighter, harder-tuned rap lead with eighth echo and a compact plate, inspired by Scorpion.",
+         "Modern melodic rap hooks with a tighter, more forward center.",
+         "For a less severe take, raise pitch.retune to 20 ms; for a drier take, lower rev.level 3 dB.",
+         DRAKE_BASE, {"pitch.retune": 10.0, "dly.division": 2, "rev.decay": 1.6, "teq.highGain": 1.0}),
+        (BANK_DRAKE, "Drake: Honestly Nevermind",
+         "A bright, saturated dance-rap lead with eighth echo, inspired by Honestly Nevermind.",
+         "Dance-rap and house-influenced vocals that need a glossy top.",
+         "For a darker take, lower teq.highGain 2 dB; for a cleaner take, lower sat.drive 3 dB.",
+         DRAKE_BASE, {"sat.mode": 1, "sat.drive": 5.0, "teq.highGain": 3.0, "rev.decay": 1.4}),
+        (BANK_DRAKE, "Drake: For All The Dogs",
+         "A dark, spacious rap lead with quarter echo and a longer hall-like plate, inspired by For All The Dogs.",
+         "Dark, melodic rap leads with a dramatic tail.",
+         "For a brighter take, raise teq.highGain 2 dB; for a shorter tail, lower rev.decay 1 s.",
+         DRAKE_BASE, {"teq.highGain": -1.0, "rev.decay": 2.5, "dly.division": 3, "comp.threshold": -28.0}),
+
+        # Kanye ----------------------------------------------------------
+        (BANK_KANYE, "Kanye: Graduation",
+         "A bright, hard-tuned maximalist study with quarter echo and a wide plate, inspired by Graduation.",
+         "Stadium-sized hip-hop and gospel-tinged leads.",
+         "For a cleaner take, lower sat.drive 4 dB; for a shorter tail, lower rev.decay 1 s.",
+         KANYE_BASE, {"teq.highGain": 2.5, "rev.decay": 3.5, "dly.division": 3, "comp.threshold": -32.0}),
+        (BANK_KANYE, "Kanye: My Beautiful Dark Twisted Fantasy",
+         "A maximal, saturated hard-tune study with a huge plate, inspired by My Beautiful Dark Twisted Fantasy.",
+         "Dense, cinematic hip-hop and gospel productions with a massive tail.",
+         "For a less dense take, lower sat.drive 4 dB; for a drier take, lower rev.level 4 dB.",
+         KANYE_BASE, {"sat.mode": 1, "sat.drive": 12.0, "sat.blend": 60.0, "rev.decay": 4.5, "dly.division": 3, "comp.threshold": -36.0}),
+        (BANK_KANYE, "Kanye: Yeezus",
+         "A distorted, aggressive hard-tune study with a short room and sixteenth movement, inspired by Yeezus.",
+         "Industrial and experimental rap leads that should sound abrasive.",
+         "For a cleaner take, lower sat.drive 8 dB; for a darker take, lower teq.highGain 2 dB.",
+         KANYE_BASE, {"sat.mode": 1, "sat.drive": 18.0, "sat.blend": 60.0, "rev.type": 0, "rev.decay": 0.6, "dly.division": 1, "teq.highGain": -1.0}),
+        (BANK_KANYE, "Kanye: The Life of Pablo",
+         "A gospel-tinged hard-tune study with a wide plate, inspired by The Life of Pablo.",
+         "Gospel-rap and maximalist hip-hop leads with a broad tail.",
+         "For a cleaner take, lower sat.drive 3 dB; for a shorter tail, lower rev.decay 1.5 s.",
+         KANYE_BASE, {"rev.decay": 4.0, "dly.division": 3, "teq.highGain": 1.0, "comp.threshold": -34.0}),
+        (BANK_KANYE, "Kanye: Ye",
+         "A raw, short-room hard-tune study with minimal delay, inspired by Ye.",
+         "Sparse, raw rap productions that should sound close and unpolished.",
+         "For a cleaner take, lower sat.drive 4 dB; for more space, raise rev.decay 0.6 s.",
+         KANYE_BASE, {"rev.type": 0, "rev.decay": 0.8, "rev.level": -28.0, "dly.bypass": 1, "sat.drive": 8.0, "comp.threshold": -30.0}),
+        (BANK_KANYE, "Kanye: Vultures",
+         "A dark, hard-tuned rap study with eighth echo and a wide plate, inspired by Vultures.",
+         "Dark, modern hip-hop leads with a theatrical tail.",
+         "For a brighter take, raise teq.highGain 2 dB; for a shorter tail, lower rev.decay 1 s.",
+         KANYE_BASE, {"rev.decay": 3.0, "dly.division": 2, "teq.highGain": -1.5, "sat.mode": 1, "sat.drive": 10.0}),
+
+        # Modern pop -----------------------------------------------------
+        (BANK_MODERNPOP, "Billie Eilish",
+         "An intimate, close-mic study with heavy smooth leveling and a tiny room, inspired by Billie Eilish.",
+         "Whisper-pop and intimate alternative vocals that should feel hyper-close.",
+         "For a louder take, raise comp.makeup 3 dB; for a drier take, lower rev.level 5 dB.",
+         MODPOP_BASE, {"pitch.amount": 20.0, "pitch.retune": 180.0, "pitch.humanize": 80.0, "dn.amount": 30.0, "dn.maxReduction": 8.0, "comp.threshold": -32.0, "comp.ratio": 4.0, "comp.makeup": 8.0, "rev.type": 0, "rev.decay": 0.8, "rev.level": -28.0, "dly.bypass": 1, "teq.highGain": 0.0}),
+        (BANK_MODERNPOP, "Ariana Grande",
+         "An airy, surgical pop/R&B study with a long chamber and quarter echo, inspired by Ariana Grande.",
+         "Airy pop and R&B leads that need a very open top and a long tail.",
+         "For a less bright take, lower teq.highGain 2 dB; for a drier take, lower rev.level 4 dB.",
+         MODPOP_BASE, {"pitch.amount": 90.0, "pitch.retune": 10.0, "pitch.humanize": 10.0, "ds.freq": 8000.0, "ds.threshold": -38.0, "comp.threshold": -28.0, "teq.highGain": 4.0, "rev.decay": 3.0, "dly.division": 3}),
+        (BANK_MODERNPOP, "Taylor Swift",
+         "A clear, story-forward pop lead with a compact plate and eighth echo, inspired by Taylor Swift.",
+         "Story-driven pop vocals that need clarity and a polished, not oversized, space.",
+         "For a warmer take, raise teq.lowGain 1 dB; for a brighter take, raise teq.highGain 1.5 dB.",
+         MODPOP_BASE, {"pitch.amount": 55.0, "pitch.retune": 100.0, "pitch.humanize": 50.0, "comp.threshold": -26.0, "teq.highGain": 2.0, "rev.decay": 1.8}),
+        (BANK_MODERNPOP, "Olivia Rodrigo",
+         "A pop-rock edge study with saturated attitude and a short plate, inspired by Olivia Rodrigo.",
+         "Pop-rock and singer-songwriter leads that need grit and forward motion.",
+         "For a cleaner take, lower sat.drive 4 dB; for a darker take, lower teq.presGain 1.5 dB.",
+         MODPOP_BASE, {"pitch.amount": 40.0, "pitch.retune": 120.0, "sat.mode": 1, "sat.drive": 8.0, "sat.blend": 50.0, "comp.threshold": -28.0, "rev.decay": 1.5}),
+        (BANK_MODERNPOP, "Sabrina Carpenter",
+         "A bright, playful pop lead with dotted eighth movement, inspired by Sabrina Carpenter.",
+         "Contemporary pop leads that need a bright, rhythmic, flirty space.",
+         "For a drier take, lower delay level 4 dB; for a darker take, lower teq.highGain 2 dB.",
+         MODPOP_BASE, {"pitch.amount": 70.0, "pitch.retune": 50.0, "comp.threshold": -27.0, "teq.highGain": 3.0, "rev.decay": 1.6, "dly.feel": 1}),
+        (BANK_MODERNPOP, "Chappell Roan",
+         "An 80s-influenced synth-pop study with a wide plate and quarter echo, inspired by Chappell Roan.",
+         "Theatrical synth-pop and camp-pop leads that need a big, dramatic tail.",
+         "For a shorter tail, lower rev.decay 1 s; for a cleaner take, lower sat.drive 3 dB.",
+         MODPOP_BASE, {"pitch.amount": 50.0, "pitch.retune": 80.0, "sat.mode": 1, "sat.drive": 5.0, "teq.highGain": 2.0, "rev.decay": 2.8, "dly.division": 3}),
+
+        # R&B / hip-hop --------------------------------------------------
+        (BANK_RNBHIPHOP, "SZA",
+         "A warm, intimate R&B study with a soft plate and eighth echo, inspired by SZA.",
+         "Modern R&B and soul leads that need closeness and warmth.",
+         "For a brighter take, raise teq.highGain 1.5 dB; for a drier take, lower rev.level 3 dB.",
+         RNB_BASE, {"pitch.amount": 80.0, "pitch.retune": 12.0, "teq.lowGain": 1.5, "rev.decay": 2.4}),
+        (BANK_RNBHIPHOP, "Frank Ocean",
+         "An organic, tape-warm R&B study with a vintage chamber, inspired by Frank Ocean.",
+         "Alternative R&B and soul leads that should feel analog and unhurried.",
+         "For a brighter take, raise teq.highGain 1.5 dB; for a cleaner take, lower sat.drive 3 dB.",
+         RNB_BASE, {"pitch.amount": 65.0, "pitch.retune": 25.0, "pitch.humanize": 60.0, "sat.drive": 5.0, "sat.blend": 40.0, "rev.type": 0, "rev.decay": 2.5, "rev.level": -18.0, "dly.bypass": 1, "teq.lowGain": 2.0}),
+        (BANK_RNBHIPHOP, "Beyonce",
+         "A dense, powerful R&B/pop study with a wide plate, inspired by Beyonce.",
+         "Big R&B and pop leads that need density, authority and a broad tail.",
+         "For a cleaner take, raise comp.threshold 3 dB; for a brighter take, raise teq.highGain 1.5 dB.",
+         RNB_BASE, {"pitch.amount": 85.0, "pitch.retune": 8.0, "comp.ratio": 4.0, "comp.makeup": 4.0, "ds.threshold": -36.0, "ds.range": 10.0, "teq.highGain": 2.0, "rev.decay": 2.2}),
+        (BANK_RNBHIPHOP, "Rihanna",
+         "A polished pop/R&B study with stereo quarter echo and a warm plate, inspired by Rihanna.",
+         "Pop/R&B leads that need a glossy center and a spacious tail.",
+         "For a drier take, lower delay level 4 dB; for a darker take, lower teq.highGain 2 dB.",
+         RNB_BASE, {"pitch.amount": 80.0, "pitch.retune": 12.0, "teq.highGain": 2.5, "rev.decay": 2.6, "dly.division": 3}),
+        (BANK_RNBHIPHOP, "Travis Scott",
+         "A dark, hard-tuned trap study with ping-pong echo and a wide plate, inspired by Travis Scott.",
+         "Psychedelic trap and rage leads that need a dark, wide, saturated space.",
+         "For a less severe take, raise pitch.retune to 12 ms; for a cleaner take, lower sat.drive 5 dB.",
+         RNB_BASE, {"pitch.amount": 100.0, "pitch.retune": 1.0, "pitch.humanize": 0.0, "pitch.scale": 0, "comp.threshold": -30.0, "comp.ratio": 5.0, "sat.mode": 1, "sat.drive": 8.0, "teq.highGain": -1.0, "rev.decay": 3.2, "rev.level": -17.0, "dly.feedback": 30.0, "dly.pingpong": 1}),
+        (BANK_RNBHIPHOP, "Post Malone",
+         "A vibrato-aware pop/rap study with a long plate and dotted eighth echo, inspired by Post Malone.",
+         "Melodic pop-rap leads that need a warm top and a long, wide tail.",
+         "For a cleaner take, lower sat.drive 3 dB; for a brighter take, raise teq.highGain 1.5 dB.",
+         RNB_BASE, {"pitch.amount": 85.0, "pitch.retune": 10.0, "pitch.humanize": 60.0, "sat.drive": 4.0, "sat.blend": 40.0, "teq.highGain": 3.0, "rev.decay": 3.2, "dly.feel": 1}),
+    ]
+    return [study(bank, name, desc, use, first, base, **overrides)
+            for bank, name, desc, use, first, base, overrides in specs]
+
+
+PRESETS.extend(build_studies())
+
+
 def validate():
     errors = []
-    if len(PRESETS) != 60:
-        errors.append(f"expected 60 presets, got {len(PRESETS)}")
+    if len(PRESETS) != 96:
+        errors.append(f"expected 96 presets, got {len(PRESETS)}")
 
     banks = {}
     for p in PRESETS:
@@ -1630,7 +1995,9 @@ def validate():
         banks[p["bank"]] += 1
 
     expected_banks = {BANK_TRACKING, BANK_RAP, BANK_POP, BANK_RNB, BANK_ACOUSTIC, BANK_FX,
-                      BANK_ARTIST, BANK_MODERN, BANK_POPROCK, BANK_BROADCAST}
+                      BANK_ARTIST, BANK_MODERN, BANK_POPROCK, BANK_BROADCAST,
+                      BANK_WEEKND, BANK_DUA, BANK_DRAKE, BANK_KANYE,
+                      BANK_MODERNPOP, BANK_RNBHIPHOP}
     if set(banks) != expected_banks:
         errors.append(f"bank mismatch: {banks}")
 
@@ -1690,6 +2057,12 @@ def main():
             BANK_MODERN: "modernrap",
             BANK_POPROCK: "popsoulrock",
             BANK_BROADCAST: "broadcast",
+            BANK_WEEKND: "weeknd",
+            BANK_DUA: "dua",
+            BANK_DRAKE: "drake",
+            BANK_KANYE: "kanye",
+            BANK_MODERNPOP: "modernpop",
+            BANK_RNBHIPHOP: "rnbhiphop",
         }[p["bank"]]
         name_slug = "".join(c.lower() if c.isalnum() else "-" for c in p["name"])
         name_slug = "-".join(filter(None, name_slug.split("-")))
@@ -1721,7 +2094,9 @@ def main():
 
     print(f"Wrote {len(payload)} presets across {len(set(p['bank'] for p in payload))} banks")
     for bank in [BANK_TRACKING, BANK_RAP, BANK_POP, BANK_RNB, BANK_ACOUSTIC, BANK_FX,
-                 BANK_ARTIST, BANK_MODERN, BANK_POPROCK, BANK_BROADCAST]:
+                 BANK_ARTIST, BANK_MODERN, BANK_POPROCK, BANK_BROADCAST,
+                 BANK_WEEKND, BANK_DUA, BANK_DRAKE, BANK_KANYE,
+                 BANK_MODERNPOP, BANK_RNBHIPHOP]:
         print(f"  {bank}: {sum(1 for p in payload if p['bank'] == bank)}")
 
 

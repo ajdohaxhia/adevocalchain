@@ -1,7 +1,8 @@
-# Preset research and design notes — 1.1.0
+# Preset research and design notes — 1.2.0
 
-The 24 presets added in 1.1.0 are **original parameter designs** informed by
-publicly described production directions and common genre chains. They are not
+The 24 presets added in 1.1.0 and the 36 granular studies added in 1.2.0 are
+**original parameter designs** informed by publicly described production
+directions and common genre chains. They are not
 official artist presets, not endorsed by any artist, and not exact recreations
 of any record. Artist names in preset descriptions are descriptive references
 only.
@@ -24,13 +25,48 @@ only.
 | [bchillmix — Tems-style Afrobeats vocals](https://bchillmix.com/blogs/news/how-to-get-tems-style-vocals-in-fl-studio-or-bandlab) | Warm Afrobeats depth and rhythmic throw direction. |
 | [Gearspace — Drake vocal chain discussion](https://gearspace.com/threads/drake-vocal-chain-with-comparison.1310272/) | Community discussion of close, conversational rap presentation (unverified). |
 | [Toontrack — Lead Vocals EZmix pack](https://www.toontrack.com/product/lead-vocals-ezmix-pack/) | Commercial reference for the range of lead-vocal starting points. |
+| [adé — Vocal Chain Explorer](https://adelajdo.com/tools/vocal-chain-explorer) | Detailed artist chains for The Weeknd, Dua Lipa, Drake, Kanye West, Billie Eilish, Ariana Grande, SZA, Frank Ocean, Travis Scott, Post Malone, Rihanna, Adele, Bruno Mars and others; the 1.2.0 granular studies are parameterized from these public chain notes. |
 
 These sources vary in authority. Studio interviews and manufacturer guides were
 weighted above SEO preset round-ups. No source published a complete,
 verifiable artist chain, and none was copied. The settings below were chosen to
 fit this plugin's fixed topology and were then render-tested.
 
-## Mapping of new presets
+## 1.2.0 granular studies
+
+The Vocal Chain Explorer exposes 29 detailed artist chains. From those notes and
+the genre sources above, 1.2.0 adds **36 era/song studies** — six each for:
+
+- **Weeknd Studies** — After Hours, Blinding Lights, Starboy, Save Your Tears,
+  Die For You, Dawn FM.
+- **Dua Lipa Studies** — Future Nostalgia, Levitating, Don't Start Now, Houdini,
+  Training Season, Radical Optimism.
+- **Drake Studies** — Take Care, Nothing Was The Same, Views, Scorpion,
+  Honestly Nevermind, For All The Dogs.
+- **Kanye Studies** — Graduation, My Beautiful Dark Twisted Fantasy, Yeezus,
+  The Life of Pablo, Ye, Vultures.
+- **Modern Pop Studies** — Billie Eilish, Ariana Grande, Taylor Swift,
+  Olivia Rodrigo, Sabrina Carpenter, Chappell Roan.
+- **R&B & Hip-Hop Studies** — SZA, Frank Ocean, Beyonce, Rihanna, Travis Scott,
+  Post Malone.
+
+Chain notes that shaped the parameterization:
+
+| Artist | Explorer notes used | Plugin mapping |
+|---|---|---|
+| The Weeknd | 8 ms / 85 % tuning, 10 kHz air, FET + opto leveling, 6.2 kHz de-ess, 1/4 delay, 2.6 s chamber | 8–25 ms tuning, 3.5–4.5 dB high shelf, dual-stage compression via threshold/ratio, 6.2 kHz de-esser, quarter/dotted delay, plate 1.8–3.4 s. |
+| Dua Lipa | 15 ms / 85 % tuning, 300 Hz cut, 6 kHz presence, FET + opto, 6.2 kHz de-ess, metallic plate | 15–25 ms tuning, 300 Hz cut, 6 kHz presence, fast compressor, 6.2 kHz de-esser, short-to-medium plate. |
+| Drake | 22 ms / 65 % tuning, 80 Hz HPF, 12 kHz air, 360 Hz cut, opto leveling, dark room | Slow tuning, low-mid warmth, 12 kHz air, soft ratio, dotted/slap delay, short-to-medium plate. |
+| Kanye West | 0 ms / 100 % hard tune, 180 Hz cut, 5 kHz air, heavy FET, tube saturation, long hall | 1 ms hard tune, 160 Hz HPF, 5 kHz presence, 8:1 compression, tape/edge drive, long plate. |
+| Billie Eilish | 25 ms / 70 % tuning, soft de-ess, 300 Hz cut, opto leveling, low-level compression, 0.8 s room | Gentle tuning, 300 Hz cut, 4:1 smooth leveling, spectral cleanup, tiny room. |
+| Ariana Grande | 10 ms / 90 % tuning, surgical de-ess, 3.5 kHz dynamic boost, ADT, chamber | Fast tuning, 8 kHz de-ess, 4 dB air, plate 3.0 s, quarter echo. |
+| SZA | 12 ms / 80 % tuning, 8 kHz air, opto leveling, subtle chorus, 2.4 s plate | 12 ms tuning, warm low-mids, soft plate, eighth echo. |
+| Travis Scott | 0 ms / 100 % tuning, 8 kHz air, 8:1 FET, doubler, ping-pong 1/8 triplet, 3.2 s hall | 1 ms hard tune, dense leveling, edge saturation, ping-pong echo, long plate. |
+
+The settings were not copied as plugin presets; they were converted into this
+plugin's fixed 82-parameter topology, then render-tested.
+
+## Mapping of 1.1.0 presets
 
 ### Artist-Inspired Leads
 

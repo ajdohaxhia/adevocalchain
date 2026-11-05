@@ -9,9 +9,9 @@ required and are reported as **blocked by the environment**.
 
 ```bash
 mkdir -p ~/Library/Audio/Plug-Ins/VST3 ~/Library/Audio/Plug-Ins/Components
-cp -R "dist/ademusic-vocal-rack-1.1.0-macOS-arm64/VST3/ademusic Vocal Rack.vst3" \
+cp -R "dist/ademusic-vocal-rack-1.2.0-macOS-arm64/VST3/ademusic Vocal Rack.vst3" \
       ~/Library/Audio/Plug-Ins/VST3/
-cp -R "dist/ademusic-vocal-rack-1.1.0-macOS-arm64/Components/ademusic Vocal Rack.component" \
+cp -R "dist/ademusic-vocal-rack-1.2.0-macOS-arm64/Components/ademusic Vocal Rack.component" \
       ~/Library/Audio/Plug-Ins/Components/
 xattr -dr com.apple.quarantine ~/Library/Audio/Plug-Ins/VST3/"ademusic Vocal Rack.vst3" 2>/dev/null || true
 xattr -dr com.apple.quarantine ~/Library/Audio/Plug-Ins/Components/"ademusic Vocal Rack.component" 2>/dev/null || true
@@ -91,7 +91,7 @@ produced locally with:
   --vocal /path/to/dry-vocal.wav ./vocal-renders
 ```
 
-That writes 60 WAV files (48 kHz, 24-bit stereo, latency-trimmed, 2 s tail).
+That writes 96 WAV files (48 kHz, 24-bit stereo, latency-trimmed, 2 s tail).
 
 ## Expected measurements
 

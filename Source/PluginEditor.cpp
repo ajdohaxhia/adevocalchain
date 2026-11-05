@@ -56,7 +56,7 @@ VocalRackEditor::VocalRackEditor (VocalRackAudioProcessor& processorRef)
     configureDetailTabs();
 
     addAndMakeVisible (noticeLabel);
-    noticeLabel.setText ("60 factory presets · Keep Song Key is on for factory browsing.",
+    noticeLabel.setText ("96 factory presets · Keep Song Key is on for factory browsing.",
                          juce::dontSendNotification);
     noticeLabel.setFont (VocalRackLookAndFeel::font (10.0f));
     noticeLabel.setColour (juce::Label::textColourId, VocalRackLookAndFeel::dimText());
@@ -520,7 +520,7 @@ void VocalRackEditor::timerCallback()
         && juce::Time::getMillisecondCounterHiRes() > noticeExpiryMs)
     {
         noticeExpiryMs = 0.0;
-        noticeLabel.setText ("60 factory presets · Keep Song Key is on for factory browsing.",
+        noticeLabel.setText ("96 factory presets · Keep Song Key is on for factory browsing.",
                              juce::dontSendNotification);
         noticeLabel.setColour (juce::Label::textColourId, VocalRackLookAndFeel::dimText());
     }

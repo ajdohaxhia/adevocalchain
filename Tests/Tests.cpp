@@ -1096,7 +1096,7 @@ void testPresetsAndState()
         processor.prepareToPlay (48000.0, 512);
 
         const auto& entries = processor.getPresets().getEntries();
-        check (entries.size() == 60, "60 factory presets parsed");
+        check (entries.size() == 96, "96 factory presets parsed");
 
         std::map<juce::String, int> banks;
 
@@ -1129,7 +1129,7 @@ void testPresetsAndState()
             check (finite, "factory preset renders finite: " + entry.name);
         }
 
-        check (banks.size() == 10, "factory bank count is ten");
+        check (banks.size() == 16, "factory bank count is sixteen");
 
         for (const auto& [bank, count] : banks)
             check (count == 6, "factory bank has six presets: " + bank);
@@ -1188,7 +1188,7 @@ void testPresetsAndState()
         badFile.replaceWithText ("{ definitely not valid json ");
         processor.getPresets().initialise();
         check (! processor.getPresets().getScanErrors().isEmpty(), "corrupt user preset is reported");
-        check (processor.getPresets().getEntries().size() >= 60, "corrupt file does not remove factory bank");
+        check (processor.getPresets().getEntries().size() >= 96, "corrupt file does not remove factory bank");
 
         auto state = juce::MemoryBlock();
         processor.getStateInformation (state);
@@ -1616,7 +1616,7 @@ void renderUserVocal (const juce::File& inputFile, const juce::File& outputDirec
         std::cout << "RENDER " << file.getFullPathName() << std::endl;
     }
 
-    check (rendered == 60, "local vocal rendered through all 60 factory presets");
+    check (rendered == 96, "local vocal rendered through all 96 factory presets");
 }
 
 void printLatencyTable()

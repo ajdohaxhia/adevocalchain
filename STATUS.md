@@ -3,7 +3,7 @@
 **Phase:** Release validation complete (local). DAW/listening checks blocked by
 this environment.
 
-Updated: 2026-11-05 11:38 Europe/Rome
+Updated: 2026-11-05 12:03 Europe/Rome
 
 ## Last successful commands
 
@@ -14,7 +14,7 @@ cmake -S . -B build-release -G "Unix Makefiles" \
   -DCMAKE_OSX_ARCHITECTURES=arm64
 cmake --build build-release --target VocalRack_VST3 VocalRack_AU VocalRackTests -j8
 ./build-release/VocalRackTests_artefacts/Release/VocalRackTests
-# 60 presets / 10 banks; 358 checks
+# 96 presets / 16 banks; 400 checks
 
 tools/pluginval/pluginval.app/Contents/MacOS/pluginval --strictness-level 7 \
   --validate "build-release/VocalRack_artefacts/Release/VST3/ademusic Vocal Rack.vst3"
@@ -30,11 +30,11 @@ auval -v aufx Vrck Adms
 
 - `build-release/VocalRack_artefacts/Release/VST3/ademusic Vocal Rack.vst3`
 - `build-release/VocalRack_artefacts/Release/AU/ademusic Vocal Rack.component`
-- `dist/ademusic-vocal-rack-1.1.0-macOS-arm64.zip`
-  SHA-256 `76b6650b1f200d311263a22c1e1f36854f25e90c927fa21bd7ddfb4320d18cda`
+- `dist/ademusic-vocal-rack-1.2.0-macOS-arm64.zip`
+  SHA-256 `004103075c57e6c4f1ba6707245b73053ed1e00ea1d9c843dfa36bcd4028ff45`
 - `presets/ademusic-vocal-rack-factory.json`
 - `docs/VERIFICATION.md`
-- `docs/verification/tests.log` (358 checks)
+- `docs/verification/tests.log` (400 checks)
 - `docs/verification/pluginval-vst3.log`
 - `docs/verification/pluginval-au.log`
 - `docs/verification/auval.log`
@@ -48,7 +48,7 @@ auval -v aufx Vrck Adms
 - Track latency 720 samples = 15.00 ms @48 kHz; 655 / 1309 / 1440 at
   44.1 / 88.2 / 96 kHz.
 - Mix latency 3716 samples = 77.42 ms @48 kHz.
-- CPU track 2.4 %, mix 3.0 % average block budget; p99 6.6 % / 11.7 %.
+- CPU track 2.2 %, mix 2.6 % average block budget; p99 3.8 % / 8.0 %.
 - Hard Tune 0.36 cents median; noise reduction 8.19 dB with -0.81 dB voice
   change; expander 19.92 dB; alias -24.88 → -44.41 dB with 2x oversampling.
 

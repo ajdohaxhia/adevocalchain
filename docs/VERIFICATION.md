@@ -1,7 +1,7 @@
 # ademusic Vocal Rack — verification report
 
 Date: 2026-11-05 (Europe/Rome)  
-Build: **1.0.0**, native **arm64** Release  
+Build: **1.1.0**, native **arm64** Release  
 Project: `ademusic-vocal-rack/`  
 Status: **all locally runnable checks passed**; DAW and human listening checks
 are blocked by this environment and listed with exact next steps.
@@ -31,9 +31,9 @@ passed. This is an environment cache issue, not a plugin failure.
 |---|---|---|
 | VST3 | `build-release/VocalRack_artefacts/Release/VST3/ademusic Vocal Rack.vst3` | 11 MB |
 | AUv2 | `build-release/VocalRack_artefacts/Release/AU/ademusic Vocal Rack.component` | 10 MB |
-| Local ZIP | `dist/ademusic-vocal-rack-1.0.0-macOS-arm64.zip` | see `dist/*.sha256` |
-| Factory bank | `presets/ademusic-vocal-rack-factory.json` | 36 presets |
-| Headless tests | `build-release/VocalRackTests_artefacts/Release/VocalRackTests` | 330 checks |
+| Local ZIP | `dist/ademusic-vocal-rack-1.1.0-macOS-arm64.zip` | see `dist/*.sha256` |
+| Factory bank | `presets/ademusic-vocal-rack-factory.json` | 60 presets |
+| Headless tests | `build-release/VocalRackTests_artefacts/Release/VocalRackTests` | 358 checks |
 
 Identity facts read from the built bundles:
 
@@ -52,13 +52,13 @@ Command:
 ./build-release/VocalRackTests_artefacts/Release/VocalRackTests | tee docs/verification/tests.log
 ```
 
-Result: **330 PASS, 0 FAIL**. Log: `docs/verification/tests.log`.
+Result: **358 PASS, 0 FAIL**. Log: `docs/verification/tests.log`.
 
 Coverage exercised by the suite:
 
 | Area | Evidence |
 |---|---|
-| Parameters / schema | 82 stable IDs, unique, defaults in range, 36 factory presets parse |
+| Parameters / schema | 82 stable IDs, unique, defaults in range, 60 factory presets parse |
 | Latency | Track impulse lands exactly at 720 samples at 48 kHz; Mix at 3716 |
 | Dry alignment | Global bypass preserves impulse amplitude and both channels |
 | All-stage bypass | Processed path unity ratio 1.000 for Track and Mix |
@@ -74,14 +74,14 @@ Coverage exercised by the suite:
 | Delay | 120 BPM: 500 ms quarter, 250 ms eighth, 375 ms dotted-eighth; invalid tempo falls back to 100 BPM manual and lands at 0.600 s |
 | Reverb | finite decaying tail; Room vs Plate different tails (0.00667 vs 0.00948) |
 | Limiter | sample-peak ceiling enforced on stress signal; release/GR reported; lookahead 128 Mix / 16 Track |
-| Presets | all 36 render finite; six banks × six; full parameter state |
+| Presets | all 60 render finite; ten banks × six; full parameter state |
 | Key recall | Keep Song Key preserves tonic/scale/mask; off recalls preset key |
 | User presets | Save As, export, import, duplicate, rename, delete, atomic files, corrupt-file scan |
 | Session state | edited params, preset identity, A/B slots, quality; recall after deleting preset file |
 | A/B | independent output trim restores correctly |
 | Quality | preset load does not change Track/Mix; latency remains stable |
 | Automation | rapid sweep finite, max sample step 0.138 |
-| Local vocal | optional `--vocal` rendered all 36 presets to 48 kHz WAV |
+| Local vocal | optional `--vocal` rendered all 60 presets to 48 kHz WAV |
 
 ### Measured latency
 
@@ -108,10 +108,10 @@ denoiser (Mix), dynamics, color, delay and reverb:
 
 | Quality | Block | Avg callback | p99 | Avg block budget | p99 budget |
 |---|---:|---:|---:|---:|---:|
-| Track | 128 | 0.055 ms | 0.079 ms | 2.05 % | 2.97 % |
-| Track | 256 | 0.107 ms | 0.115 ms | 2.01 % | 2.15 % |
-| Mix | 128 | 0.067 ms | 0.196 ms | 2.52 % | 7.35 % |
-| Mix | 256 | 0.131 ms | 0.229 ms | 2.45 % | 4.30 % |
+| Track | 128 | 0.064 ms | 0.176 ms | 2.41 % | 6.60 % |
+| Track | 256 | 0.130 ms | 0.302 ms | 2.43 % | 5.67 % |
+| Mix | 128 | 0.080 ms | 0.311 ms | 3.00 % | 11.65 % |
+| Mix | 256 | 0.159 ms | 0.422 ms | 2.98 % | 7.91 % |
 
 No callback miss measured. Latency values above are the reported plugin latency.
 
@@ -200,7 +200,7 @@ WAV:
   --vocal /tmp/vr-vocal-fixture.wav /tmp/vr-renders
 ```
 
-36 WAV files were produced successfully. Human listening for consonants,
+60 WAV files were produced successfully. Human listening for consonants,
 sibilance, sustained-note artifacts and preset character remains manual; see
 `docs/MANUAL_CHECKLIST.md`.
 
@@ -243,7 +243,7 @@ No MegaTune project files, presets or sessions were modified.
 `scripts/package.sh` stages:
 
 ```
-dist/ademusic-vocal-rack-1.0.0-macOS-arm64/
+dist/ademusic-vocal-rack-1.1.0-macOS-arm64/
   VST3/ademusic Vocal Rack.vst3
   Components/ademusic Vocal Rack.component
   presets/ademusic-vocal-rack-factory.json
@@ -256,7 +256,7 @@ dist/ademusic-vocal-rack-1.0.0-macOS-arm64/
 
 The ZIP is extracted and compared recursively; bundle contents and signatures
 are verified after extraction. The SHA-256 of the final ZIP is written to
-`dist/ademusic-vocal-rack-1.0.0-macOS-arm64.zip.sha256`.
+`dist/ademusic-vocal-rack-1.1.0-macOS-arm64.zip.sha256`.
 
 ## 10. Final pass/fail/blocked matrix
 
@@ -264,7 +264,7 @@ are verified after extraction. The SHA-256 of the final ZIP is written to
 |---|---|---|
 | Build both formats arm64 | **PASSED** | Bundles + `lipo`/`file` |
 | Bundle metadata and AU/VST3 IDs | **PASSED** | `plutil`, `moduleinfo.json` |
-| Headless DSP/OO tests | **PASSED** | 330 checks |
+| Headless DSP/OO tests | **PASSED** | 358 checks |
 | Latency and alignment | **PASSED** | impulse ≤15 ms Track |
 | CPU benchmark | **PASSED** | 2.1–2.6 % average |
 | pluginval VST3 strictness 7 | **PASSED** | log |
@@ -291,4 +291,4 @@ PLUGINVAL_BIN=/path/to/pluginval ./scripts/validate.sh
 ./scripts/package.sh
 ```
 
-The tarball hash is written to `dist/ademusic-vocal-rack-1.0.0-macOS-arm64.zip.sha256`.
+The tarball hash is written to `dist/ademusic-vocal-rack-1.1.0-macOS-arm64.zip.sha256`.

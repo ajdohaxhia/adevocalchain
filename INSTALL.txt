@@ -1,4 +1,4 @@
-ademusic Vocal Rack 1.0.0 — macOS arm64
+ademusic Vocal Rack 1.1.0 — macOS arm64
 ======================================
 
 Contents
@@ -47,7 +47,7 @@ configuration.
 
 Factory presets
 ---------------
-36 presets are embedded in the plugin. The JSON file in presets/ is the same
+60 presets are embedded in the plugin. The JSON file in presets/ is the same
 bank for inspection or re-import. Factory entries are immutable; Save As,
 duplicate, rename, delete, import, and export operate on user presets under:
 

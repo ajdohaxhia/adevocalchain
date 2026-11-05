@@ -1,0 +1,8 @@
+LATENCY sr=44100 quality=track samples=655 ms=14.853 components=denoise+0 shifter+640 sat+0 limiter+15
+LATENCY sr=44100 quality=mix samples=3706 ms=84.036 components=denoise+1024 shifter+2560 sat+4 limiter+118
+LATENCY sr=48000 quality=track samples=720 ms=15.000 components=denoise+0 shifter+704 sat+0 limiter+16
+LATENCY sr=48000 quality=mix samples=3716 ms=77.417 components=denoise+1024 shifter+2560 sat+4 limiter+128
+LATENCY sr=88200 quality=track samples=1309 ms=14.841 components=denoise+0 shifter+1280 sat+0 limiter+29
+LATENCY sr=88200 quality=mix samples=7407 ms=83.980 components=denoise+2048 shifter+5120 sat+4 limiter+235
+LATENCY sr=96000 quality=track samples=1440 ms=15.000 components=denoise+0 shifter+1408 sat+0 limiter+32
+LATENCY sr=96000 quality=mix samples=7428 ms=77.375 components=denoise+2048 shifter+5120 sat+4 limiter+256

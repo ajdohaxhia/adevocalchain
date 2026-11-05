@@ -1,0 +1,36 @@
+{
+  "version": 6,
+  "cmakeMinimumRequired": {
+    "major": 3,
+    "minor": 22,
+    "patch": 0
+  },
+  "configurePresets": [
+    {
+      "name": "release-arm64",
+      "displayName": "Release arm64 (Apple Silicon)",
+      "description": "Native arm64 Release build. Set VR_JUCE_PATH to an offline JUCE 8.0.15 checkout, or leave it unset to fetch the pin.",
+      "generator": "Unix Makefiles",
+      "binaryDir": "${sourceDir}/build-release",
+      "cacheVariables": {
+        "CMAKE_BUILD_TYPE": "Release",
+        "CMAKE_OSX_ARCHITECTURES": "arm64",
+        "CMAKE_OSX_DEPLOYMENT_TARGET": "12.0",
+        "VR_BUILD_TESTS": "ON",
+        "VR_JUCE_PATH": "$env{VR_JUCE_PATH}"
+      }
+    }
+  ],
+  "buildPresets": [
+    {
+      "name": "release-arm64",
+      "configurePreset": "release-arm64",
+      "jobs": 8,
+      "targets": [
+        "VocalRack_VST3",
+        "VocalRack_AU",
+        "VocalRackTests"
+      ]
+    }
+  ]
+}

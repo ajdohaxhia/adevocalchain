@@ -1,0 +1,334 @@
+ademusic Vocal Rack validation suite
+===================================
+PASS  parameter schema has 82 parameters
+PASS  default in range: global.input
+PASS  find spec: global.input
+PASS  default in range: global.output
+PASS  find spec: global.output
+PASS  default in range: global.mix
+PASS  find spec: global.mix
+PASS  default in range: global.bypass
+PASS  find spec: global.bypass
+PASS  default in range: exp.bypass
+PASS  find spec: exp.bypass
+PASS  default in range: exp.threshold
+PASS  find spec: exp.threshold
+PASS  default in range: exp.range
+PASS  find spec: exp.range
+PASS  default in range: exp.attack
+PASS  find spec: exp.attack
+PASS  default in range: exp.hold
+PASS  find spec: exp.hold
+PASS  default in range: exp.release
+PASS  find spec: exp.release
+PASS  default in range: dn.bypass
+PASS  find spec: dn.bypass
+PASS  default in range: dn.amount
+PASS  find spec: dn.amount
+PASS  default in range: dn.maxReduction
+PASS  find spec: dn.maxReduction
+PASS  default in range: pitch.bypass
+PASS  find spec: pitch.bypass
+PASS  default in range: pitch.amount
+PASS  find spec: pitch.amount
+PASS  default in range: pitch.retune
+PASS  find spec: pitch.retune
+PASS  default in range: pitch.humanize
+PASS  find spec: pitch.humanize
+PASS  default in range: pitch.a4
+PASS  find spec: pitch.a4
+PASS  default in range: pitch.tonic
+PASS  find spec: pitch.tonic
+PASS  default in range: pitch.scale
+PASS  find spec: pitch.scale
+PASS  default in range: pitch.mask
+PASS  find spec: pitch.mask
+PASS  default in range: pitch.range
+PASS  find spec: pitch.range
+PASS  default in range: ceq.bypass
+PASS  find spec: ceq.bypass
+PASS  default in range: ceq.hpf
+PASS  find spec: ceq.hpf
+PASS  default in range: ceq.cut1Freq
+PASS  find spec: ceq.cut1Freq
+PASS  default in range: ceq.cut1Gain
+PASS  find spec: ceq.cut1Gain
+PASS  default in range: ceq.cut1Q
+PASS  find spec: ceq.cut1Q
+PASS  default in range: ceq.cut2Freq
+PASS  find spec: ceq.cut2Freq
+PASS  default in range: ceq.cut2Gain
+PASS  find spec: ceq.cut2Gain
+PASS  default in range: ceq.cut2Q
+PASS  find spec: ceq.cut2Q
+PASS  default in range: teq.bypass
+PASS  find spec: teq.bypass
+PASS  default in range: teq.lowFreq
+PASS  find spec: teq.lowFreq
+PASS  default in range: teq.lowGain
+PASS  find spec: teq.lowGain
+PASS  default in range: teq.presFreq
+PASS  find spec: teq.presFreq
+PASS  default in range: teq.presGain
+PASS  find spec: teq.presGain
+PASS  default in range: teq.presQ
+PASS  find spec: teq.presQ
+PASS  default in range: teq.highFreq
+PASS  find spec: teq.highFreq
+PASS  default in range: teq.highGain
+PASS  find spec: teq.highGain
+PASS  default in range: comp.bypass
+PASS  find spec: comp.bypass
+PASS  default in range: comp.threshold
+PASS  find spec: comp.threshold
+PASS  default in range: comp.ratio
+PASS  find spec: comp.ratio
+PASS  default in range: comp.attack
+PASS  find spec: comp.attack
+PASS  default in range: comp.release
+PASS  find spec: comp.release
+PASS  default in range: comp.knee
+PASS  find spec: comp.knee
+PASS  default in range: comp.makeup
+PASS  find spec: comp.makeup
+PASS  default in range: comp.mix
+PASS  find spec: comp.mix
+PASS  default in range: comp.detHPF
+PASS  find spec: comp.detHPF
+PASS  default in range: ds.bypass
+PASS  find spec: ds.bypass
+PASS  default in range: ds.freq
+PASS  find spec: ds.freq
+PASS  default in range: ds.threshold
+PASS  find spec: ds.threshold
+PASS  default in range: ds.range
+PASS  find spec: ds.range
+PASS  default in range: ds.release
+PASS  find spec: ds.release
+PASS  default in range: ds.audition
+PASS  find spec: ds.audition
+PASS  default in range: sat.bypass
+PASS  find spec: sat.bypass
+PASS  default in range: sat.mode
+PASS  find spec: sat.mode
+PASS  default in range: sat.drive
+PASS  find spec: sat.drive
+PASS  default in range: sat.blend
+PASS  find spec: sat.blend
+PASS  default in range: sat.output
+PASS  find spec: sat.output
+PASS  default in range: dly.bypass
+PASS  find spec: dly.bypass
+PASS  default in range: dly.sync
+PASS  find spec: dly.sync
+PASS  default in range: dly.ms
+PASS  find spec: dly.ms
+PASS  default in range: dly.division
+PASS  find spec: dly.division
+PASS  default in range: dly.feel
+PASS  find spec: dly.feel
+PASS  default in range: dly.feedback
+PASS  find spec: dly.feedback
+PASS  default in range: dly.level
+PASS  find spec: dly.level
+PASS  default in range: dly.lowCut
+PASS  find spec: dly.lowCut
+PASS  default in range: dly.highCut
+PASS  find spec: dly.highCut
+PASS  default in range: dly.pingpong
+PASS  find spec: dly.pingpong
+PASS  default in range: dly.duck
+PASS  find spec: dly.duck
+PASS  default in range: dly.manualBpm
+PASS  find spec: dly.manualBpm
+PASS  default in range: rev.bypass
+PASS  find spec: rev.bypass
+PASS  default in range: rev.type
+PASS  find spec: rev.type
+PASS  default in range: rev.predelay
+PASS  find spec: rev.predelay
+PASS  default in range: rev.decay
+PASS  find spec: rev.decay
+PASS  default in range: rev.damping
+PASS  find spec: rev.damping
+PASS  default in range: rev.lowCut
+PASS  find spec: rev.lowCut
+PASS  default in range: rev.highCut
+PASS  find spec: rev.highCut
+PASS  default in range: rev.level
+PASS  find spec: rev.level
+PASS  default in range: rev.duck
+PASS  find spec: rev.duck
+PASS  default in range: lim.bypass
+PASS  find spec: lim.bypass
+PASS  default in range: lim.ceiling
+PASS  find spec: lim.ceiling
+PASS  default in range: lim.release
+PASS  find spec: lim.release
+PASS  parameter ids are unique
+PASS  MIDI 57 is A with A enabled
+PASS  B excluded: 59 snaps to A when only A is enabled
+PASS  B excluded: 59 snaps to C when A and C are enabled
+PASS  B/C boundary tie is deterministic
+PASS  B/C octave boundary selects C above 59.5
+PASS  negative MIDI index uses positive modulo
+PASS  negative octave does not invent a target
+PASS  empty mask yields no target
+PASS  empty mask applies unity ratio
+PASS  C major mask includes C/E and excludes C#
+PASS  Track reports positive latency
+PASS  Track reports <= 720 samples at 48 kHz (15 ms)
+PASS  Track bypass impulse lands at reported latency (720 vs 720)
+PASS  Track bypass preserves impulse amplitude
+PASS  Track bypass preserves the right channel
+PASS  Mix reports positive latency
+PASS  Track reports <= 720 samples at 48 kHz (15 ms)
+PASS  Mix bypass impulse lands at reported latency (3716 vs 3716)
+PASS  Mix bypass preserves impulse amplitude
+PASS  Mix bypass preserves the right channel
+PASS  sample-rate render keeps length
+PASS  finite output at 44100 Hz
+PASS  bounded output at 44100 Hz
+PASS  zero-length + oversized block is safe at 44100 Hz
+PASS  sample-rate render keeps length
+PASS  finite output at 44100 Hz
+PASS  bounded output at 44100 Hz
+PASS  zero-length + oversized block is safe at 44100 Hz
+PASS  sample-rate render keeps length
+PASS  finite output at 48000 Hz
+PASS  bounded output at 48000 Hz
+PASS  zero-length + oversized block is safe at 48000 Hz
+PASS  sample-rate render keeps length
+PASS  finite output at 48000 Hz
+PASS  bounded output at 48000 Hz
+PASS  zero-length + oversized block is safe at 48000 Hz
+PASS  sample-rate render keeps length
+PASS  finite output at 88200 Hz
+PASS  bounded output at 88200 Hz
+PASS  zero-length + oversized block is safe at 88200 Hz
+PASS  sample-rate render keeps length
+PASS  finite output at 88200 Hz
+PASS  bounded output at 88200 Hz
+PASS  zero-length + oversized block is safe at 88200 Hz
+PASS  sample-rate render keeps length
+PASS  finite output at 96000 Hz
+PASS  bounded output at 96000 Hz
+PASS  zero-length + oversized block is safe at 96000 Hz
+PASS  sample-rate render keeps length
+PASS  finite output at 96000 Hz
+PASS  bounded output at 96000 Hz
+PASS  zero-length + oversized block is safe at 96000 Hz
+PASS  odd/varying block size 37 is finite
+PASS  odd/varying block size 127 is finite
+PASS  odd/varying block size 1024 is finite
+PASS  bus layout 1->1 is finite
+PASS  bus layout 1->2 is finite
+PASS  bus layout 2->2 is finite
+PASS  Track detector 80.0 Hz, error 8.5 cents
+PASS  Track detector 130.0 Hz, error 2.1 cents
+PASS  Track detector 220.0 Hz, error 0.8 cents
+PASS  Track detector 440.0 Hz, error 0.9 cents
+PASS  Track detector 880.0 Hz, error 3.3 cents
+PASS  silence is unvoiced
+PASS  Mix detector 80.0 Hz, error 3.7 cents
+PASS  Mix detector 130.0 Hz, error 1.2 cents
+PASS  Mix detector 220.0 Hz, error 0.5 cents
+PASS  Mix detector 440.0 Hz, error 0.8 cents
+PASS  Mix detector 880.0 Hz, error 3.3 cents
+PASS  silence is unvoiced
+PASS  rendered tuning produced pitch estimates
+PASS  Hard Tune median pitch error <= 10 cents (0.36 cents)
+PASS  Natural mode leaves measurable vibrato movement (53.7 cents)
+PASS  unvoiced tail survives the shifter
+PASS  limiter enforces the sample-peak ceiling
+PASS  limiter reports its lookahead
+PASS  limiter reports gain reduction
+PASS  compressor reduces a loud signal
+PASS  compressor leaves a quiet signal alone
+PASS  cleanup EQ attenuates below the high-pass
+PASS  de-esser attenuates the sibilance band (high RMS 0.0452, low RMS 0.2475)
+PASS  de-esser preserves the low band (high RMS 0.0452, low RMS 0.2475)
+PASS  delay quarter = 500 ms (peak 24000)
+PASS  delay eighth = 250 ms (peak 12000)
+PASS  delay dotted eighth = 375 ms (peak 18000)
+PASS  reverb tail decays
+PASS  reverb output is finite
+PASS  Room and Plate produce different tails (room 0.00667, plate 0.00948)
+PASS  invalid host tempo falls back to manual 100 BPM (peak 28800)
+PASS  2x saturation oversampling lowers measured aliasing (-24.88 dB -> -44.41 dB)
+PASS  Track all-stage bypass is unity-ish (ratio 1.000)
+PASS  Mix all-stage bypass is unity-ish (ratio 1.000)
+PASS  spectral cleanup reduces steady noise by > 6 dB (8.19 dB, voice -0.81 dB)
+PASS  spectral cleanup keeps voiced level within 3 dB (-0.81 dB)
+PASS  Track does not secretly apply spectral cleanup (0.06 dB)
+PASS  expander closes between phrases (19.92 dB)
+PASS  mono insert keeps a usable delay/reverb tail (0.00509)
+PASS  36 factory presets parsed
+PASS  factory preset renders finite: Clean Start
+PASS  factory preset renders finite: Record Ready
+PASS  factory preset renders finite: Home Booth
+PASS  factory preset renders finite: Laptop Fan
+PASS  factory preset renders finite: Plosive Rescue
+PASS  factory preset renders finite: Bright Mic Tamer
+PASS  factory preset renders finite: Midnight Rap Lead
+PASS  factory preset renders finite: 808 Club Lead
+PASS  factory preset renders finite: Punch In
+PASS  factory preset renders finite: Dry Pocket
+PASS  factory preset renders finite: Dark Melodic Trap
+PASS  factory preset renders finite: Wide Ad-libs
+PASS  factory preset renders finite: Neon Pop Lead
+PASS  factory preset renders finite: Nu-Disco Lead
+PASS  factory preset renders finite: House Topline
+PASS  factory preset renders finite: Radio Hook
+PASS  factory preset renders finite: Club Chorus
+PASS  factory preset renders finite: Disco Doubles
+PASS  factory preset renders finite: Late Night Falsetto
+PASS  factory preset renders finite: Warm Low Lead
+PASS  factory preset renders finite: Velvet Runs
+PASS  factory preset renders finite: Whisper Close
+PASS  factory preset renders finite: Air Without Bite
+PASS  factory preset renders finite: Blue Hour
+PASS  factory preset renders finite: Intimate Dry
+PASS  factory preset renders finite: Breath and Space
+PASS  factory preset renders finite: Acoustic Lead
+PASS  factory preset renders finite: Storyteller
+PASS  factory preset renders finite: Live Room Control
+PASS  factory preset renders finite: Harmony Stack
+PASS  factory preset renders finite: Hard Tune
+PASS  factory preset renders finite: Telephone Verse
+PASS  factory preset renders finite: Distorted Hook
+PASS  factory preset renders finite: Slap Room
+PASS  factory preset renders finite: Dotted Throw
+PASS  factory preset renders finite: End of the Night
+PASS  factory bank count is six
+PASS  factory bank has six presets: Effects and Throws
+PASS  factory bank has six presets: Natural and Acoustic
+PASS  factory bank has six presets: Pop and Dance
+PASS  factory bank has six presets: R&B and Melodic
+PASS  factory bank has six presets: Rap and Trap
+PASS  factory bank has six presets: Tracking and Cleanup
+PASS  Late Night Falsetto exists by stable id
+PASS  Keep Song Key preserves tonic, scale and mask on factory load
+PASS  Keep Song Key off recalls the preset key
+PASS  Save As writes a user preset: 
+PASS  saved preset is a user preset
+PASS  user preset exports: 
+PASS  export file exists
+PASS  exported preset imports: 
+PASS  corrupt user preset is reported
+PASS  corrupt file does not remove factory bank
+PASS  state serializes
+PASS  session recall restores edited parameters
+PASS  session recall restores preset identity
+PASS  session recall survives a deleted user preset file
+PASS  factory preset load does not change the quality configuration
+PASS  duplicate user preset: 
+PASS  rename user preset: 
+PASS  delete user preset: 
+PASS  A/B slot A restores its output trim
+PASS  A/B slot B restores its edited state
+PASS  future preset schema version is rejected
+PASS  automation sweep remains finite
+PASS  automation sweep avoids extreme sample discontinuities (0.135)
+===================================
+ALL CHECKS PASSED

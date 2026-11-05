@@ -1,0 +1,6 @@
+build*/
+dist/
+tools/pluginval/
+.DS_Store
+*.dSYM
+*.tmp

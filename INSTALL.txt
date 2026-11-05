@@ -1,0 +1,62 @@
+ademusic Vocal Rack 1.0.0 — macOS arm64
+======================================
+
+Contents
+--------
+  VST3/ademusic Vocal Rack.vst3
+  Components/ademusic Vocal Rack.component
+  presets/ademusic-vocal-rack-factory.json
+  docs/VERIFICATION.md
+  docs/MANUAL_CHECKLIST.md
+  docs/PRESET_FORMAT.md
+  LICENSE, LICENSES/, THIRD_PARTY_NOTICES.md
+
+Shortest route to a DAW
+-----------------------
+1. Quit the DAW.
+2. Copy the bundles to the user-level plug-in folders:
+
+     mkdir -p ~/Library/Audio/Plug-Ins/VST3 ~/Library/Audio/Plug-Ins/Components
+     cp -R "VST3/ademusic Vocal Rack.vst3" ~/Library/Audio/Plug-Ins/VST3/
+     cp -R "Components/ademusic Vocal Rack.component" ~/Library/Audio/Plug-Ins/Components/
+
+   (From Finder: hold Option while opening the Go menu, choose Library, then
+   Audio/Plug-Ins. Create VST3 and Components if needed.)
+
+3. If the ZIP was downloaded from another machine, clear quarantine:
+     xattr -dr com.apple.quarantine ~/Library/Audio/Plug-Ins/VST3/"ademusic Vocal Rack.vst3"
+     xattr -dr com.apple.quarantine ~/Library/Audio/Plug-Ins/Components/"ademusic Vocal Rack.component"
+
+4. Start the DAW.
+   Logic Pro (AU):  insert Audio FX -> Audio Units -> ademusic -> ademusic Vocal Rack.
+   VST3 host:       scan/insert ademusic -> ademusic Vocal Rack.
+5. Put it on a mono or stereo vocal track, play audio, open the editor, and
+   choose a preset in the browser (BROWSE).
+
+Quality configurations
+----------------------
+TRACK  report latency 720 samples = 15.00 ms at 48 kHz (measured, arm64).
+       Uses the low-latency expander and tuning path; spectral cleanup is
+       unavailable and the UI says so when a preset asks for it.
+MIX    report latency 3716 samples = 77.42 ms at 48 kHz (measured, arm64).
+       Adds the full spectral denoiser and 2x saturation oversampling.
+
+Stop transport before changing TRACK/MIX if your host does not re-align live;
+the plugin re-prepares and updates the host latency. Presets never change this
+configuration.
+
+Factory presets
+---------------
+36 presets are embedded in the plugin. The JSON file in presets/ is the same
+bank for inspection or re-import. Factory entries are immutable; Save As,
+duplicate, rename, delete, import, and export operate on user presets under:
+
+  ~/Library/Application Support/ademusic/Vocal Rack/Presets/
+
+Keep Song Key is on by default for factory browsing: the current tonic, scale
+and note mask stay put. Turn it off to recall the preset's stored tuning. Full
+session recall always restores the saved key and mask.
+
+Uninstall
+---------
+Delete the two bundles above. User presets are not removed.

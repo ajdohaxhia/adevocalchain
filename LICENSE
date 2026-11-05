@@ -1,0 +1,21 @@
+ademusic Vocal Rack
+Copyright (c) 2026 ademusic
+
+This project's original source code is licensed under the GNU Affero General
+Public License, version 3 or later (AGPL-3.0-or-later). A copy is in
+LICENSES/AGPL-3.0.txt.
+
+This build links the JUCE Framework 8.0.15, which is dual-licensed under the
+AGPLv3 and a commercial JUCE licence. This build is offered under the AGPLv3
+path. For closed-source or otherwise non-AGPL distribution you must obtain a
+JUCE commercial licence and separate permission for the original code.
+
+The streaming phase-vocoder pitch shifter in Source/dsp/PitchShifter.cpp is
+adapted from PitchLab / MegaTune, Copyright (c) 2026 PitchLab, under the MIT
+licence. Its MIT notice is retained in that file and a copy of the licence is
+in LICENSES/PitchLab-MIT.txt.
+
+No RNNoise build, model weights, third-party fonts, or recorded audio are
+bundled. The test and demo signals are generated numerically; the UI uses the
+system Helvetica Neue font. pluginval is a validation tool and is not included
+in the distributed plugin package.

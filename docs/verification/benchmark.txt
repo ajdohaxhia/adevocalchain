@@ -1,0 +1,4 @@
+BENCH quality=track block=128 latency_ms=15.000 avg_ms=0.0546 p99_ms=0.0791 avg_budget_pct=2.05 p99_budget_pct=2.97
+BENCH quality=track block=256 latency_ms=15.000 avg_ms=0.1072 p99_ms=0.1149 avg_budget_pct=2.01 p99_budget_pct=2.15
+BENCH quality=mix block=128 latency_ms=77.417 avg_ms=0.0672 p99_ms=0.1959 avg_budget_pct=2.52 p99_budget_pct=7.35
+BENCH quality=mix block=256 latency_ms=77.417 avg_ms=0.1309 p99_ms=0.2294 avg_budget_pct=2.45 p99_budget_pct=4.30

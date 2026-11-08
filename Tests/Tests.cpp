@@ -307,7 +307,7 @@ RackParams bypassAllParams()
 void testParameterSchema()
 {
     const auto& specs = vr::getParamSpecs();
-    check (specs.size() == 84, "parameter schema has 84 parameters");
+    check (specs.size() == 102, "parameter schema has 102 parameters");
 
     std::set<juce::String> ids;
 
@@ -977,6 +977,58 @@ static double probeAmplitudeAt (const std::vector<float>& v, double sampleRate, 
     }
 
     return 2.0 * std::sqrt (re * re + im * im) / (double) count;
+}
+
+void testDynamicEq()
+{
+    constexpr double sr = 48000.0;
+    const int length = (int) (2.0 * sr);
+    std::vector<float> tone ((size_t) length, 0.0f);
+
+    for (int i = 0; i < length; ++i)
+        tone[(size_t) i] = 0.35f * (float) std::sin (juce::MathConstants<double>::twoPi * 300.0
+                                                       * (double) i / sr);
+
+    auto render = [&] (bool on, float gain, float threshold)
+    {
+        auto p = bypassAllParams();
+        p.deq1On = on;
+        p.deq1Freq = 300.0f;
+        p.deq1Q = 1.0f;
+        p.deq1Gain = gain;
+        p.deq1Threshold = threshold;
+        p.deq1Ratio = 4.0f;
+        p.deq1Range = 12.0f;
+        p.deq1Attack = 1.0f;
+        p.deq1Release = 80.0f;
+        return runEngine (p, tone, tone, sr, 512, vr::QualityMode::mix);
+    };
+
+    auto rms = [] (const std::vector<float>& v, int start)
+    {
+        double sum = 0.0;
+        int count = 0;
+
+        for (int i = start; i < (int) v.size(); ++i)
+        {
+            sum += (double) v[(size_t) i] * (double) v[(size_t) i];
+            ++count;
+        }
+
+        return std::sqrt (sum / (double) juce::jmax (1, count));
+    };
+
+    const auto dry = render (false, 0.0f, -30.0f);
+    const auto cut = render (true, 0.0f, -50.0f);
+    const auto boost = render (true, 6.0f, 0.0f);
+    const int start = 12000;
+
+    check (rms (cut.left, start) < rms (dry.left, start) * 0.8,
+           "dynamic EQ reduces a signal above threshold");
+    check (rms (boost.left, start) > rms (dry.left, start) * 1.1,
+           "dynamic EQ static peaking gain boosts");
+    check (std::isfinite (rms (cut.left, start)) && std::isfinite (rms (boost.left, start)),
+           "dynamic EQ remains finite");
 }
 
 void testCleanSignalPath()
@@ -2076,6 +2128,7 @@ int main (int argc, char** argv)
     testRenderedPitch();
     testModules();
     testCleanSignalPath();
+    testDynamicEq();
     testFormantPreservation();
     testNoiseAndUnity();
     testPresetsAndState();

@@ -29,6 +29,7 @@ enum class ParamGroup
     cleanup,
     pitch,
     eq,
+    dynamicEq,
     comp,
     deesser,
     saturation,
@@ -93,6 +94,26 @@ struct RackParams
     int pitchRange = 1;
     bool pitchFormantPreserve = false;
     float pitchFormantShift = 0.0f;
+
+    // Dynamic EQ
+    bool deq1On = false;
+    float deq1Freq = 300.0f;
+    float deq1Q = 1.0f;
+    float deq1Gain = 0.0f;
+    float deq1Threshold = -30.0f;
+    float deq1Ratio = 2.0f;
+    float deq1Range = 8.0f;
+    float deq1Attack = 10.0f;
+    float deq1Release = 120.0f;
+    bool deq2On = false;
+    float deq2Freq = 3000.0f;
+    float deq2Q = 1.0f;
+    float deq2Gain = 0.0f;
+    float deq2Threshold = -30.0f;
+    float deq2Ratio = 2.0f;
+    float deq2Range = 8.0f;
+    float deq2Attack = 5.0f;
+    float deq2Release = 80.0f;
 
     // Cleanup EQ
     bool ceqBypass = false;
@@ -209,6 +230,25 @@ private:
         std::atomic<float>* pitchRange = nullptr;
         std::atomic<float>* pitchFormant = nullptr;
         std::atomic<float>* pitchFormantShift = nullptr;
+
+        std::atomic<float>* deq1On = nullptr;
+        std::atomic<float>* deq1Freq = nullptr;
+        std::atomic<float>* deq1Q = nullptr;
+        std::atomic<float>* deq1Gain = nullptr;
+        std::atomic<float>* deq1Threshold = nullptr;
+        std::atomic<float>* deq1Ratio = nullptr;
+        std::atomic<float>* deq1Range = nullptr;
+        std::atomic<float>* deq1Attack = nullptr;
+        std::atomic<float>* deq1Release = nullptr;
+        std::atomic<float>* deq2On = nullptr;
+        std::atomic<float>* deq2Freq = nullptr;
+        std::atomic<float>* deq2Q = nullptr;
+        std::atomic<float>* deq2Gain = nullptr;
+        std::atomic<float>* deq2Threshold = nullptr;
+        std::atomic<float>* deq2Ratio = nullptr;
+        std::atomic<float>* deq2Range = nullptr;
+        std::atomic<float>* deq2Attack = nullptr;
+        std::atomic<float>* deq2Release = nullptr;
 
         std::atomic<float>* ceqBypass = nullptr;
         std::atomic<float>* ceqHpfFreq = nullptr;

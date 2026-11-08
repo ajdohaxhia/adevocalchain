@@ -460,6 +460,18 @@ void VocalRackEditor::configureDetailTabs()
     addKnob (*toneEq, "teq.highFreq");
     addKnob (*toneEq, "teq.highGain");
 
+    auto* deq = makeGrid ("Dyn EQ", "DYNAMIC EQ", 8);
+    addPower (*deq, "deq1.on", "Band 1");
+    addPower (*deq, "deq2.on", "Band 2");
+
+    for (const char* id : { "deq1.freq", "deq1.q", "deq1.gain", "deq1.threshold",
+                            "deq1.ratio", "deq1.range", "deq1.attack", "deq1.release" })
+        addKnob (*deq, id);
+
+    for (const char* id : { "deq2.freq", "deq2.q", "deq2.gain", "deq2.threshold",
+                            "deq2.ratio", "deq2.range", "deq2.attack", "deq2.release" })
+        addKnob (*deq, id);
+
     auto* color = makeGrid ("Color", "COLOR", 3);
     addPower (*color, "sat.bypass", "Enabled");
     addCombo (*color, "sat.mode", "Mode");

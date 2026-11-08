@@ -396,7 +396,8 @@ bool PresetManager::validatePreset (const juce::var& root, PresetEntry& out,
             // Parameters introduced after the format's first public version
             // are optional in old user presets; use their documented default
             // instead of rejecting the preset.
-            const bool introducedIn2 = id == "pitch.formant" || id == "pitch.formantShift";
+            const bool introducedIn2 = id == "pitch.formant" || id == "pitch.formantShift"
+                                      || id.startsWith ("deq");
 
             if (introducedIn2)
                 number = (double) spec.defaultValue;

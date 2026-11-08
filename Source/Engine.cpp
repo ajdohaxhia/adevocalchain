@@ -55,6 +55,7 @@ void Engine::prepare (double newSampleRate, int maximumBlockSize, int inputChann
 
     expander.prepare (sampleRate, maximumBlock);
     cleanupEq.prepare (sampleRate, maximumBlock);
+    dynamicEq.prepare (sampleRate, maximumBlock);
     compressor.prepare (sampleRate, maximumBlock);
     deEsser.prepare (sampleRate, maximumBlock);
     toneEq.prepare (sampleRate, maximumBlock);
@@ -106,6 +107,7 @@ void Engine::reset()
     selector.reset();
     shifter.reset();
     cleanupEq.reset();
+    dynamicEq.reset();
     compressor.reset();
     deEsser.reset();
     toneEq.reset();
@@ -489,6 +491,7 @@ void Engine::processChunk (int numSamples, const RackParams& params, const Trans
     }
 
     cleanupEq.process (workBuffer, n, params);
+    dynamicEq.process (workBuffer, n, params);
     compressor.process (workBuffer, n, params);
     deEsser.process (workBuffer, n, params);
     toneEq.process (workBuffer, n, params);
@@ -540,6 +543,7 @@ void Engine::processChunk (int numSamples, const RackParams& params, const Trans
 
     compGrDb.store (compressor.getGainReductionDb(), std::memory_order_relaxed);
     deEsserGrDb.store (deEsser.getReductionDb(), std::memory_order_relaxed);
+    dynamicEqGrDb.store (dynamicEq.getGainReductionDb(), std::memory_order_relaxed);
     limiterGrDb.store (limiter.getGainReductionDb(), std::memory_order_relaxed);
     delayMs.store (delay.getDelayMs(), std::memory_order_relaxed);
 

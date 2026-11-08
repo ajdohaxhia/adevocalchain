@@ -42,6 +42,24 @@ const std::vector<ParamSpec>& specTable()
         { "pitch.formant", "Formant",       "",    0.0f,   1.0f,   0.0f, 1.0f, PT::boolean,  0, nullptr, PG::pitch, "Preserve the vocal-tract formant envelope (Mix only)." },
         { "pitch.formantShift","Formant Shift","st",-12.0f, 12.0f, 0.0f, 1.0f, PT::floating, 0, nullptr, PG::pitch, "Move the preserved formant envelope relative to the shifted pitch (Mix only)." },
 
+        { "deq1.on",        "B1 On",       "",     0.0f,  1.0f,  0.0f, 1.0f, PT::boolean,  0, nullptr, PG::dynamicEq, "Enable dynamic EQ band 1." },
+        { "deq1.freq",      "B1 Freq",     "Hz",  40.0f, 16000.0f, 300.0f, 0.3f, PT::floating, 0, nullptr, PG::dynamicEq, "Dynamic EQ band 1 frequency." },
+        { "deq1.q",         "B1 Q",        "",     0.2f,  10.0f,  1.0f, 1.0f, PT::floating, 0, nullptr, PG::dynamicEq, "Dynamic EQ band 1 Q." },
+        { "deq1.gain",      "B1 Gain",     "dB", -12.0f, 12.0f,  0.0f, 1.0f, PT::floating, 0, nullptr, PG::dynamicEq, "Static peaking gain for dynamic EQ band 1." },
+        { "deq1.threshold", "B1 Threshold","dB", -60.0f, 0.0f, -30.0f, 1.0f, PT::floating, 0, nullptr, PG::dynamicEq, "Dynamic reduction threshold for band 1." },
+        { "deq1.ratio",     "B1 Ratio",    ":1",   1.0f, 10.0f,  2.0f, 1.0f, PT::floating, 0, nullptr, PG::dynamicEq, "Dynamic reduction ratio for band 1." },
+        { "deq1.range",     "B1 Range",    "dB",   0.0f, 24.0f,  8.0f, 1.0f, PT::floating, 0, nullptr, PG::dynamicEq, "Maximum dynamic cut for band 1." },
+        { "deq1.attack",    "B1 Attack",   "ms",   0.1f, 100.0f, 10.0f, 1.0f, PT::floating, 0, nullptr, PG::dynamicEq, "Dynamic EQ band 1 attack." },
+        { "deq1.release",   "B1 Release",  "ms",  10.0f, 1000.0f,120.0f, 1.0f, PT::floating, 0, nullptr, PG::dynamicEq, "Dynamic EQ band 1 release." },
+        { "deq2.on",        "B2 On",       "",     0.0f,  1.0f,  0.0f, 1.0f, PT::boolean,  0, nullptr, PG::dynamicEq, "Enable dynamic EQ band 2." },
+        { "deq2.freq",      "B2 Freq",     "Hz",  40.0f, 16000.0f, 3000.0f, 0.3f, PT::floating, 0, nullptr, PG::dynamicEq, "Dynamic EQ band 2 frequency." },
+        { "deq2.q",         "B2 Q",        "",     0.2f,  10.0f,  1.0f, 1.0f, PT::floating, 0, nullptr, PG::dynamicEq, "Dynamic EQ band 2 Q." },
+        { "deq2.gain",      "B2 Gain",     "dB", -12.0f, 12.0f,  0.0f, 1.0f, PT::floating, 0, nullptr, PG::dynamicEq, "Static peaking gain for dynamic EQ band 2." },
+        { "deq2.threshold", "B2 Threshold","dB", -60.0f, 0.0f, -30.0f, 1.0f, PT::floating, 0, nullptr, PG::dynamicEq, "Dynamic reduction threshold for band 2." },
+        { "deq2.ratio",     "B2 Ratio",    ":1",   1.0f, 10.0f,  2.0f, 1.0f, PT::floating, 0, nullptr, PG::dynamicEq, "Dynamic reduction ratio for band 2." },
+        { "deq2.range",     "B2 Range",    "dB",   0.0f, 24.0f,  8.0f, 1.0f, PT::floating, 0, nullptr, PG::dynamicEq, "Maximum dynamic cut for band 2." },
+        { "deq2.attack",    "B2 Attack",   "ms",   0.1f, 100.0f, 5.0f, 1.0f, PT::floating, 0, nullptr, PG::dynamicEq, "Dynamic EQ band 2 attack." },
+        { "deq2.release",   "B2 Release",  "ms",  10.0f, 1000.0f,80.0f, 1.0f, PT::floating, 0, nullptr, PG::dynamicEq, "Dynamic EQ band 2 release." },
         { "ceq.bypass",    "Cleanup EQ","",     0.0f,   1.0f,   0.0f, 1.0f, PT::boolean,  0, nullptr, PG::eq, "Bypass the high-pass and two corrective cuts." },
         { "ceq.hpf",       "High-pass",  "Hz",  20.0f, 500.0f,  80.0f, 0.5f, PT::floating, 0, nullptr, PG::eq, "Variable 12 dB/octave high-pass." },
         { "ceq.cut1Freq",  "Cut 1 Freq", "Hz",  80.0f, 2000.0f, 300.0f, 0.5f, PT::floating, 0, nullptr, PG::eq, "First corrective cut frequency." },
@@ -230,6 +248,25 @@ ParamCache::ParamCache (juce::AudioProcessorValueTreeState& state)
     p.pitchFormant = get ("pitch.formant");
     p.pitchFormantShift = get ("pitch.formantShift");
 
+    p.deq1On = get ("deq1.on");
+    p.deq1Freq = get ("deq1.freq");
+    p.deq1Q = get ("deq1.q");
+    p.deq1Gain = get ("deq1.gain");
+    p.deq1Threshold = get ("deq1.threshold");
+    p.deq1Ratio = get ("deq1.ratio");
+    p.deq1Range = get ("deq1.range");
+    p.deq1Attack = get ("deq1.attack");
+    p.deq1Release = get ("deq1.release");
+    p.deq2On = get ("deq2.on");
+    p.deq2Freq = get ("deq2.freq");
+    p.deq2Q = get ("deq2.q");
+    p.deq2Gain = get ("deq2.gain");
+    p.deq2Threshold = get ("deq2.threshold");
+    p.deq2Ratio = get ("deq2.ratio");
+    p.deq2Range = get ("deq2.range");
+    p.deq2Attack = get ("deq2.attack");
+    p.deq2Release = get ("deq2.release");
+
     p.ceqBypass = get ("ceq.bypass");
     p.ceqHpfFreq = get ("ceq.hpf");
     p.ceqCut1Freq = get ("ceq.cut1Freq");
@@ -332,6 +369,25 @@ void ParamCache::snapshot (RackParams& out) const noexcept
     out.pitchRange = i (p.pitchRange);
     out.pitchFormantPreserve = b (p.pitchFormant);
     out.pitchFormantShift = f (p.pitchFormantShift);
+
+    out.deq1On = b (p.deq1On);
+    out.deq1Freq = f (p.deq1Freq);
+    out.deq1Q = f (p.deq1Q);
+    out.deq1Gain = f (p.deq1Gain);
+    out.deq1Threshold = f (p.deq1Threshold);
+    out.deq1Ratio = f (p.deq1Ratio);
+    out.deq1Range = f (p.deq1Range);
+    out.deq1Attack = f (p.deq1Attack);
+    out.deq1Release = f (p.deq1Release);
+    out.deq2On = b (p.deq2On);
+    out.deq2Freq = f (p.deq2Freq);
+    out.deq2Q = f (p.deq2Q);
+    out.deq2Gain = f (p.deq2Gain);
+    out.deq2Threshold = f (p.deq2Threshold);
+    out.deq2Ratio = f (p.deq2Ratio);
+    out.deq2Range = f (p.deq2Range);
+    out.deq2Attack = f (p.deq2Attack);
+    out.deq2Release = f (p.deq2Release);
 
     out.ceqBypass = b (p.ceqBypass);
     out.ceqHpfFreq = f (p.ceqHpfFreq);

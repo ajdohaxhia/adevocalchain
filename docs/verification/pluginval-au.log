@@ -1,14 +1,14 @@
-Started validating: /Users/ade/Documents/deepseek-harness/default-workspace/ademusic-vocal-rack/dist/ademusic-vocal-rack-2.1.0-macOS-arm64/Components/ademusic Vocal Rack.component
-Random seed: 0x4ddcf01
+Started validating: /Users/ade/Documents/deepseek-harness/default-workspace/ademusic-vocal-rack/dist/ademusic-vocal-rack-2.2.0-macOS-arm64/Components/ademusic Vocal Rack.component
+Random seed: 0x2f58fc
 Validation started
 Strictness level: 7
 -----------------------------------------------------------------
-Starting tests in: pluginval / Scan for plugins located in: /Users/ade/Documents/deepseek-harness/default-workspace/ademusic-vocal-rack/dist/ademusic-vocal-rack-2.1.0-macOS-arm64/Components/ademusic Vocal Rack.component...
+Starting tests in: pluginval / Scan for plugins located in: /Users/ade/Documents/deepseek-harness/default-workspace/ademusic-vocal-rack/dist/ademusic-vocal-rack-2.2.0-macOS-arm64/Components/ademusic Vocal Rack.component...
 Num plugins found: 1
 
 Testing plugin: AudioUnit-ademusic Vocal Rack-9762a958-76636860
-ademusic: ademusic Vocal Rack v2.1.0
-Completed tests in pluginval / Scan for plugins located in: /Users/ade/Documents/deepseek-harness/default-workspace/ademusic-vocal-rack/dist/ademusic-vocal-rack-2.1.0-macOS-arm64/Components/ademusic Vocal Rack.component
+ademusic: ademusic Vocal Rack v2.2.0
+Completed tests in pluginval / Scan for plugins located in: /Users/ade/Documents/deepseek-harness/default-workspace/ademusic-vocal-rack/dist/ademusic-vocal-rack-2.2.0-macOS-arm64/Components/ademusic Vocal Rack.component
 -----------------------------------------------------------------
 Starting tests in: pluginval / Open plugin (cold)...
 Completed tests in pluginval / Open plugin (cold)

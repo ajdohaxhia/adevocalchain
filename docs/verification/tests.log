@@ -319,6 +319,9 @@ TRUE_PEAK_STRESS hz=11025 db=-1.06953
 PASS  true peak stress case stays within 0.7 dB: 11025 Hz
 TRUE_PEAK_STRESS hz=12000 db=-1.29686
 PASS  true peak stress case stays within 0.7 dB: 12000 Hz
+LUFS_1K value=-24.7714
+PASS  LUFS-S meter is finite
+PASS  1 kHz LUFS-S is in the expected range
 FORMANT offCentroid=1806.6 onCentroid=1375.2
 PASS  formant-preserving shifter produces measurable output
 PASS  formant preservation keeps the spectral envelope lower than free pitch shift

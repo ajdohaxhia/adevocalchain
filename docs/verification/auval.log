@@ -9,18 +9,18 @@ VALIDATING AUDIO UNIT: 'aufx' - 'Vrck' - 'Adms'
 --------------------------------------------------
 Manufacturer String: ademusic
 AudioUnit Name: ademusic Vocal Rack
-Component Version: 2.1.0 (0x20100)
+Component Version: 2.2.0 (0x20200)
 
 * * PASS
 --------------------------------------------------
 TESTING OPEN TIMES:
 COLD:
-Time to open AudioUnit:         365.070 ms
+Time to open AudioUnit:         349.696 ms
 WARM:
-Time to open AudioUnit:         7.650  ms
+Time to open AudioUnit:         10.145  ms
 This AudioUnit is a version 2 implementation.
 FIRST TIME:
-Time for initialization:        0.089 ms
+Time for initialization:        0.114 ms
 
 * * PASS
 --------------------------------------------------
@@ -59,7 +59,7 @@ VERIFYING SPECIAL PROPERTIES:
 
 VERIFYING CUSTOM UI
 Cocoa Views Available: 1
-  JUCE_AUCocoaViewClass_6ac6506585e98d8a
+  JUCE_AUCocoaViewClass_61e5a68b91b72a3f
     PASS
 
 HAS FACTORY PRESETS

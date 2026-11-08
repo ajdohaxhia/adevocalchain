@@ -128,7 +128,8 @@ void VocalRackAudioProcessor::processBlock (juce::AudioBuffer<float>& buffer,
     const int slot = juce::jlimit (0, 1, activeABAtomic.load (std::memory_order_relaxed));
     auto& measured = abMeasuredRmsDb[slot];
     const float stored = measured.load (std::memory_order_relaxed);
-    measured.store (stored < -59.0f ? rmsDb : stored + 0.06f * (rmsDb - stored),
+    const float lufs = engine.getOutputLufs();
+    measured.store (stored < -59.0f ? lufs : stored + 0.06f * (lufs - stored),
                     std::memory_order_relaxed);
     currentOutputRmsDb.store (rmsDb, std::memory_order_relaxed);
 

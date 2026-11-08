@@ -3,6 +3,7 @@
 #include "Parameters.h"
 #include "dsp/DynamicEQ.h"
 #include "dsp/TruePeakLimiter.h"
+#include "dsp/LoudnessMeter.h"
 #include "dsp/Modules.h"
 #include "dsp/PitchDetector.h"
 #include "dsp/PitchSelector.h"
@@ -78,6 +79,8 @@ public:
     float getInputRmsDb() const noexcept { return inputRmsDb.load (std::memory_order_relaxed); }
     float getOutputRmsDb() const noexcept { return outputRmsDb.load (std::memory_order_relaxed); }
     float getOutputPeakDb() const noexcept { return outputPeakDb.load (std::memory_order_relaxed); }
+    float getOutputTruePeakDb() const noexcept { return outputTruePeakDb.load (std::memory_order_relaxed); }
+    float getOutputLufs() const noexcept { return outputLufsDb.load (std::memory_order_relaxed); }
     float getCompressorGainReductionDb() const noexcept { return compGrDb.load (std::memory_order_relaxed); }
     float getLimiterGainReductionDb() const noexcept { return limiterGrDb.load (std::memory_order_relaxed); }
     float getDeEsserGainReductionDb() const noexcept { return deEsserGrDb.load (std::memory_order_relaxed); }
@@ -129,6 +132,8 @@ private:
     Reverb reverb;
     LookaheadLimiter limiter;
     TruePeakLimiter truePeakLimiter;
+    LoudnessMeter loudnessMeter;
+    std::unique_ptr<juce::dsp::Oversampling<float>> truePeakMeter;
 
     juce::AudioBuffer<float> workBuffer;
     juce::AudioBuffer<float> denoiseBuffer;
@@ -168,6 +173,8 @@ private:
     std::atomic<float> inputRmsDb { -120.0f };
     std::atomic<float> outputRmsDb { -120.0f };
     std::atomic<float> outputPeakDb { -120.0f };
+    std::atomic<float> outputTruePeakDb { -120.0f };
+    std::atomic<float> outputLufsDb { -70.0f };
     std::atomic<float> compGrDb { 0.0f };
     std::atomic<float> limiterGrDb { 0.0f };
     std::atomic<float> deEsserGrDb { 0.0f };
@@ -184,6 +191,8 @@ private:
 
     double meterOutputSum = 0.0;
     float meterOutputPeak = 0.0f;
+    float meterTruePeak = 0.0f;
+    juce::AudioBuffer<float> truePeakMeterBuffer;
     int64_t meterOutputSamples = 0;
 
     JUCE_DECLARE_NON_COPYABLE_WITH_LEAK_DETECTOR (Engine)

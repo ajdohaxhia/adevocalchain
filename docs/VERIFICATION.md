@@ -1,7 +1,7 @@
 # ademusic Vocal Rack — verification report
 
 Date: 2026-11-05 (Europe/Rome)  
-Build: **2.1.0**, native **arm64** Release  
+Build: **2.2.0**, native **arm64** Release  
 Project: `ademusic-vocal-rack/`  
 Status: **all locally runnable checks passed**; DAW and human listening checks
 are blocked by this environment and listed with exact next steps.
@@ -31,9 +31,9 @@ passed. This is an environment cache issue, not a plugin failure.
 |---|---|---|
 | VST3 | `build-release/VocalRack_artefacts/Release/VST3/ademusic Vocal Rack.vst3` | 11 MB |
 | AUv2 | `build-release/VocalRack_artefacts/Release/AU/ademusic Vocal Rack.component` | 10 MB |
-| Local ZIP | `dist/ademusic-vocal-rack-2.1.0-macOS-arm64.zip` | see `dist/*.sha256` |
+| Local ZIP | `dist/ademusic-vocal-rack-2.2.0-macOS-arm64.zip` | see `dist/*.sha256` |
 | Factory bank | `presets/ademusic-vocal-rack-factory.json` | 96 presets |
-| Headless tests | `build-release/VocalRackTests_artefacts/Release/VocalRackTests` | 467 checks |
+| Headless tests | `build-release/VocalRackTests_artefacts/Release/VocalRackTests` | 469 checks |
 
 Identity facts read from the built bundles:
 
@@ -52,7 +52,7 @@ Command:
 ./build-release/VocalRackTests_artefacts/Release/VocalRackTests | tee docs/verification/tests.log
 ```
 
-Result: **467 PASS, 0 FAIL**. Log: `docs/verification/tests.log`.
+Result: **469 PASS, 0 FAIL**. Log: `docs/verification/tests.log`.
 
 Coverage exercised by the suite:
 
@@ -83,7 +83,8 @@ Coverage exercised by the suite:
 | Formant | free 1.5× centroid 1806.6 Hz; preserved 1375.2 Hz; legacy preset fields default to off/0 |
 | Dynamic EQ | 300 Hz threshold reduction PASS; +6 dB static gain PASS; finite PASS |
 | True Peak | 8× reference: −1.00 dBTP ceiling; steady −1.91 dB, 11025 Hz −1.07 dB, 12000 Hz −1.30 dB; latency 21 samples |
-| A/B match | +12 dB slot boost > 1.2×; bounded ≤ 4.0×; return to unity < 0.05 |
+| A/B match | +12 dB slot boost > 1.2×; bounded ≤ 4.0×; return to unity < 0.05; LUFS-S based |
+| LUFS-S | 1 kHz reference measured −24.77 LUFS; finite |
 | Quality | preset load does not change Track/Mix; latency remains stable |
 | Automation | rapid sweep finite, max sample step 0.138 |
 | Local vocal | optional `--vocal` rendered all 96 presets to 48 kHz WAV |
@@ -113,10 +114,10 @@ denoiser (Mix), dynamics, color, delay and reverb:
 
 | Quality | Block | Avg callback | p99 | Avg block budget | p99 budget |
 |---|---:|---:|---:|---:|---:|
-| Track | 128 | 0.059 ms | 0.093 ms | 2.19 % | 3.50 % |
-| Track | 256 | 0.117 ms | 0.150 ms | 2.19 % | 2.82 % |
-| Mix | 128 | 0.072 ms | 0.219 ms | 2.70 % | 8.22 % |
-| Mix | 256 | 0.143 ms | 0.275 ms | 2.69 % | 5.16 % |
+| Track | 128 | 0.060 ms | 0.093 ms | 2.24 % | 3.49 % |
+| Track | 256 | 0.119 ms | 0.161 ms | 2.24 % | 3.01 % |
+| Mix | 128 | 0.073 ms | 0.221 ms | 2.72 % | 8.28 % |
+| Mix | 256 | 0.144 ms | 0.279 ms | 2.70 % | 5.24 % |
 
 No callback miss measured. Latency values above are the reported plugin latency.
 
@@ -248,7 +249,7 @@ No MegaTune project files, presets or sessions were modified.
 `scripts/package.sh` stages:
 
 ```
-dist/ademusic-vocal-rack-2.1.0-macOS-arm64/
+dist/ademusic-vocal-rack-2.2.0-macOS-arm64/
   VST3/ademusic Vocal Rack.vst3
   Components/ademusic Vocal Rack.component
   presets/ademusic-vocal-rack-factory.json
@@ -256,7 +257,7 @@ dist/ademusic-vocal-rack-2.1.0-macOS-arm64/
   docs/MANUAL_CHECKLIST.md
   docs/PRESET_FORMAT.md
   docs/PRESET_RESEARCH.md
-  docs/RELEASE_NOTES_v2.1.0.md
+  docs/RELEASE_NOTES_v2.2.0.md
   docs/UI_REDESIGN.md
   docs/AUDIT_2.0.md
   docs/PLAN_2.0.md
@@ -270,7 +271,7 @@ dist/ademusic-vocal-rack-2.1.0-macOS-arm64/
 
 The ZIP is extracted and compared recursively; bundle contents and signatures
 are verified after extraction. The SHA-256 of the final ZIP is written to
-`dist/ademusic-vocal-rack-2.1.0-macOS-arm64.zip.sha256`.
+`dist/ademusic-vocal-rack-2.2.0-macOS-arm64.zip.sha256`.
 
 ## 10. Final pass/fail/blocked matrix
 
@@ -278,7 +279,7 @@ are verified after extraction. The SHA-256 of the final ZIP is written to
 |---|---|---|
 | Build both formats arm64 | **PASSED** | Bundles + `lipo`/`file` |
 | Bundle metadata and AU/VST3 IDs | **PASSED** | `plutil`, `moduleinfo.json` |
-| Headless DSP/OO tests | **PASSED** | 467 checks |
+| Headless DSP/OO tests | **PASSED** | 469 checks |
 | Latency and alignment | **PASSED** | impulse ≤15 ms Track |
 | CPU benchmark | **PASSED** | 2.1–2.6 % average |
 | pluginval VST3 strictness 7 | **PASSED** | log |
@@ -305,4 +306,4 @@ PLUGINVAL_BIN=/path/to/pluginval ./scripts/validate.sh
 ./scripts/package.sh
 ```
 
-The tarball hash is written to `dist/ademusic-vocal-rack-2.1.0-macOS-arm64.zip.sha256`.
+The tarball hash is written to `dist/ademusic-vocal-rack-2.2.0-macOS-arm64.zip.sha256`.

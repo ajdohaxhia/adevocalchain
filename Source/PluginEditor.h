@@ -173,6 +173,7 @@ private:
     juce::Label latencyLabel;
     juce::Label sampleRateLabel;
     juce::Label ceilingLabel;
+    juce::Label meterSummaryLabel;
     juce::TextButton previousButton { "<" };
     juce::TextButton nextButton { ">" };
     juce::TextButton browseButton { "BROWSE" };

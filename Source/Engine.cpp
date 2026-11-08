@@ -68,6 +68,13 @@ void Engine::prepare (double newSampleRate, int maximumBlockSize, int inputChann
     {
         truePeakLimiter.prepare (sampleRate, maximumBlock, activeChannels);
         truePeakLatency = truePeakLimiter.getLatencySamples();
+
+        truePeakMeter = std::make_unique<juce::dsp::Oversampling<float>> (
+            (size_t) activeChannels, 2,
+            juce::dsp::Oversampling<float>::filterHalfBandPolyphaseIIR, true, false);
+        truePeakMeter->initProcessing ((size_t) maximumBlock);
+        truePeakMeterBuffer.setSize (activeChannels, maximumBlock, false, true, false);
+        loudnessMeter.prepare (sampleRate);
     }
 
     for (auto& line : dryRaw)
@@ -81,6 +88,8 @@ void Engine::prepare (double newSampleRate, int maximumBlockSize, int inputChann
 
     truePeakLimiter.reset();
 
+    loudnessMeter.prepare (sampleRate);
+    truePeakMeterBuffer.setSize (2, maximumBlock, false, true, false);
     workBuffer.setSize (2, maximumBlock, false, true, false);
     denoiseBuffer.setSize (2, maximumBlock, false, true, false);
     shifterWet.setSize (2, maximumBlock, false, true, false);
@@ -375,6 +384,7 @@ void Engine::process (juce::AudioBuffer<float>& buffer,
 
     meterOutputSum = 0.0;
     meterOutputPeak = 0.0f;
+    meterTruePeak = 0.0f;
     meterOutputSamples = 0;
 
     double inputSum = 0.0;
@@ -434,6 +444,8 @@ void Engine::process (juce::AudioBuffer<float>& buffer,
     const double outputRms = std::sqrt (meterOutputSum / (double) juce::jmax ((int64_t) 1, meterOutputSamples));
     outputRmsDb.store (gainToDb ((float) outputRms), std::memory_order_relaxed);
     outputPeakDb.store (gainToDb (meterOutputPeak), std::memory_order_relaxed);
+    outputTruePeakDb.store (gainToDb (meterTruePeak), std::memory_order_relaxed);
+    outputLufsDb.store (loudnessMeter.getLufs(), std::memory_order_relaxed);
 }
 
 void Engine::processChunk (int numSamples, const RackParams& params, const TransportInfo& transport)
@@ -552,6 +564,29 @@ void Engine::processChunk (int numSamples, const RackParams& params, const Trans
 
     if (quality == QualityMode::mix && params.limTruePeak)
         truePeakLimiter.process (workBuffer, n, params);
+
+    loudnessMeter.process (workBuffer, n);
+
+    if (quality == QualityMode::mix && params.limTruePeak && truePeakMeter != nullptr)
+    {
+        for (int ch = 0; ch < 2; ++ch)
+            truePeakMeterBuffer.copyFrom (ch, 0, workBuffer, ch, 0, n);
+
+        juce::dsp::AudioBlock<float> meterBlock (truePeakMeterBuffer);
+        auto sub = meterBlock.getSubBlock (0, (size_t) n);
+        auto up = truePeakMeter->processSamplesUp (sub);
+
+        for (size_t ch = 0; ch < up.getNumChannels(); ++ch)
+            for (size_t i = 0; i < up.getNumSamples(); ++i)
+                meterTruePeak = juce::jmax (meterTruePeak,
+                                            std::abs (up.getChannelPointer (ch)[i]));
+
+        truePeakMeter->processSamplesDown (sub);
+    }
+    else
+    {
+        meterTruePeak = 0.0f;
+    }
 
     compGrDb.store (compressor.getGainReductionDb(), std::memory_order_relaxed);
     deEsserGrDb.store (deEsser.getReductionDb(), std::memory_order_relaxed);

@@ -1049,6 +1049,31 @@ static double measuredTruePeak (const juce::AudioBuffer<float>& buffer, int n)
     return peak;
 }
 
+void testLoudnessMeter()
+{
+    constexpr double sr = 48000.0;
+    constexpr int block = 512;
+    vr::LoudnessMeter meter;
+    meter.prepare (sr);
+    juce::AudioBuffer<float> buffer (2, block);
+
+    for (int blockIndex = 0; blockIndex < 300; ++blockIndex)
+    {
+        for (int ch = 0; ch < 2; ++ch)
+            for (int i = 0; i < block; ++i)
+                buffer.setSample (ch, i, 0.1f * (float) std::sin (
+                    juce::MathConstants<double>::twoPi * 1000.0
+                    * (double) (blockIndex * block + i) / sr));
+
+        meter.process (buffer, block);
+    }
+
+    const float lufs = meter.getLufs();
+    std::cout << "LUFS_1K value=" << lufs << std::endl;
+    check (std::isfinite (lufs), "LUFS-S meter is finite");
+    check (lufs > -30.0f && lufs < -18.0f, "1 kHz LUFS-S is in the expected range");
+}
+
 void testTruePeakLimiter()
 {
     constexpr double sr = 48000.0;
@@ -2286,6 +2311,7 @@ int main (int argc, char** argv)
     testCleanSignalPath();
     testDynamicEq();
     testTruePeakLimiter();
+    testLoudnessMeter();
     testFormantPreservation();
     testLoudnessMatchedAB();
     testNoiseAndUnity();

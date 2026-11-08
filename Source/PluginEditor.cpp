@@ -167,6 +167,12 @@ void VocalRackEditor::configureTopBar()
     ceilingLabel.setJustificationType (juce::Justification::centredLeft);
     addAndMakeVisible (ceilingLabel);
 
+    meterSummaryLabel.setFont (VocalRackLookAndFeel::font (10.0f));
+    meterSummaryLabel.setColour (juce::Label::textColourId, VocalRackLookAndFeel::dimText());
+    meterSummaryLabel.setJustificationType (juce::Justification::centredLeft);
+    meterSummaryLabel.setTooltip ("Short-term K-weighted loudness and 4x true-peak meter from the output signal.");
+    addAndMakeVisible (meterSummaryLabel);
+
     spectralLabel.setFont (VocalRackLookAndFeel::font (8.5f, true));
     spectralLabel.setColour (juce::Label::textColourId, VocalRackLookAndFeel::danger());
     spectralLabel.setJustificationType (juce::Justification::centredLeft);
@@ -641,6 +647,14 @@ void VocalRackEditor::timerCallback()
         stateDirty = false;
     }
 
+    const auto lufs = processor.getEngine().getOutputLufs();
+    const auto truePeak = processor.getEngine().getOutputTruePeakDb();
+    meterSummaryLabel.setText ("LUFS-S " + juce::String (lufs, 1)
+                                   + "   TP " + (truePeak < -100.0f
+                                                     ? juce::String ("--")
+                                                     : juce::String (truePeak, 1) + " dBTP"),
+                               juce::dontSendNotification);
+
     if (noticeExpiryMs > 0.0
         && juce::Time::getMillisecondCounterHiRes() > noticeExpiryMs)
     {
@@ -820,7 +834,9 @@ void VocalRackEditor::resized()
     footer.removeFromLeft (12);
     latencyLabel.setBounds (footer.removeFromLeft (250));
     footer.removeFromLeft (12);
-    ceilingLabel.setBounds (footer.removeFromLeft (190));
+    ceilingLabel.setBounds (footer.removeFromLeft (182));
+    footer.removeFromLeft (12);
+    meterSummaryLabel.setBounds (footer.removeFromLeft (196));
     footer.removeFromLeft (12);
     noticeLabel.setBounds (footer);
     if (getWidth() >= 1050)

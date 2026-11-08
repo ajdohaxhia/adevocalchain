@@ -77,6 +77,11 @@ public:
     void triggerStateFade() noexcept { stateFadeRequested.store (true, std::memory_order_relaxed); }
 
     float getInputRmsDb() const noexcept { return inputRmsDb.load (std::memory_order_relaxed); }
+    float getInputPeakDb() const noexcept { return inputPeakDb.load (std::memory_order_relaxed); }
+    float getInputPeakLeftDb() const noexcept { return inputPeakLeftDb.load (std::memory_order_relaxed); }
+    float getInputPeakRightDb() const noexcept { return inputPeakRightDb.load (std::memory_order_relaxed); }
+    float getOutputPeakLeftDb() const noexcept { return outputPeakLeftDb.load (std::memory_order_relaxed); }
+    float getOutputPeakRightDb() const noexcept { return outputPeakRightDb.load (std::memory_order_relaxed); }
     float getOutputRmsDb() const noexcept { return outputRmsDb.load (std::memory_order_relaxed); }
     float getOutputPeakDb() const noexcept { return outputPeakDb.load (std::memory_order_relaxed); }
     float getOutputTruePeakDb() const noexcept { return outputTruePeakDb.load (std::memory_order_relaxed); }
@@ -171,6 +176,11 @@ private:
     float masterFadeStep = 1.0f;
 
     std::atomic<float> inputRmsDb { -120.0f };
+    std::atomic<float> inputPeakDb { -120.0f };
+    std::atomic<float> inputPeakLeftDb { -120.0f };
+    std::atomic<float> inputPeakRightDb { -120.0f };
+    std::atomic<float> outputPeakLeftDb { -120.0f };
+    std::atomic<float> outputPeakRightDb { -120.0f };
     std::atomic<float> outputRmsDb { -120.0f };
     std::atomic<float> outputPeakDb { -120.0f };
     std::atomic<float> outputTruePeakDb { -120.0f };
@@ -191,6 +201,11 @@ private:
 
     double meterOutputSum = 0.0;
     float meterOutputPeak = 0.0f;
+    float meterInputPeak = 0.0f;
+    float meterInputPeakL = 0.0f;
+    float meterInputPeakR = 0.0f;
+    float meterOutputPeakL = 0.0f;
+    float meterOutputPeakR = 0.0f;
     float meterTruePeak = 0.0f;
     juce::AudioBuffer<float> truePeakMeterBuffer;
     int64_t meterOutputSamples = 0;

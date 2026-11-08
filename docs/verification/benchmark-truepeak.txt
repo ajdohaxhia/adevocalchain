@@ -1,0 +1,16 @@
+BENCH_TP sr=44100 block=64 latency_ms=84.512 avg_ms=0.0316 p99_ms=0.0468 avg_budget_pct=2.18 p99_budget_pct=3.22
+BENCH_TP sr=44100 block=128 latency_ms=84.512 avg_ms=0.0626 p99_ms=0.1101 avg_budget_pct=2.16 p99_budget_pct=3.79
+BENCH_TP sr=44100 block=256 latency_ms=84.512 avg_ms=0.1477 p99_ms=0.3468 avg_budget_pct=2.54 p99_budget_pct=5.97
+BENCH_TP sr=44100 block=512 latency_ms=84.512 avg_ms=0.2518 p99_ms=0.3315 avg_budget_pct=2.17 p99_budget_pct=2.86
+BENCH_TP sr=48000 block=64 latency_ms=77.854 avg_ms=0.0305 p99_ms=0.0487 avg_budget_pct=2.29 p99_budget_pct=3.65
+BENCH_TP sr=48000 block=128 latency_ms=77.854 avg_ms=0.0604 p99_ms=0.0828 avg_budget_pct=2.27 p99_budget_pct=3.10
+BENCH_TP sr=48000 block=256 latency_ms=77.854 avg_ms=0.1188 p99_ms=0.1624 avg_budget_pct=2.23 p99_budget_pct=3.05
+BENCH_TP sr=48000 block=512 latency_ms=77.854 avg_ms=0.2366 p99_ms=0.3418 avg_budget_pct=2.22 p99_budget_pct=3.20
+BENCH_TP sr=88200 block=64 latency_ms=84.218 avg_ms=0.0308 p99_ms=0.0596 avg_budget_pct=4.24 p99_budget_pct=8.22
+BENCH_TP sr=88200 block=128 latency_ms=84.218 avg_ms=0.0610 p99_ms=0.0970 avg_budget_pct=4.21 p99_budget_pct=6.69
+BENCH_TP sr=88200 block=256 latency_ms=84.218 avg_ms=0.1205 p99_ms=0.1810 avg_budget_pct=4.15 p99_budget_pct=6.24
+BENCH_TP sr=88200 block=512 latency_ms=84.218 avg_ms=0.2391 p99_ms=0.3235 avg_budget_pct=4.12 p99_budget_pct=5.57
+BENCH_TP sr=96000 block=64 latency_ms=77.594 avg_ms=0.0305 p99_ms=0.0564 avg_budget_pct=4.58 p99_budget_pct=8.46
+BENCH_TP sr=96000 block=128 latency_ms=77.594 avg_ms=0.0608 p99_ms=0.0892 avg_budget_pct=4.56 p99_budget_pct=6.69
+BENCH_TP sr=96000 block=256 latency_ms=77.594 avg_ms=0.1205 p99_ms=0.1812 avg_budget_pct=4.52 p99_budget_pct=6.80
+BENCH_TP sr=96000 block=512 latency_ms=77.594 avg_ms=0.2399 p99_ms=0.3309 avg_budget_pct=4.50 p99_budget_pct=6.20

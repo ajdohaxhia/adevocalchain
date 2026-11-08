@@ -513,8 +513,12 @@ void MeterPanel::timerCallback()
         value += coefficient * (target - value);
     };
 
-    follow (inputDb, engine.getInputRmsDb(), 0.55f, 0.18f);
-    follow (outputDb, engine.getOutputPeakDb(), 0.7f, 0.12f);
+    follow (inputDb, engine.getInputPeakDb(), 0.8f, 0.18f);
+    follow (outputDb, engine.getOutputPeakDb(), 0.8f, 0.12f);
+    follow (inputPeakL, engine.getInputPeakLeftDb(), 0.8f, 0.18f);
+    follow (inputPeakR, engine.getInputPeakRightDb(), 0.8f, 0.18f);
+    follow (outputPeakL, engine.getOutputPeakLeftDb(), 0.8f, 0.12f);
+    follow (outputPeakR, engine.getOutputPeakRightDb(), 0.8f, 0.12f);
     follow (compGr, engine.getCompressorGainReductionDb(), 0.7f, 0.2f);
     follow (limiterGr, engine.getLimiterGainReductionDb(), 0.8f, 0.2f);
     follow (dynamicEqGr, engine.getDynamicEqGainReductionDb(), 0.7f, 0.2f);
@@ -546,7 +550,8 @@ void MeterPanel::paint (juce::Graphics& g)
     g.drawText ("LEVELS", area.removeFromTop (16), juce::Justification::centredLeft);
 
     auto drawMeter = [&g] (juce::Rectangle<int> row, const juce::String& label, float db,
-                           float peakDb, juce::Colour colour, bool hold)
+                           float peakDb, juce::Colour colour, bool hold,
+                           float leftDb, float rightDb)
     {
         auto labelArea = row.removeFromLeft (34);
         auto valueArea = row.removeFromRight (52);
@@ -559,10 +564,15 @@ void MeterPanel::paint (juce::Graphics& g)
         g.setColour (juce::Colour (0xff2b302b));
         g.fillRoundedRectangle (bar.toFloat(), 2.0f);
 
-        const float position = meterPosition (db);
-        auto fill = bar.toFloat().withWidth (bar.getWidth() * position);
+        const float leftPosition = meterPosition (leftDb);
+        const float rightPosition = meterPosition (rightDb);
+        const float half = bar.getHeight() * 0.5f;
         g.setColour (colour);
-        g.fillRoundedRectangle (fill, 2.0f);
+        g.fillRoundedRectangle (bar.toFloat().withHeight (half)
+                                    .withWidth (bar.getWidth() * leftPosition), 1.5f);
+        g.setColour (colour.withAlpha (0.62f));
+        g.fillRoundedRectangle (bar.toFloat().withTrimmedTop (half)
+                                    .withWidth (bar.getWidth() * rightPosition), 1.5f);
 
         if (hold && peakDb > kMinDb)
         {
@@ -579,9 +589,11 @@ void MeterPanel::paint (juce::Graphics& g)
     };
 
     drawMeter (area.removeFromTop (24), "IN", inputDb, -60.0f,
-               VocalRackLookAndFeel::accent().withAlpha (0.68f), false);
+               VocalRackLookAndFeel::accent().withAlpha (0.68f), false,
+               inputPeakL, inputPeakR);
     drawMeter (area.removeFromTop (24), "OUT", outputDb, peakHoldDb,
-               VocalRackLookAndFeel::accent(), true);
+               VocalRackLookAndFeel::accent(), true,
+               outputPeakL, outputPeakR);
 
     area.removeFromTop (4);
 

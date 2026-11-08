@@ -13,15 +13,15 @@ and versioned full-state recall.
 
 ## Download the latest release
 
-**[ademusic Vocal Rack 2.2.0 (VST3 + AU) - dynamic EQ / True Peak / LUFS metering](https://github.com/ajdohaxhia/adevocalchain/releases/tag/v2.2.0)**
+**[ademusic Vocal Rack 2.3.0 (VST3 + AU) - full metering / True Peak / LUFS-S](https://github.com/ajdohaxhia/adevocalchain/releases/tag/v2.3.0)**
 
 | Asset | Contents |
 |---|---|
-| [Combined ZIP](https://github.com/ajdohaxhia/adevocalchain/releases/download/v2.2.0/ademusic-vocal-rack-2.2.0-macOS-arm64.zip) | VST3 + AU + presets + install docs + verification logs |
-| [VST3 ZIP](https://github.com/ajdohaxhia/adevocalchain/releases/download/v2.2.0/ademusic-vocal-rack-2.2.0-VST3-macOS-arm64.zip) | `ademusic Vocal Rack.vst3` |
-| [AU ZIP](https://github.com/ajdohaxhia/adevocalchain/releases/download/v2.2.0/ademusic-vocal-rack-2.2.0-AU-macOS-arm64.zip) | `ademusic Vocal Rack.component` |
-| [Factory presets](https://github.com/ajdohaxhia/adevocalchain/releases/download/v2.2.0/ademusic-vocal-rack-2.2.0-factory-presets.json) | Versioned JSON preset bank |
-| [SHA-256 sums](https://github.com/ajdohaxhia/adevocalchain/releases/download/v2.2.0/SHA256SUMS.txt) | Asset checksums |
+| [Combined ZIP](https://github.com/ajdohaxhia/adevocalchain/releases/download/v2.3.0/ademusic-vocal-rack-2.3.0-macOS-arm64.zip) | VST3 + AU + presets + install docs + verification logs |
+| [VST3 ZIP](https://github.com/ajdohaxhia/adevocalchain/releases/download/v2.3.0/ademusic-vocal-rack-2.3.0-VST3-macOS-arm64.zip) | `ademusic Vocal Rack.vst3` |
+| [AU ZIP](https://github.com/ajdohaxhia/adevocalchain/releases/download/v2.3.0/ademusic-vocal-rack-2.3.0-AU-macOS-arm64.zip) | `ademusic Vocal Rack.component` |
+| [Factory presets](https://github.com/ajdohaxhia/adevocalchain/releases/download/v2.3.0/ademusic-vocal-rack-2.3.0-factory-presets.json) | Versioned JSON preset bank |
+| [SHA-256 sums](https://github.com/ajdohaxhia/adevocalchain/releases/download/v2.3.0/SHA256SUMS.txt) | Asset checksums |
 
 macOS arm64. The bundles are ad-hoc signed, not notarized; see
 [INSTALL.txt](INSTALL.txt) for the user-level plug-in paths and the quarantine
@@ -108,9 +108,9 @@ remain environment-blocked here.
 
 ```bash
 mkdir -p ~/Library/Audio/Plug-Ins/VST3 ~/Library/Audio/Plug-Ins/Components
-cp -R "dist/ademusic-vocal-rack-2.2.0-macOS-arm64/VST3/ademusic Vocal Rack.vst3" \
+cp -R "dist/ademusic-vocal-rack-2.3.0-macOS-arm64/VST3/ademusic Vocal Rack.vst3" \
       ~/Library/Audio/Plug-Ins/VST3/
-cp -R "dist/ademusic-vocal-rack-2.2.0-macOS-arm64/Components/ademusic Vocal Rack.component" \
+cp -R "dist/ademusic-vocal-rack-2.3.0-macOS-arm64/Components/ademusic Vocal Rack.component" \
       ~/Library/Audio/Plug-Ins/Components/
 ```
 

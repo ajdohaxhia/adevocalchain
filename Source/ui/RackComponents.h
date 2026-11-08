@@ -116,6 +116,10 @@ private:
     float compGr = 0.0f;
     float limiterGr = 0.0f;
     float dynamicEqGr = 0.0f;
+    float inputPeakL = -60.0f;
+    float inputPeakR = -60.0f;
+    float outputPeakL = -60.0f;
+    float outputPeakR = -60.0f;
 };
 
 class PitchPanel final : public juce::Component,

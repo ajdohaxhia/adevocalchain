@@ -30,8 +30,8 @@ auval -v aufx Vrck Adms
 
 - `build-release/VocalRack_artefacts/Release/VST3/ademusic Vocal Rack.vst3`
 - `build-release/VocalRack_artefacts/Release/AU/ademusic Vocal Rack.component`
-- `dist/ademusic-vocal-rack-2.2.0-macOS-arm64.zip`
-  SHA-256 `dfd3c41a663a2e48d9db8d02b9678c0795cf1a06c4d1de2d222eaa0509c16d95`
+- `dist/ademusic-vocal-rack-2.3.0-macOS-arm64.zip`
+  SHA-256 `4bce8b4d66f86449d412027b4b2c5e862f536c5967300d57cd0ae69d1fdea4e8`
 - `presets/ademusic-vocal-rack-factory.json`
 - `docs/VERIFICATION.md`
 - `docs/verification/tests.log` (469 checks)

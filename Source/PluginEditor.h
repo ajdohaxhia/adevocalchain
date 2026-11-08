@@ -174,6 +174,8 @@ private:
     juce::Label sampleRateLabel;
     juce::Label ceilingLabel;
     juce::Label meterSummaryLabel;
+    float truePeakHoldDb = -120.0f;
+    int truePeakHoldTicks = 0;
     juce::TextButton previousButton { "<" };
     juce::TextButton nextButton { ">" };
     juce::TextButton browseButton { "BROWSE" };

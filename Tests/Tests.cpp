@@ -2245,6 +2245,61 @@ void testFormantPreservation()
            "formant preservation keeps the spectral envelope lower than free pitch shift");
 }
 
+void runTruePeakBenchmark()
+{
+    for (double sampleRate : { 44100.0, 48000.0, 88200.0, 96000.0 })
+    {
+        for (int blockSize : { 64, 128, 256, 512 })
+        {
+            vr::RackParams params;
+            params.limTruePeak = true;
+            params.limBypass = false;
+
+            vr::Engine engine;
+            engine.prepare (sampleRate, blockSize, 2, 2, vr::QualityMode::mix);
+            engine.setTruePeakEnabled (true);
+            const auto signal = voice (sampleRate, 3.0, 220.0, 0.2, 25.0);
+            juce::AudioBuffer<float> buffer (2, blockSize);
+            std::vector<double> times;
+            int position = 0;
+
+            while (position + blockSize <= (int) signal.size())
+            {
+                for (int i = 0; i < blockSize; ++i)
+                {
+                    buffer.setSample (0, i, signal[(size_t) (position + i)]);
+                    buffer.setSample (1, i, signal[(size_t) (position + i)]);
+                }
+
+                const auto began = std::chrono::steady_clock::now();
+                engine.process (buffer, params, {}, 2, 2);
+                const auto ended = std::chrono::steady_clock::now();
+
+                if (position > (int) (0.5 * sampleRate))
+                    times.push_back (std::chrono::duration<double> (ended - began).count());
+
+                position += blockSize;
+            }
+
+            std::sort (times.begin(), times.end());
+            const double average = std::accumulate (times.begin(), times.end(), 0.0)
+                                   / (double) std::max<size_t> (1, times.size());
+            const double p99 = times.empty() ? 0.0 : times[(size_t) (times.size() * 0.99)];
+            const double budget = (double) blockSize / sampleRate;
+            const double latencyMs = 1000.0 * (double) engine.getLatencySamples() / sampleRate;
+
+            std::cout << "BENCH_TP sr=" << juce::String (sampleRate, 0)
+                      << " block=" << blockSize
+                      << " latency_ms=" << juce::String (latencyMs, 3)
+                      << " avg_ms=" << juce::String (average * 1000.0, 4)
+                      << " p99_ms=" << juce::String (p99 * 1000.0, 4)
+                      << " avg_budget_pct=" << juce::String (average / budget * 100.0, 2)
+                      << " p99_budget_pct=" << juce::String (p99 / budget * 100.0, 2)
+                      << std::endl;
+        }
+    }
+}
+
 int main (int argc, char** argv)
 {
     juce::ScopedJuceInitialiser_GUI gui;
@@ -2280,6 +2335,12 @@ int main (int argc, char** argv)
     if (args.contains ("--bench"))
     {
         runBenchmark();
+        return failures == 0 ? 0 : 1;
+    }
+
+    if (args.contains ("--bench-tp"))
+    {
+        runTruePeakBenchmark();
         return failures == 0 ? 0 : 1;
     }
 

@@ -649,11 +649,38 @@ void VocalRackEditor::timerCallback()
 
     const auto lufs = processor.getEngine().getOutputLufs();
     const auto truePeak = processor.getEngine().getOutputTruePeakDb();
+    const auto rms = processor.getEngine().getOutputRmsDb();
+
+    if (truePeak < -100.0f)
+    {
+        truePeakHoldDb = -120.0f;
+        truePeakHoldTicks = 0;
+    }
+    else if (truePeak >= truePeakHoldDb)
+    {
+        truePeakHoldDb = truePeak;
+        truePeakHoldTicks = 40;
+    }
+    else if (--truePeakHoldTicks <= 0)
+    {
+        truePeakHoldDb = juce::jmax (truePeak, truePeakHoldDb - 0.5f);
+    }
+
+    const bool overload = truePeak > -0.05f;
+    const auto tpText = truePeak < -100.0f
+                            ? juce::String ("--")
+                            : juce::String (truePeak, 1)
+                                  + (truePeakHoldDb < -100.0f
+                                         ? juce::String()
+                                         : " H" + juce::String (truePeakHoldDb, 1));
     meterSummaryLabel.setText ("LUFS-S " + juce::String (lufs, 1)
-                                   + "   TP " + (truePeak < -100.0f
-                                                     ? juce::String ("--")
-                                                     : juce::String (truePeak, 1) + " dBTP"),
+                                   + "  TP " + tpText
+                                   + "  RMS " + juce::String (rms, 1)
+                                   + (overload ? "  OVER" : ""),
                                juce::dontSendNotification);
+    meterSummaryLabel.setColour (juce::Label::textColourId,
+                                  overload ? VocalRackLookAndFeel::danger()
+                                           : VocalRackLookAndFeel::dimText());
 
     if (noticeExpiryMs > 0.0
         && juce::Time::getMillisecondCounterHiRes() > noticeExpiryMs)
@@ -836,7 +863,7 @@ void VocalRackEditor::resized()
     footer.removeFromLeft (12);
     ceilingLabel.setBounds (footer.removeFromLeft (182));
     footer.removeFromLeft (12);
-    meterSummaryLabel.setBounds (footer.removeFromLeft (196));
+    meterSummaryLabel.setBounds (footer.removeFromLeft (248));
     footer.removeFromLeft (12);
     noticeLabel.setBounds (footer);
     if (getWidth() >= 1050)

@@ -384,6 +384,11 @@ void Engine::process (juce::AudioBuffer<float>& buffer,
 
     meterOutputSum = 0.0;
     meterOutputPeak = 0.0f;
+    meterOutputPeakL = 0.0f;
+    meterOutputPeakR = 0.0f;
+    meterInputPeak = 0.0f;
+    meterInputPeakL = 0.0f;
+    meterInputPeakR = 0.0f;
     meterTruePeak = 0.0f;
     meterOutputSamples = 0;
 
@@ -408,6 +413,9 @@ void Engine::process (juce::AudioBuffer<float>& buffer,
             inputSum += (double) left[i] * (double) left[i]
                         + (double) right[i] * (double) right[i];
             inputSamples += 2;
+            meterInputPeakL = juce::jmax (meterInputPeakL, std::abs (left[i]));
+            meterInputPeakR = juce::jmax (meterInputPeakR, std::abs (right[i]));
+            meterInputPeak = juce::jmax (meterInputPeak, juce::jmax (std::abs (left[i]), std::abs (right[i])));
         }
 
         processChunk (n, params, transport);
@@ -440,10 +448,15 @@ void Engine::process (juce::AudioBuffer<float>& buffer,
 
     const double inputRms = std::sqrt (inputSum / (double) juce::jmax ((int64_t) 1, inputSamples));
     inputRmsDb.store (gainToDb ((float) inputRms), std::memory_order_relaxed);
+    inputPeakDb.store (gainToDb (meterInputPeak), std::memory_order_relaxed);
+    inputPeakLeftDb.store (gainToDb (meterInputPeakL), std::memory_order_relaxed);
+    inputPeakRightDb.store (gainToDb (meterInputPeakR), std::memory_order_relaxed);
 
     const double outputRms = std::sqrt (meterOutputSum / (double) juce::jmax ((int64_t) 1, meterOutputSamples));
     outputRmsDb.store (gainToDb ((float) outputRms), std::memory_order_relaxed);
     outputPeakDb.store (gainToDb (meterOutputPeak), std::memory_order_relaxed);
+    outputPeakLeftDb.store (gainToDb (meterOutputPeakL), std::memory_order_relaxed);
+    outputPeakRightDb.store (gainToDb (meterOutputPeakR), std::memory_order_relaxed);
     outputTruePeakDb.store (gainToDb (meterTruePeak), std::memory_order_relaxed);
     outputLufsDb.store (loudnessMeter.getLufs(), std::memory_order_relaxed);
 }
@@ -603,6 +616,11 @@ void Engine::processChunk (int numSamples, const RackParams& params, const Trans
             const float value = workBuffer.getReadPointer (ch)[i];
             const float absolute = std::abs (value);
             meterOutputPeak = juce::jmax (meterOutputPeak, absolute);
+
+            if (ch == 0)
+                meterOutputPeakL = juce::jmax (meterOutputPeakL, absolute);
+            else
+                meterOutputPeakR = juce::jmax (meterOutputPeakR, absolute);
             meterOutputSum += (double) value * (double) value;
             ++meterOutputSamples;
         }

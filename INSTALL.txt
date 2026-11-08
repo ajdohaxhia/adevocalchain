@@ -1,4 +1,4 @@
-ademusic Vocal Rack 2.2.0 — macOS arm64
+ademusic Vocal Rack 2.3.0 — macOS arm64
 ======================================
 
 Contents

@@ -63,6 +63,9 @@ public:
     void switchAB (int slot);
     void copyAB (int from, int to);
     int getActiveAB() const noexcept { return activeAB; }
+    void setLoudnessMatch (bool shouldMatch) noexcept;
+    bool isLoudnessMatch() const noexcept { return loudnessMatch.load (std::memory_order_relaxed); }
+    float getComparisonGain() const noexcept { return comparisonGainDbg.load (std::memory_order_relaxed); }
     void setKeepSongKey (bool shouldKeep) noexcept { keepSongKey = shouldKeep; notifyStateChanged(); }
     bool getKeepSongKey() const noexcept { return keepSongKey; }
     bool isEdited() const noexcept { return edited; }
@@ -113,6 +116,14 @@ private:
     juce::ValueTree abStates[2];
     bool abValid[2] { false, false };
     int activeAB = 0;
+
+    std::atomic<int> activeABAtomic { 0 };
+    std::atomic<bool> loudnessMatch { false };
+    std::atomic<float> comparisonTargetGain { 1.0f };
+    std::atomic<float> comparisonGainDbg { 1.0f };
+    std::atomic<float> abMeasuredRmsDb[2] { { -60.0f }, { -60.0f } };
+    std::atomic<float> currentOutputRmsDb { -60.0f };
+    float comparisonGain = 1.0f;
 
     JUCE_DECLARE_NON_COPYABLE_WITH_LEAK_DETECTOR (VocalRackAudioProcessor)
 };

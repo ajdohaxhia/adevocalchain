@@ -109,6 +109,47 @@ void VocalRackAudioProcessor::processBlock (juce::AudioBuffer<float>& buffer,
                     juce::jmax (1, getTotalNumInputChannels()),
                     juce::jmax (1, getTotalNumOutputChannels()));
 
+    // Measure the processed signal before comparison gain. This keeps the
+    // loudness detector independent from the gain it controls.
+    const int channels = juce::jmax (1, buffer.getNumChannels());
+    const int samples = buffer.getNumSamples();
+    double sum = 0.0;
+
+    for (int ch = 0; ch < channels; ++ch)
+        for (int i = 0; i < samples; ++i)
+        {
+            const double sample = buffer.getReadPointer (ch)[i];
+            sum += sample * sample;
+        }
+
+    const float rmsDb = sum > 1.0e-12
+                            ? (float) (10.0 * std::log10 (sum / (double) juce::jmax (1, samples * channels)))
+                            : -60.0f;
+    const int slot = juce::jlimit (0, 1, activeABAtomic.load (std::memory_order_relaxed));
+    auto& measured = abMeasuredRmsDb[slot];
+    const float stored = measured.load (std::memory_order_relaxed);
+    measured.store (stored < -59.0f ? rmsDb : stored + 0.06f * (rmsDb - stored),
+                    std::memory_order_relaxed);
+    currentOutputRmsDb.store (rmsDb, std::memory_order_relaxed);
+
+    const float targetGain = isLoudnessMatch()
+                                 ? comparisonTargetGain.load (std::memory_order_relaxed)
+                                 : 1.0f;
+
+    if (isLoudnessMatch() || std::abs (comparisonGain - 1.0f) > 0.0001f)
+    {
+        const float coefficient = 1.0f - std::exp (-1.0f / (0.05f * (float) currentSampleRate));
+
+        for (int i = 0; i < samples; ++i)
+        {
+            comparisonGain += coefficient * (targetGain - comparisonGain);
+
+            for (int ch = 0; ch < channels; ++ch)
+                buffer.getWritePointer (ch)[i] *= comparisonGain;
+        }
+    }
+
+    comparisonGainDbg.store (comparisonGain, std::memory_order_relaxed);
     processing.store (false);
 }
 
@@ -129,6 +170,7 @@ void VocalRackAudioProcessor::getStateInformation (juce::MemoryBlock& destData)
     state.setProperty ("edited", edited, nullptr);
     state.setProperty ("keepSongKey", keepSongKey, nullptr);
     state.setProperty ("abSlot", activeAB, nullptr);
+    state.setProperty ("loudnessMatch", isLoudnessMatch(), nullptr);
     state.setProperty ("abA", abValid[0] ? abStates[0].toXmlString() : juce::String(), nullptr);
     state.setProperty ("abB", abValid[1] ? abStates[1].toXmlString() : juce::String(), nullptr);
 
@@ -167,6 +209,8 @@ void VocalRackAudioProcessor::setStateInformation (const void* data, int sizeInB
     edited = (bool) state.getProperty ("edited", false);
     keepSongKey = (bool) state.getProperty ("keepSongKey", true);
     activeAB = juce::jlimit (0, 1, (int) state.getProperty ("abSlot", 0));
+    activeABAtomic.store (activeAB, std::memory_order_relaxed);
+    setLoudnessMatch ((bool) state.getProperty ("loudnessMatch", false));
 
     for (int slot = 0; slot < 2; ++slot)
     {
@@ -489,6 +533,9 @@ void VocalRackAudioProcessor::switchAB (int slot)
     if (slot < 0 || slot > 1 || slot == activeAB)
         return;
 
+    const float referenceRms = abMeasuredRmsDb[activeAB].load (std::memory_order_relaxed);
+    const float targetRms = abMeasuredRmsDb[slot].load (std::memory_order_relaxed);
+
     abStates[activeAB] = apvts.copyState();
     abStates[activeAB].setProperty ("edited", edited, nullptr);
     abValid[activeAB] = true;
@@ -508,7 +555,24 @@ void VocalRackAudioProcessor::switchAB (int slot)
     }
 
     activeAB = slot;
+    activeABAtomic.store (slot, std::memory_order_relaxed);
+
+    if (isLoudnessMatch() && referenceRms > -59.0f && targetRms > -59.0f)
+        comparisonTargetGain.store (juce::jlimit (0.25f, 4.0f,
+                                                 dbToGain (referenceRms - targetRms)),
+                                    std::memory_order_relaxed);
+    else
+        comparisonTargetGain.store (1.0f, std::memory_order_relaxed);
+
     notifyStateChanged();
+}
+
+void VocalRackAudioProcessor::setLoudnessMatch (bool shouldMatch) noexcept
+{
+    loudnessMatch.store (shouldMatch, std::memory_order_relaxed);
+
+    if (! shouldMatch)
+        comparisonTargetGain.store (1.0f, std::memory_order_relaxed);
 }
 
 void VocalRackAudioProcessor::copyAB (int from, int to)

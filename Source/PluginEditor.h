@@ -179,6 +179,7 @@ private:
     juce::TextButton abAButton { "A" };
     juce::TextButton abBButton { "B" };
     juce::TextButton copyABButton { "COPY" };
+    juce::TextButton matchABButton { "M" };
     juce::ToggleButton keepKeyButton { "Keep Song Key" };
     juce::ComboBox qualityBox;
     PowerButton globalBypass;

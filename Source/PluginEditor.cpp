@@ -174,7 +174,7 @@ void VocalRackEditor::configureTopBar()
     addAndMakeVisible (spectralLabel);
 
     for (auto* button : { &previousButton, &nextButton, &browseButton, &abAButton,
-                          &abBButton, &copyABButton })
+                          &abBButton, &copyABButton, &matchABButton })
     {
         addAndMakeVisible (*button);
         button->setWantsKeyboardFocus (true);
@@ -186,6 +186,8 @@ void VocalRackEditor::configureTopBar()
     abAButton.setTooltip ("Recall A/B slot A");
     abBButton.setTooltip ("Recall A/B slot B");
     copyABButton.setTooltip ("Copy the active A/B slot to the other slot");
+    matchABButton.setClickingTogglesState (true);
+    matchABButton.setTooltip ("Loudness Match: match A/B comparison level without changing stored state or output trim.");
     browseButton.setButtonText ("Browse");
 
     previousButton.onClick = [this] { loadRelativePreset (-1); };
@@ -197,6 +199,11 @@ void VocalRackEditor::configureTopBar()
     copyABButton.onClick = [this]
     {
         processor.copyAB (processor.getActiveAB(), 1 - processor.getActiveAB());
+        stateDirty = true;
+    };
+    matchABButton.onClick = [this]
+    {
+        processor.setLoudnessMatch (matchABButton.getToggleState());
         stateDirty = true;
     };
 
@@ -573,6 +580,7 @@ void VocalRackEditor::toggleBrowser()
     }
 
     browseButton.setToggleState (browser.isVisible(), juce::dontSendNotification);
+    matchABButton.setToggleState (processor.isLoudnessMatch(), juce::dontSendNotification);
     browseButton.setColour (juce::TextButton::buttonColourId,
                             browser.isVisible() ? VocalRackLookAndFeel::accentSoft()
                                                 : VocalRackLookAndFeel::panelLight());
@@ -616,6 +624,7 @@ void VocalRackEditor::timerCallback()
     if (browseButton.getToggleState() != browser.isVisible())
     {
         browseButton.setToggleState (browser.isVisible(), juce::dontSendNotification);
+    matchABButton.setToggleState (processor.isLoudnessMatch(), juce::dontSendNotification);
         browseButton.setColour (juce::TextButton::buttonColourId,
                                 browser.isVisible() ? VocalRackLookAndFeel::accent()
                                                     : VocalRackLookAndFeel::panelLight());
@@ -686,6 +695,7 @@ void VocalRackEditor::refreshFromProcessor()
     abBButton.setToggleState (processor.getActiveAB() == 1, juce::dontSendNotification);
     qualityBox.setSelectedId (track ? 1 : 2, juce::dontSendNotification);
     browseButton.setToggleState (browser.isVisible(), juce::dontSendNotification);
+    matchABButton.setToggleState (processor.isLoudnessMatch(), juce::dontSendNotification);
 
     if (formantToggle != nullptr)
     {
@@ -757,12 +767,14 @@ void VocalRackEditor::resized()
     const int copyX = globalX - 70;
     const int bX = copyX - 40;
     const int aX = bX - 40;
-    const int presetEnd = aX - 18;
+    const int matchX = aX - 40;
+    const int presetEnd = matchX - 18;
 
     globalBypass.setBounds (globalX, topY, 92, 36);
     copyABButton.setBounds (copyX, topY + 2, 62, 32);
     abBButton.setBounds (bX, topY + 2, 32, 32);
     abAButton.setBounds (aX, topY + 2, 32, 32);
+    matchABButton.setBounds (matchX, topY + 2, 32, 32);
 
     const int presetStart = headerX + 300;
     previousButton.setBounds (presetStart, topY, 30, 32);

@@ -18,6 +18,9 @@ Status: **implemented and tested, not released as 2.1.0**.
 - Live per-band gain-reduction markers and a live response curve derived from the
   actual static peaking + dynamic bandpass transfer functions.
 - Dynamic EQ gain reduction row added to the level meter.
+- Optional loudness-matched A/B: post-DSP, pre-comparison RMS measurement,
+  bounded ±12 dB comparison gain, 50 ms smoothing, and a header M toggle. The
+  comparison gain is not stored in A/B snapshots and does not touch output trim.
 
 ## Verification
 
@@ -30,8 +33,8 @@ Status: **implemented and tested, not released as 2.1.0**.
 
 ## Not delivered / not ready for 2.1.0
 
-- True Peak limiting remains absent.
-- Loudness-matched A/B.
+- True Peak limiting and independent true-peak verification remain absent.
+- Independent LUFS-S display and long-term loudness reference.
 - Dynamic EQ/LUFS/true-peak metering UI.
 - Real-voice and DAW listening.
 

@@ -9,18 +9,18 @@ VALIDATING AUDIO UNIT: 'aufx' - 'Vrck' - 'Adms'
 --------------------------------------------------
 Manufacturer String: ademusic
 AudioUnit Name: ademusic Vocal Rack
-Component Version: 1.4.0 (0x10400)
+Component Version: 2.0.0 (0x20000)
 
 * * PASS
 --------------------------------------------------
 TESTING OPEN TIMES:
 COLD:
-Time to open AudioUnit:         390.944 ms
+Time to open AudioUnit:         348.373 ms
 WARM:
-Time to open AudioUnit:         10.044  ms
+Time to open AudioUnit:         7.756  ms
 This AudioUnit is a version 2 implementation.
 FIRST TIME:
-Time for initialization:        0.218 ms
+Time for initialization:        0.115 ms
 
 * * PASS
 --------------------------------------------------
@@ -59,7 +59,7 @@ VERIFYING SPECIAL PROPERTIES:
 
 VERIFYING CUSTOM UI
 Cocoa Views Available: 1
-  JUCE_AUCocoaViewClass_9f56b22fa4333d53
+  JUCE_AUCocoaViewClass_6b1c135cfd327f97
     PASS
 
 HAS FACTORY PRESETS
@@ -75,7 +75,7 @@ TESTING HOST CALLBACKS
 --------------------------------------------------
 PUBLISHED PARAMETER INFO:
 
-# # # 82 Global Scope Parameters:
+# # # 84 Global Scope Parameters:
 Parameter ID:1488291
 Name: Cut 1 Q
 Parameter Type: Generic
@@ -229,6 +229,13 @@ Values: Minimum = -60.0000000, Default = -11.9999990, Maximum = 0.0000000
 Flags: Values Have Strings, High Resolution, Can Ramp, Readable, Writable 
   -parameter PASS
 
+Parameter ID:349426573
+Name: Formant Shift
+Parameter Type: Generic
+Values: Minimum = -12.0000000, Default = 0.0000000, Maximum = 12.0000000
+Flags: Values Have Strings, High Resolution, Can Ramp, Readable, Writable 
+  -parameter PASS
+
 Parameter ID:418169279
 Name: Input
 Parameter Type: Generic
@@ -290,6 +297,13 @@ Name: High Cut
 Parameter Type: Generic
 Values: Minimum = 1000.0000000, Default = 8999.9990234, Maximum = 20000.0000000
 Flags: Values Have Strings, High Resolution, Can Ramp, Readable, Writable 
+  -parameter PASS
+
+Parameter ID:790206965
+Name: Formant
+Parameter Type: Boolean
+Values: Minimum = Off, Default = Off, Maximum = On
+Flags: Values Have Strings, High Resolution, Readable, Writable 
   -parameter PASS
 
 Parameter ID:818824131

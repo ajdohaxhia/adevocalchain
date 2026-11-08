@@ -1,6 +1,6 @@
 ademusic Vocal Rack validation suite
 ===================================
-PASS  parameter schema has 82 parameters
+PASS  parameter schema has 84 parameters
 PASS  default in range: global.input
 PASS  find spec: global.input
 PASS  default in range: global.output
@@ -45,6 +45,10 @@ PASS  default in range: pitch.mask
 PASS  find spec: pitch.mask
 PASS  default in range: pitch.range
 PASS  find spec: pitch.range
+PASS  default in range: pitch.formant
+PASS  find spec: pitch.formant
+PASS  default in range: pitch.formantShift
+PASS  find spec: pitch.formantShift
 PASS  default in range: ceq.bypass
 PASS  find spec: ceq.bypass
 PASS  default in range: ceq.hpf
@@ -266,6 +270,9 @@ PASS  zero-amount spectral cleanup is effectively transparent
 PASS  unity correction preserves level at 110 Hz
 PASS  unity correction preserves level at 220 Hz
 PASS  phase-locked A440 correction keeps level
+FORMANT offCentroid=1806.6 onCentroid=1375.2
+PASS  formant-preserving shifter produces measurable output
+PASS  formant preservation keeps the spectral envelope lower than free pitch shift
 PASS  Track all-stage bypass is unity-ish (ratio 1.000)
 PASS  Mix all-stage bypass is unity-ish (ratio 1.000)
 PASS  spectral cleanup reduces steady noise by > 6 dB (8.18 dB, voice -0.81 dB)
@@ -274,6 +281,8 @@ PASS  Track does not secretly apply spectral cleanup (0.00 dB)
 PASS  expander closes between phrases (19.86 dB)
 PASS  mono insert keeps a usable delay/reverb tail (0.00510)
 PASS  96 factory presets parsed
+PASS  pre-2.0 preset without formant fields still validates
+PASS  legacy preset receives safe formant defaults
 PASS  factory preset renders finite: Clean Start
 PASS  factory preset renders finite: Record Ready
 PASS  factory preset renders finite: Home Booth

@@ -51,7 +51,8 @@ Mix:   denoiser 1024 + shifter 2560 + saturation 4 + limiter 128 = 3716
   tie-break; 30-cent hysteresis; empty mask means no correction.
 - `PitchShifter`: adapted MIT phase vocoder, 512/1024 Track frames and
   2048/4096 Mix frames, 75 % overlap, window-sum normalisation, arbitrary
-  aligned delay. Ratio is smoothed in log2 space by the retune time constant,
+  aligned delay. 2.0 adds an optional Mix-only formant envelope correction and
+  formant shift; the unity-ratio and inactive paths bypass it. Ratio is smoothed in log2 space by the retune time constant,
   and unvoiced transitions release to unity rather than cutting the shifter.
 
 ## Noise path

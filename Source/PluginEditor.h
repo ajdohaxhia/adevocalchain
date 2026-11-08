@@ -138,7 +138,7 @@ private:
     void addQuickPower (const char* parameterId, const char* label);
     void addKnob (ControlGrid& grid, const char* parameterId, const char* subLabel = nullptr);
     void addPower (ControlGrid& grid, const char* parameterId, const char* label);
-    void addToggle (ControlGrid& grid, const char* parameterId, const char* label);
+    juce::ToggleButton* addToggle (ControlGrid& grid, const char* parameterId, const char* label);
     void addCombo (ControlGrid& grid, const char* parameterId, const char* label);
 
     VocalRackAudioProcessor& processor;
@@ -184,6 +184,7 @@ private:
     std::vector<std::unique_ptr<juce::AudioProcessorValueTreeState::ButtonAttachment>> toggleAttachments;
     std::vector<std::unique_ptr<juce::AudioProcessorValueTreeState::ComboBoxAttachment>> detailComboAttachments;
 
+    juce::ToggleButton* formantToggle = nullptr;
     juce::Label noticeLabel;
     juce::Label spectralLabel;
     juce::Label qualityHintLabel;

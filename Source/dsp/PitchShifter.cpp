@@ -34,6 +34,9 @@ void PitchShifter::buildFftState (int frameSize, int numChannels)
     state.magnitude.assign ((size_t) frameSize / 2 + 2, 0.0f);
     state.omega.assign ((size_t) frameSize / 2 + 2, 0.0f);
     state.phase.assign ((size_t) frameSize / 2 + 2, 0.0f);
+    state.logMagnitude.assign ((size_t) frameSize / 2 + 2, 0.0f);
+    state.envelope.assign ((size_t) frameSize / 2 + 2, 0.0f);
+    state.envelopePrefix.assign ((size_t) frameSize / 2 + 3, 0.0f);
     state.targetMagnitude.assign ((size_t) frameSize / 2 + 2, 0.0f);
     state.targetPhase.assign ((size_t) frameSize / 2 + 2, 0.0f);
     state.targetSource.assign ((size_t) frameSize / 2 + 2, -1);
@@ -224,7 +227,8 @@ void PitchShifter::processFrame (int centre, float ratio) noexcept
     // Unity is special: use a time-domain overlap-add of the windowed input.
     // The phase vocoder is excellent for real shifts but its analysis/synthesis
     // phase can still dull an in-tune note. Direct OLA is bit-transparent there.
-    if (std::abs (ratio - 1.0f) < 1.0e-4f)
+    if (std::abs (ratio - 1.0f) < 1.0e-4f
+        && ! (formantPreserve && std::abs (formantShiftSemitones) > 0.01f))
     {
         const int64_t outputStart = (int64_t) centre + (int64_t) delaySamples - (int64_t) halfSize;
 
@@ -318,6 +322,35 @@ void PitchShifter::processFrame (int centre, float ratio) noexcept
 
         state.previousPhaseValid[(size_t) channel] = 1;
 
+        if (formantPreserve)
+        {
+            // Smooth log-magnitude envelope (roughly 1/6 octave). This is the
+            // vocal-tract envelope estimate used to decouple formants from
+            // pitch. Prefix sums keep it O(bins) per frame.
+            state.envelopePrefix[0] = 0.0f;
+
+            for (int k = 0; k <= halfSize; ++k)
+            {
+                state.logMagnitude[(size_t) k] = std::log (state.magnitude[(size_t) k] + 1.0e-9f);
+                state.envelopePrefix[(size_t) (k + 1)] =
+                    state.envelopePrefix[(size_t) k] + state.logMagnitude[(size_t) k];
+            }
+
+            state.envelopePrefix[(size_t) (halfSize + 2)] =
+                state.envelopePrefix[(size_t) (halfSize + 1)];
+
+            for (int k = 0; k <= halfSize; ++k)
+            {
+                const int radius = juce::jmax (1, (int) std::lround ((double) k * 0.06));
+                const int low = juce::jmax (0, k - radius);
+                const int high = juce::jmin (halfSize, k + radius);
+                state.envelope[(size_t) k] =
+                    (state.envelopePrefix[(size_t) (high + 1)]
+                         - state.envelopePrefix[(size_t) low])
+                    / (float) (high - low + 1);
+            }
+        }
+
         std::fill (state.fftRe.begin(), state.fftRe.end(), 0.0f);
         std::fill (state.fftIm.begin(), state.fftIm.end(), 0.0f);
         std::fill (state.targetMagnitude.begin(), state.targetMagnitude.end(), 0.0f);
@@ -339,8 +372,27 @@ void PitchShifter::processFrame (int centre, float ratio) noexcept
             const int source1 = juce::jmin (halfSize, source0 + 1);
             const float fraction = (float) (sourcePosition - (double) source0);
 
-            const float magnitude = (1.0f - fraction) * state.magnitude[(size_t) source0]
-                                    + fraction * state.magnitude[(size_t) source1];
+            float magnitude = (1.0f - fraction) * state.magnitude[(size_t) source0]
+                              + fraction * state.magnitude[(size_t) source1];
+
+            if (formantPreserve)
+            {
+                const float formantRatio = std::exp2 (formantShiftSemitones / 12.0f);
+                const float targetEnvelopePosition = juce::jlimit (
+                    0.0f, (float) (halfSize - 1), (float) target / formantRatio);
+                const int targetEnvelope0 = (int) std::floor (targetEnvelopePosition);
+                const int targetEnvelope1 = juce::jmin (halfSize, targetEnvelope0 + 1);
+                const float targetEnvelopeFraction = targetEnvelopePosition - (float) targetEnvelope0;
+                const float envelopeAtTarget =
+                    (1.0f - targetEnvelopeFraction) * state.envelope[(size_t) targetEnvelope0]
+                    + targetEnvelopeFraction * state.envelope[(size_t) targetEnvelope1];
+                const float sourceEnvelope =
+                    (1.0f - fraction) * state.envelope[(size_t) source0]
+                    + fraction * state.envelope[(size_t) source1];
+                const float correction = juce::jlimit (0.25f, 4.0f,
+                                                       std::exp (envelopeAtTarget - sourceEnvelope));
+                magnitude *= correction;
+            }
 
             if (magnitude < 1.0e-5f)
             {

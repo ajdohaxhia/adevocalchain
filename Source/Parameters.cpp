@@ -39,6 +39,8 @@ const std::vector<ParamSpec>& specTable()
         { "pitch.scale",   "Scale",        "",    0.0f,   3.0f,   0.0f, 1.0f, PT::choice,   4, "Chromatic|Major|Minor|Custom", PG::pitch, "Scale used for target selection." },
         { "pitch.mask",    "Notes",        "",    0.0f, 4095.0f, 4095.0f, 1.0f, PT::intValue, 0, nullptr, PG::pitch, "12-bit mask of enabled pitch classes. Empty means no correction." },
         { "pitch.range",   "Range",        "",    0.0f,   2.0f,   1.0f, 1.0f, PT::choice,   3, "Low (65-350 Hz)|Full (65-1100 Hz)|High (150-1500 Hz)", PG::pitch, "Input range for pitch tracking." },
+        { "pitch.formant", "Formant",       "",    0.0f,   1.0f,   0.0f, 1.0f, PT::boolean,  0, nullptr, PG::pitch, "Preserve the vocal-tract formant envelope (Mix only)." },
+        { "pitch.formantShift","Formant Shift","st",-12.0f, 12.0f, 0.0f, 1.0f, PT::floating, 0, nullptr, PG::pitch, "Move the preserved formant envelope relative to the shifted pitch (Mix only)." },
 
         { "ceq.bypass",    "Cleanup EQ","",     0.0f,   1.0f,   0.0f, 1.0f, PT::boolean,  0, nullptr, PG::eq, "Bypass the high-pass and two corrective cuts." },
         { "ceq.hpf",       "High-pass",  "Hz",  20.0f, 500.0f,  80.0f, 0.5f, PT::floating, 0, nullptr, PG::eq, "Variable 12 dB/octave high-pass." },
@@ -225,6 +227,8 @@ ParamCache::ParamCache (juce::AudioProcessorValueTreeState& state)
     p.pitchScale = get ("pitch.scale");
     p.pitchMask = get ("pitch.mask");
     p.pitchRange = get ("pitch.range");
+    p.pitchFormant = get ("pitch.formant");
+    p.pitchFormantShift = get ("pitch.formantShift");
 
     p.ceqBypass = get ("ceq.bypass");
     p.ceqHpfFreq = get ("ceq.hpf");
@@ -326,6 +330,8 @@ void ParamCache::snapshot (RackParams& out) const noexcept
     out.pitchScale = i (p.pitchScale);
     out.pitchMask = i (p.pitchMask);
     out.pitchRange = i (p.pitchRange);
+    out.pitchFormantPreserve = b (p.pitchFormant);
+    out.pitchFormantShift = f (p.pitchFormantShift);
 
     out.ceqBypass = b (p.ceqBypass);
     out.ceqHpfFreq = f (p.ceqHpfFreq);

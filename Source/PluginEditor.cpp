@@ -313,16 +313,21 @@ void VocalRackEditor::addPower (ControlGrid& grid, const char* parameterId, cons
     grid.addHeaderControl (power);
 }
 
-void VocalRackEditor::addToggle (ControlGrid& grid, const char* parameterId, const char* label)
+juce::ToggleButton* VocalRackEditor::addToggle (ControlGrid& grid, const char* parameterId, const char* label)
 {
     auto* toggle = new juce::ToggleButton (label);
     toggle->setTitle (label);
     toggle->setWantsKeyboardFocus (true);
-    toggle->setTooltip (juce::String (label) + " for this module.");
+
+    if (const auto* spec = findParamSpec (parameterId))
+        toggle->setTooltip (juce::String (label) + " — " + spec->description);
+    else
+        toggle->setTooltip (juce::String (label));
     grid.addHeaderControl (toggle);
     toggleAttachments.push_back (
         std::make_unique<juce::AudioProcessorValueTreeState::ButtonAttachment> (
             processor.getAPVTS(), parameterId, *toggle));
+    return toggle;
 }
 
 void VocalRackEditor::addCombo (ControlGrid& grid, const char* parameterId, const char* label)
@@ -406,13 +411,15 @@ void VocalRackEditor::configureDetailTabs()
     addKnob (*cleanup, "dn.amount", "Reduction");
     addKnob (*cleanup, "dn.maxReduction", "Ceiling");
 
-    auto* pitch = makeGrid ("Pitch", "PITCH CORRECTION", 4);
+    auto* pitch = makeGrid ("Pitch", "PITCH CORRECTION", 5);
     addPower (*pitch, "pitch.bypass", "Enabled");
     addCombo (*pitch, "pitch.range", "Range");
+    formantToggle = addToggle (*pitch, "pitch.formant", "Formant Pres.");
     addKnob (*pitch, "pitch.amount", "Correction amount");
     addKnob (*pitch, "pitch.retune", "Retune time");
     addKnob (*pitch, "pitch.humanize", "Natural movement");
     addKnob (*pitch, "pitch.a4", "A4 reference");
+    addKnob (*pitch, "pitch.formantShift", "Formant shift");
 
     auto* cleanEq = makeGrid ("Clean EQ", "CLEAN EQ", 7);
     addPower (*cleanEq, "ceq.bypass", "Enabled");
@@ -665,6 +672,14 @@ void VocalRackEditor::refreshFromProcessor()
     abBButton.setToggleState (processor.getActiveAB() == 1, juce::dontSendNotification);
     qualityBox.setSelectedId (track ? 1 : 2, juce::dontSendNotification);
     browseButton.setToggleState (browser.isVisible(), juce::dontSendNotification);
+
+    if (formantToggle != nullptr)
+    {
+        formantToggle->setEnabled (! track);
+        formantToggle->setTooltip (track
+                                       ? "Formant preservation is available in Mix quality. Switch Quality to Mix to enable it."
+                                       : "Preserve the vocal-tract formant envelope while tuning.");
+    }
 
     const int scale = (int) std::lround (raw ("pitch.scale"));
     const int tonic = (int) std::lround (raw ("pitch.tonic"));

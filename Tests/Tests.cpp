@@ -2,6 +2,7 @@
 #include "PluginEditor.h"
 #include "PluginProcessor.h"
 #include "Presets.h"
+#include "presets/FactoryPresetsData.h"
 #include "dsp/Modules.h"
 
 #include <juce_audio_formats/juce_audio_formats.h>
@@ -306,7 +307,7 @@ RackParams bypassAllParams()
 void testParameterSchema()
 {
     const auto& specs = vr::getParamSpecs();
-    check (specs.size() == 82, "parameter schema has 82 parameters");
+    check (specs.size() == 84, "parameter schema has 84 parameters");
 
     std::set<juce::String> ids;
 
@@ -1203,6 +1204,33 @@ void testPresetsAndState()
         const auto& entries = processor.getPresets().getEntries();
         check (entries.size() == 96, "96 factory presets parsed");
 
+        // Backward compatibility: a v1 preset written before the 2.0 formant
+        // parameters must load with documented defaults, not be rejected.
+        auto legacyFactory = juce::JSON::parse (vr::kFactoryPresetJson);
+
+        if (auto* array = legacyFactory.getArray())
+        {
+            if (! array->isEmpty())
+            {
+                auto legacy = (*array)[0];
+
+                if (auto* object = legacy.getDynamicObject())
+                {
+                    object->removeProperty ("pitch.formant");
+                    object->removeProperty ("pitch.formantShift");
+                    vr::PresetEntry legacyEntry;
+                    juce::String legacyError;
+                    check (processor.getPresets().validatePreset (legacy, legacyEntry, legacyError),
+                           "pre-2.0 preset without formant fields still validates");
+                    auto* legacyParams = legacyEntry.parameters.getDynamicObject();
+                    check (legacyParams != nullptr
+                               && (double) legacyParams->getProperty ("pitch.formant") == 0.0
+                               && (double) legacyParams->getProperty ("pitch.formantShift") == 0.0,
+                           "legacy preset receives safe formant defaults");
+                }
+            }
+        }
+
         std::map<juce::String, int> banks;
 
         for (const auto& entry : entries)
@@ -1491,6 +1519,9 @@ void writeSnapshot (const juce::File& file)
     processor.prepareToPlay (48000.0, 512);
     const auto snapshotPreset = juce::SystemStats::getEnvironmentVariable ("VR_SNAPSHOT_PRESET", "factory.pop.neon-pop-lead");
     processor.requestPresetLoad (snapshotPreset, true);
+
+    if (juce::SystemStats::getEnvironmentVariable ("VR_SNAPSHOT_QUALITY", {}) == "mix")
+        processor.requestQuality (vr::QualityMode::mix);
 
     {
         juce::AudioBuffer<float> buffer (2, 512);
@@ -1891,6 +1922,96 @@ void printLatencyTable()
     }
 }
 
+struct FixedPitchProvider final : vr::PitchShifter::PitchProvider
+{
+    float ratio = 1.5f;
+    vr::PitchShifter::PitchInfo getPitchAt (double) override
+    {
+        return { ratio, true };
+    }
+};
+
+static double spectralCentroid (const std::vector<float>& samples, double sr,
+                                int start, int count)
+{
+    double weighted = 0.0;
+    double total = 0.0;
+
+    for (double hz = 100.0; hz <= 6000.0; hz += 100.0)
+    {
+        const double amplitude = probeAmplitudeAt (samples, sr, hz, start, count);
+        weighted += hz * amplitude;
+        total += amplitude;
+    }
+
+    return total > 1.0e-9 ? weighted / total : 0.0;
+}
+
+void testFormantPreservation()
+{
+    constexpr double sr = 48000.0;
+    const int length = (int) (1.5 * sr);
+    std::vector<float> input ((size_t) length, 0.0f);
+
+    for (int i = 0; i < length; ++i)
+    {
+        const double t = (double) i / sr;
+        double value = 0.0;
+
+        for (int harmonic = 1; harmonic <= 50; ++harmonic)
+        {
+            const double hz = 100.0 * harmonic;
+            const double envelope = std::exp (-0.5 * std::pow ((hz - 1200.0) / 500.0, 2.0));
+            value += envelope * std::sin (juce::MathConstants<double>::twoPi * hz * t);
+        }
+
+        input[(size_t) i] = (float) (0.06 * value);
+    }
+
+    auto render = [&] (bool preserve)
+    {
+        FixedPitchProvider provider;
+        vr::PitchShifter shifter;
+        shifter.setPitchProvider (&provider);
+        shifter.setFormantOptions (preserve, 0.0f);
+        shifter.prepare (sr, 1, 512, 2048, 2560);
+
+        std::vector<float> output (input.size(), 0.0f);
+        int position = 0;
+
+        while (position < (int) input.size())
+        {
+            const int count = juce::jmin (512, (int) input.size() - position);
+            juce::AudioBuffer<float> in (1, count);
+            std::copy (input.begin() + position, input.begin() + position + count,
+                       in.getWritePointer (0));
+            shifter.pushInput (in, 0, count);
+            juce::AudioBuffer<float> wet (1, count);
+            shifter.renderNextBlock (wet, count);
+            std::copy (wet.getReadPointer (0), wet.getReadPointer (0) + count,
+                       output.begin() + position);
+            position += count;
+        }
+
+        return output;
+    };
+
+    const auto dry = render (false);
+    const auto preserved = render (true);
+    const int start = (int) (0.45 * sr);
+    const int count = (int) (0.7 * sr);
+    const double dryCentroid = spectralCentroid (dry, sr, start, count);
+    const double preservedCentroid = spectralCentroid (preserved, sr, start, count);
+
+    std::cout << "FORMANT offCentroid=" << juce::String (dryCentroid, 1)
+              << " onCentroid=" << juce::String (preservedCentroid, 1) << std::endl;
+
+    check (dryCentroid > 0.0 && preservedCentroid > 0.0,
+           "formant-preserving shifter produces measurable output");
+    check (preservedCentroid < dryCentroid - 80.0,
+           "formant preservation keeps the spectral envelope lower than free pitch shift");
+}
+
 int main (int argc, char** argv)
 {
     juce::ScopedJuceInitialiser_GUI gui;
@@ -1955,6 +2076,7 @@ int main (int argc, char** argv)
     testRenderedPitch();
     testModules();
     testCleanSignalPath();
+    testFormantPreservation();
     testNoiseAndUnity();
     testPresetsAndState();
     testAutomationAndBypass();

@@ -43,6 +43,11 @@ public:
                   int frameSize, int delaySamples);
     void reset();
     void setPitchProvider (PitchProvider* provider) noexcept { pitchProvider = provider; }
+    void setFormantOptions (bool preserve, float shiftSemitones) noexcept
+    {
+        formantPreserve = preserve;
+        formantShiftSemitones = juce::jlimit (-12.0f, 12.0f, shiftSemitones);
+    }
 
     void pushInput (const juce::AudioBuffer<float>& input, int startSample, int numSamples) noexcept;
     void renderNextBlock (juce::AudioBuffer<float>& wetOutput, int numSamples) noexcept;
@@ -71,6 +76,9 @@ private:
         std::vector<float> omega;
         std::vector<float> phase;
 
+        std::vector<float> logMagnitude;
+        std::vector<float> envelope;
+        std::vector<float> envelopePrefix;
         std::vector<float> targetMagnitude;
         std::vector<float> targetPhase;
         std::vector<int> targetSource;
@@ -110,6 +118,8 @@ private:
 
     FftState state;
     PitchProvider* pitchProvider = nullptr;
+    bool formantPreserve = false;
+    float formantShiftSemitones = 0.0f;
     uint64_t processedFrames = 0;
 };
 

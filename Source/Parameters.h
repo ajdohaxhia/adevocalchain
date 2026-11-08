@@ -91,6 +91,8 @@ struct RackParams
     int pitchScale = 0;
     int pitchMask = 0x0FFF;
     int pitchRange = 1;
+    bool pitchFormantPreserve = false;
+    float pitchFormantShift = 0.0f;
 
     // Cleanup EQ
     bool ceqBypass = false;
@@ -205,6 +207,8 @@ private:
         std::atomic<float>* pitchScale = nullptr;
         std::atomic<float>* pitchMask = nullptr;
         std::atomic<float>* pitchRange = nullptr;
+        std::atomic<float>* pitchFormant = nullptr;
+        std::atomic<float>* pitchFormantShift = nullptr;
 
         std::atomic<float>* ceqBypass = nullptr;
         std::atomic<float>* ceqHpfFreq = nullptr;

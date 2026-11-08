@@ -286,6 +286,32 @@
     "group": "pitch"
   },
   {
+    "id": "pitch.formant",
+    "name": "Formant",
+    "unit": "",
+    "min": 0.0,
+    "max": 1.0,
+    "default": 0.0,
+    "skew": 1.0,
+    "type": "boolean",
+    "numChoices": 0,
+    "choices": "nullptr",
+    "group": "pitch"
+  },
+  {
+    "id": "pitch.formantShift",
+    "name": "Formant Shift",
+    "unit": "st",
+    "min": -12.0,
+    "max": 12.0,
+    "default": 0.0,
+    "skew": 1.0,
+    "type": "floating",
+    "numChoices": 0,
+    "choices": "nullptr",
+    "group": "pitch"
+  },
+  {
     "id": "ceq.bypass",
     "name": "Cleanup EQ",
     "unit": "",

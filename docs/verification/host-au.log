@@ -3,6 +3,6 @@ PASS  host can instantiate the plugin:
 PASS  host insert processes audio
 PASS  host sees a non-zero plugin latency
 PASS  host sees the full parameter set
-HOST format=au latency_samples=720 parameters=82 name=ademusic Vocal Rack
+HOST format=au latency_samples=720 parameters=84 name=ademusic Vocal Rack
 PASS  host can read plugin state
 PASS  host can restore plugin state

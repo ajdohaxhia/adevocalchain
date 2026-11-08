@@ -1,0 +1,30 @@
+name: macOS build and DSP tests
+
+on:
+  push:
+    branches: [ main ]
+  pull_request:
+  workflow_dispatch:
+
+jobs:
+  build-and-test:
+    runs-on: macos-14
+    steps:
+      - uses: actions/checkout@v4
+      - name: Configure
+        run: |
+          cmake -S . -B build -G "Unix Makefiles" \
+            -DCMAKE_BUILD_TYPE=Release \
+            -DCMAKE_OSX_ARCHITECTURES=arm64 \
+            -DVR_BUILD_TESTS=ON
+      - name: Build
+        run: cmake --build build --target VocalRack_VST3 VocalRack_AU VocalRackTests -j 4
+      - name: Headless DSP tests
+        run: ./build/VocalRackTests_artefacts/Release/VocalRackTests
+      - name: Upload artifacts
+        uses: actions/upload-artifact@v4
+        with:
+          name: ademusic-vocal-rack-macos-arm64
+          path: |
+            build/VocalRack_artefacts/Release/VST3/ademusic Vocal Rack.vst3
+            build/VocalRack_artefacts/Release/AU/ademusic Vocal Rack.component

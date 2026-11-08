@@ -173,6 +173,9 @@ void Engine::updatePitchSettings (const RackParams& params)
     lastScale = params.pitchScale;
     lastTonic = params.pitchTonic;
 
+    shifter.setFormantOptions (quality == QualityMode::mix && params.pitchFormantPreserve,
+                               params.pitchFormantShift);
+
     pitchActive = ! params.pitchBypass
                   && params.pitchAmount > 0.001f
                   && selector.getEffectiveMask() != 0;

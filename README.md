@@ -13,15 +13,15 @@ and versioned full-state recall.
 
 ## Download the latest release
 
-**[ademusic Vocal Rack 1.4.0 (VST3 + AU) - clean signal path / 96 presets](https://github.com/ajdohaxhia/adevocalchain/releases/tag/v1.4.0)**
+**[ademusic Vocal Rack 2.0.0 (VST3 + AU) - formant-preserving pitch / 96 presets](https://github.com/ajdohaxhia/adevocalchain/releases/tag/v2.0.0)**
 
 | Asset | Contents |
 |---|---|
-| [Combined ZIP](https://github.com/ajdohaxhia/adevocalchain/releases/download/v1.4.0/ademusic-vocal-rack-1.4.0-macOS-arm64.zip) | VST3 + AU + presets + install docs + verification logs |
-| [VST3 ZIP](https://github.com/ajdohaxhia/adevocalchain/releases/download/v1.4.0/ademusic-vocal-rack-1.4.0-VST3-macOS-arm64.zip) | `ademusic Vocal Rack.vst3` |
-| [AU ZIP](https://github.com/ajdohaxhia/adevocalchain/releases/download/v1.4.0/ademusic-vocal-rack-1.4.0-AU-macOS-arm64.zip) | `ademusic Vocal Rack.component` |
-| [Factory presets](https://github.com/ajdohaxhia/adevocalchain/releases/download/v1.4.0/ademusic-vocal-rack-1.4.0-factory-presets.json) | Versioned JSON preset bank |
-| [SHA-256 sums](https://github.com/ajdohaxhia/adevocalchain/releases/download/v1.4.0/SHA256SUMS.txt) | Asset checksums |
+| [Combined ZIP](https://github.com/ajdohaxhia/adevocalchain/releases/download/v2.0.0/ademusic-vocal-rack-2.0.0-macOS-arm64.zip) | VST3 + AU + presets + install docs + verification logs |
+| [VST3 ZIP](https://github.com/ajdohaxhia/adevocalchain/releases/download/v2.0.0/ademusic-vocal-rack-2.0.0-VST3-macOS-arm64.zip) | `ademusic Vocal Rack.vst3` |
+| [AU ZIP](https://github.com/ajdohaxhia/adevocalchain/releases/download/v2.0.0/ademusic-vocal-rack-2.0.0-AU-macOS-arm64.zip) | `ademusic Vocal Rack.component` |
+| [Factory presets](https://github.com/ajdohaxhia/adevocalchain/releases/download/v2.0.0/ademusic-vocal-rack-2.0.0-factory-presets.json) | Versioned JSON preset bank |
+| [SHA-256 sums](https://github.com/ajdohaxhia/adevocalchain/releases/download/v2.0.0/SHA256SUMS.txt) | Asset checksums |
 
 macOS arm64. The bundles are ad-hoc signed, not notarized; see
 [INSTALL.txt](INSTALL.txt) for the user-level plug-in paths and the quarantine
@@ -61,8 +61,8 @@ Input trim → Downward expander → Spectral denoiser → Pitch correction
 | VST3 CID | `ABCDEF019182FAEB41646D735672636B` |
 | Architecture | arm64 (MacBook Air M4 target) |
 | Latency | Track **720 samples / 15.00 ms** @48 kHz; Mix **3716 / 77.42 ms** |
-| CPU | Track ~4.3 %, Mix ~5.3 % of block budget average (warmed Release, M4) |
-| Validation | 410 headless checks, pluginval strictness 7 (VST3 + AU), auval PASS |
+| CPU | Track ~2.1 %, Mix ~2.6 % of block budget average (warmed Release, M4) |
+| Validation | 418 headless checks, pluginval strictness 7 (VST3 + AU), auval PASS |
 
 ## Build
 
@@ -108,9 +108,9 @@ remain environment-blocked here.
 
 ```bash
 mkdir -p ~/Library/Audio/Plug-Ins/VST3 ~/Library/Audio/Plug-Ins/Components
-cp -R "dist/ademusic-vocal-rack-1.4.0-macOS-arm64/VST3/ademusic Vocal Rack.vst3" \
+cp -R "dist/ademusic-vocal-rack-2.0.0-macOS-arm64/VST3/ademusic Vocal Rack.vst3" \
       ~/Library/Audio/Plug-Ins/VST3/
-cp -R "dist/ademusic-vocal-rack-1.4.0-macOS-arm64/Components/ademusic Vocal Rack.component" \
+cp -R "dist/ademusic-vocal-rack-2.0.0-macOS-arm64/Components/ademusic Vocal Rack.component" \
       ~/Library/Audio/Plug-Ins/Components/
 ```
 
@@ -149,7 +149,7 @@ See `docs/PRESET_FORMAT.md` for the schema and `docs/UI_REDESIGN.md` for the 1.3
 ## Source layout
 
 ```
-Source/Parameters.*        stable 82-parameter schema and cache
+Source/Parameters.*        stable 84-parameter schema and cache
 Source/Engine.*            chain, latency budget, dry alignment, metering
 Source/dsp/                detector, selector, shifter, denoiser, reverb, modules
 Source/Presets.*           factory/user JSON library and validation
@@ -172,8 +172,10 @@ scripts/                   build/test/validate/install/package
   request it.
 - On max-decay settings the reverb is a long tail; render length/PDC is the
   host's responsibility. Tail is reported as 10 s.
-- No formant control is exposed: no formant-preserving shifter was implemented,
-  so no unverifiable control is shown.
+- Formant preservation is **Mix-only** (two new parameters, 84 total); Track
+  disables the toggle to protect the 15 ms budget. No True Peak, dynamic EQ,
+  loudness-matched A/B or formant Shift beyond the documented formant controls is
+  claimed. See `docs/AUDIT_2.0.md` and `docs/PLAN_2.0.md`.
 
 ## Licence
 

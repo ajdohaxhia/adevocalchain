@@ -76,6 +76,10 @@ public:
     float getLimiterGainReductionDb() const noexcept { return limiterGrDb.load (std::memory_order_relaxed); }
     float getDeEsserGainReductionDb() const noexcept { return deEsserGrDb.load (std::memory_order_relaxed); }
     float getDynamicEqGainReductionDb() const noexcept { return dynamicEqGrDb.load (std::memory_order_relaxed); }
+    float getDynamicEqBandGainReductionDb (int band) const noexcept
+    {
+        return dynamicEqBandGrDb[(size_t) juce::jlimit (0, 1, band)].load (std::memory_order_relaxed);
+    }
     float getDelayMs() const noexcept { return delayMs.load (std::memory_order_relaxed); }
 
     PitchStatus getPitchStatus() const noexcept;
@@ -159,6 +163,7 @@ private:
     std::atomic<float> limiterGrDb { 0.0f };
     std::atomic<float> deEsserGrDb { 0.0f };
     std::atomic<float> dynamicEqGrDb { 0.0f };
+    std::atomic<float> dynamicEqBandGrDb[2] { { 0.0f }, { 0.0f } };
     std::atomic<float> delayMs { 375.0f };
 
     std::atomic<float> statusDetectedMidi { 0.0f };

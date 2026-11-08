@@ -5,6 +5,7 @@
 
 #include <algorithm>
 #include <cmath>
+#include <complex>
 
 namespace vr
 {
@@ -190,6 +191,314 @@ void PowerButton::timerCallback()
     }
 }
 
+namespace
+{
+std::complex<double> peakingResponse (double sampleRate, double frequency,
+                                      double gainDb, double q, double at)
+{
+    const double a = std::pow (10.0, gainDb / 40.0);
+    const double w0 = juce::MathConstants<double>::twoPi * frequency / sampleRate;
+    const double alpha = std::sin (w0) / (2.0 * juce::jmax (0.05, q));
+    const double b0 = 1.0 + alpha * a;
+    const double b1 = -2.0 * std::cos (w0);
+    const double b2 = 1.0 - alpha * a;
+    const double a0 = 1.0 + alpha / a;
+    const double a1 = -2.0 * std::cos (w0);
+    const double a2 = 1.0 - alpha / a;
+    const std::complex<double> z = std::polar (1.0, -at);
+    return (b0 + b1 * z + b2 * z * z) / (a0 + a1 * z + a2 * z * z);
+}
+
+std::complex<double> bandPassResponse (double sampleRate, double frequency,
+                                       double q, double at)
+{
+    const double w0 = juce::MathConstants<double>::twoPi * frequency / sampleRate;
+    const double alpha = std::sin (w0) / (2.0 * juce::jmax (0.05, q));
+    const double b0 = alpha;
+    const double b1 = 0.0;
+    const double b2 = -alpha;
+    const double a0 = 1.0 + alpha;
+    const double a1 = -2.0 * std::cos (w0);
+    const double a2 = 1.0 - alpha;
+    const std::complex<double> z = std::polar (1.0, -at);
+    return (b0 + b1 * z + b2 * z * z) / (a0 + a1 * z + a2 * z * z);
+}
+} // namespace
+
+DynamicEQGraph::DynamicEQGraph (juce::AudioProcessorValueTreeState& state, Engine& engineIn)
+    : apvts (state), engine (engineIn)
+{
+    setTitle ("Dynamic EQ response");
+    setTooltip ("Drag a band handle for frequency and gain. Mouse wheel adjusts Q. Double-click gains 0 dB.");
+    startTimerHz (24);
+}
+
+void DynamicEQGraph::resized()
+{
+    updateCurve();
+}
+
+float DynamicEQGraph::frequencyAtX (float x) const
+{
+    const auto plot = getLocalBounds().toFloat().reduced (42.0f, 22.0f);
+    const float t = juce::jlimit (0.0f, 1.0f, (x - plot.getX()) / juce::jmax (1.0f, plot.getWidth()));
+    return 20.0f * std::pow (1000.0f, t);
+}
+
+float DynamicEQGraph::xAtFrequency (double frequency) const
+{
+    const auto plot = getLocalBounds().toFloat().reduced (42.0f, 22.0f);
+    const float t = (float) (std::log (juce::jmax (20.0, frequency) / 20.0) / std::log (1000.0));
+    return plot.getX() + juce::jlimit (0.0f, 1.0f, t) * plot.getWidth();
+}
+
+float DynamicEQGraph::dbAtY (float y) const
+{
+    const auto plot = getLocalBounds().toFloat().reduced (42.0f, 22.0f);
+    return 18.0f - juce::jlimit (0.0f, 1.0f, (y - plot.getY()) / juce::jmax (1.0f, plot.getHeight())) * 36.0f;
+}
+
+float DynamicEQGraph::yAtDb (float db) const
+{
+    const auto plot = getLocalBounds().toFloat().reduced (42.0f, 22.0f);
+    return plot.getY() + (18.0f - juce::jlimit (-18.0f, 18.0f, db)) / 36.0f * plot.getHeight();
+}
+
+juce::Point<float> DynamicEQGraph::handlePosition (int band) const
+{
+    const juce::String prefix ("deq" + juce::String (band + 1) + ".");
+    return { xAtFrequency (parameterValue (prefix + "freq")),
+             yAtDb (parameterValue (prefix + "gain")) };
+}
+
+juce::Point<float> DynamicEQGraph::livePosition (int band) const
+{
+    return { xAtFrequency (parameterValue ("deq" + juce::String (band + 1) + ".freq")),
+             yAtDb (parameterValue ("deq" + juce::String (band + 1) + ".gain")
+                    + liveGainDb[band]) };
+}
+
+int DynamicEQGraph::bandAt (juce::Point<float> position) const
+{
+    int best = -1;
+    float bestDistance = 1.0e9f;
+
+    for (int band = 0; band < 2; ++band)
+    {
+        const auto p = handlePosition (band);
+        const float distance = p.getDistanceFrom (position);
+        const float xDistance = std::abs (p.x - position.x);
+
+        if (distance < 18.0f && distance < bestDistance)
+        {
+            best = band;
+            bestDistance = distance;
+        }
+        else if (best < 0 && xDistance < bestDistance)
+        {
+            best = band;
+            bestDistance = xDistance;
+        }
+    }
+
+    return best;
+}
+
+void DynamicEQGraph::mouseDown (const juce::MouseEvent& event)
+{
+    activeBand = bandAt (event.position);
+}
+
+void DynamicEQGraph::mouseDrag (const juce::MouseEvent& event)
+{
+    if (activeBand < 0)
+        return;
+
+    const juce::String prefix ("deq" + juce::String (activeBand + 1) + ".");
+    setParameterValue (prefix + "freq", frequencyAtX (event.position.x));
+    setParameterValue (prefix + "gain", dbAtY (event.position.y));
+}
+
+void DynamicEQGraph::mouseWheelMove (const juce::MouseEvent& event,
+                                     const juce::MouseWheelDetails& wheel)
+{
+    if (activeBand < 0)
+        activeBand = bandAt (event.position);
+
+    if (activeBand < 0)
+        return;
+
+    const juce::String id ("deq" + juce::String (activeBand + 1) + ".q");
+    setParameterValue (id, parameterValue (id) * std::exp (wheel.deltaY * 0.8f));
+}
+
+void DynamicEQGraph::mouseDoubleClick (const juce::MouseEvent& event)
+{
+    const int band = bandAt (event.position);
+
+    if (band >= 0)
+        setParameterValue ("deq" + juce::String (band + 1) + ".gain", 0.0f);
+}
+
+float DynamicEQGraph::parameterValue (const juce::String& id) const
+{
+    if (auto* value = apvts.getRawParameterValue (id))
+        return value->load();
+
+    return 0.0f;
+}
+
+void DynamicEQGraph::setParameterValue (const juce::String& id, float value)
+{
+    if (auto* parameter = apvts.getParameter (id))
+    {
+        const auto range = parameter->getNormalisableRange();
+        parameter->setValueNotifyingHost (parameter->convertTo0to1 (
+            juce::jlimit (range.start, range.end, value)));
+    }
+}
+
+double DynamicEQGraph::magnitudeDb (double frequency, int band, bool live) const
+{
+    constexpr double sr = 48000.0;
+    const juce::String prefix ("deq" + juce::String (band + 1) + ".");
+    const double f = parameterValue (prefix + "freq");
+    const double q = parameterValue (prefix + "q");
+    const double gain = parameterValue (prefix + "gain");
+    const double dynamic = live ? (double) liveGainDb[band] : 0.0;
+    const bool enabled = parameterValue (prefix + "on") > 0.5f;
+
+    if (! enabled)
+        return 0.0;
+
+    const double w = juce::MathConstants<double>::twoPi * frequency / sr;
+    const auto peak = peakingResponse (sr, f, gain, q, w);
+    const auto bandPass = bandPassResponse (sr, f, q, w);
+    const auto h = peak + (std::pow (10.0, dynamic / 20.0) - 1.0) * bandPass;
+    return 20.0 * std::log10 (juce::jmax (1.0e-9, std::abs (h)));
+}
+
+void DynamicEQGraph::updateCurve()
+{
+    staticCurve.clear();
+    liveCurve.clear();
+
+    const auto plot = getLocalBounds().toFloat().reduced (42.0f, 22.0f);
+
+    for (int i = 0; i <= 256; ++i)
+    {
+        const float x = (float) i / 256.0f;
+        const double hz = 20.0 * std::pow (1000.0, (double) x);
+        double staticDb = 0.0;
+        double liveDb = 0.0;
+
+        for (int band = 0; band < 2; ++band)
+        {
+            staticDb += magnitudeDb (hz, band, false);
+            liveDb += magnitudeDb (hz, band, true);
+        }
+
+        const float px = plot.getX() + x * plot.getWidth();
+
+        if (i == 0)
+        {
+            staticCurve.startNewSubPath (px, yAtDb ((float) staticDb));
+            liveCurve.startNewSubPath (px, yAtDb ((float) liveDb));
+        }
+        else
+        {
+            staticCurve.lineTo (px, yAtDb ((float) staticDb));
+            liveCurve.lineTo (px, yAtDb ((float) liveDb));
+        }
+    }
+}
+
+void DynamicEQGraph::timerCallback()
+{
+    liveGainDb[0] = engine.getDynamicEqBandGainReductionDb (0);
+    liveGainDb[1] = engine.getDynamicEqBandGainReductionDb (1);
+    updateCurve();
+    repaint();
+}
+
+void DynamicEQGraph::paint (juce::Graphics& g)
+{
+    const auto bounds = getLocalBounds().toFloat();
+    g.setColour (VocalRackLookAndFeel::card());
+    g.fillRoundedRectangle (bounds, 6.0f);
+    g.setColour (VocalRackLookAndFeel::line());
+    g.drawRoundedRectangle (bounds.reduced (0.5f), 6.0f, 1.0f);
+
+    const auto plot = bounds.reduced (42.0f, 22.0f);
+
+    for (double hz : { 50.0, 100.0, 500.0, 1000.0, 5000.0, 10000.0 })
+    {
+        const float x = xAtFrequency (hz);
+        g.setColour (VocalRackLookAndFeel::line().withAlpha (0.45f));
+        g.drawVerticalLine ((int) x, plot.getY(), plot.getBottom());
+    }
+
+    for (float db : { -12.0f, -6.0f, 0.0f, 6.0f, 12.0f })
+    {
+        const float y = yAtDb (db);
+        g.setColour (VocalRackLookAndFeel::line().withAlpha (db == 0.0f ? 0.8f : 0.3f));
+        g.drawHorizontalLine ((int) y, plot.getX(), plot.getRight());
+    }
+
+    g.setColour (VocalRackLookAndFeel::accent().withAlpha (0.10f));
+    juce::Path fill = liveCurve;
+    fill.lineTo (plot.getRight(), yAtDb (0.0f));
+    fill.lineTo (plot.getX(), yAtDb (0.0f));
+    fill.closeSubPath();
+    g.fillPath (fill);
+
+    g.setColour (VocalRackLookAndFeel::dimText().withAlpha (0.55f));
+    g.strokePath (staticCurve, juce::PathStrokeType (1.0f, juce::PathStrokeType::curved,
+                                                     juce::PathStrokeType::rounded));
+
+    g.setColour (VocalRackLookAndFeel::accent());
+    g.strokePath (liveCurve, juce::PathStrokeType (2.0f, juce::PathStrokeType::curved,
+                                                   juce::PathStrokeType::rounded));
+
+    for (int band = 0; band < 2; ++band)
+    {
+        const auto handle = handlePosition (band);
+        const auto live = livePosition (band);
+        const bool enabled = parameterValue ("deq" + juce::String (band + 1) + ".on") > 0.5f;
+        const auto colour = enabled
+                                ? (band == 0 ? VocalRackLookAndFeel::accent()
+                                             : juce::Colour (0xff8cc8ff))
+                                : VocalRackLookAndFeel::dimText();
+
+        g.setColour (colour.withAlpha (enabled ? 0.25f : 0.12f));
+        g.drawLine (handle.x, handle.y, live.x, live.y, 1.5f);
+        g.setColour (colour.withAlpha (enabled ? 1.0f : 0.55f));
+        g.fillEllipse (handle.x - 7.0f, handle.y - 7.0f, 14.0f, 14.0f);
+        g.setColour (VocalRackLookAndFeel::background());
+        g.fillEllipse (handle.x - 3.0f, handle.y - 3.0f, 6.0f, 6.0f);
+
+        g.setColour (enabled ? VocalRackLookAndFeel::text() : VocalRackLookAndFeel::dimText());
+        g.setFont (juce::Font (juce::FontOptions (10.0f)));
+        g.drawText ("B" + juce::String (band + 1) + "  "
+                        + (enabled ? juce::String (liveGainDb[band], 1) + " dB" : "OFF"),
+                    juce::Rectangle<float> (handle.x + 10.0f, handle.y - 14.0f, 88.0f, 14.0f),
+                    juce::Justification::centredLeft);
+    }
+
+    g.setColour (VocalRackLookAndFeel::dimText());
+    g.setFont (juce::Font (juce::FontOptions (9.0f)));
+    g.drawText ("20", (int) plot.getX() - 12, (int) plot.getBottom() + 3, 30, 12,
+                juce::Justification::centredLeft);
+    g.drawText ("100", (int) xAtFrequency (100.0) - 10, (int) plot.getBottom() + 3, 30, 12,
+                juce::Justification::centredLeft);
+    g.drawText ("1k", (int) xAtFrequency (1000.0) - 8, (int) plot.getBottom() + 3, 30, 12,
+                juce::Justification::centredLeft);
+    g.drawText ("10k", (int) xAtFrequency (10000.0) - 10, (int) plot.getBottom() + 3, 34, 12,
+                juce::Justification::centredLeft);
+    g.drawText ("LIVE RESPONSE", (int) plot.getRight() - 92, (int) plot.getY() - 14, 92, 12,
+                juce::Justification::centredRight);
+}
+
 MeterPanel::MeterPanel (Engine& engineIn) : engine (engineIn)
 {
     setInterceptsMouseClicks (false, false);
@@ -208,6 +517,7 @@ void MeterPanel::timerCallback()
     follow (outputDb, engine.getOutputPeakDb(), 0.7f, 0.12f);
     follow (compGr, engine.getCompressorGainReductionDb(), 0.7f, 0.2f);
     follow (limiterGr, engine.getLimiterGainReductionDb(), 0.8f, 0.2f);
+    follow (dynamicEqGr, engine.getDynamicEqGainReductionDb(), 0.7f, 0.2f);
 
     if (outputDb >= peakHoldDb)
     {
@@ -268,12 +578,12 @@ void MeterPanel::paint (juce::Graphics& g)
                     valueArea, juce::Justification::centredRight);
     };
 
-    drawMeter (area.removeFromTop (27), "IN", inputDb, -60.0f,
+    drawMeter (area.removeFromTop (24), "IN", inputDb, -60.0f,
                VocalRackLookAndFeel::accent().withAlpha (0.68f), false);
-    drawMeter (area.removeFromTop (27), "OUT", outputDb, peakHoldDb,
+    drawMeter (area.removeFromTop (24), "OUT", outputDb, peakHoldDb,
                VocalRackLookAndFeel::accent(), true);
 
-    area.removeFromTop (6);
+    area.removeFromTop (4);
 
     auto drawGr = [&g] (juce::Rectangle<int> row, const juce::String& label, float reduction,
                         juce::Colour colour)
@@ -300,8 +610,9 @@ void MeterPanel::paint (juce::Graphics& g)
                     juce::Justification::centredRight);
     };
 
-    drawGr (area.removeFromTop (19), "GR", compGr, juce::Colour (0xffffb15c));
-    drawGr (area.removeFromTop (19), "LIM", limiterGr, VocalRackLookAndFeel::danger());
+    drawGr (area.removeFromTop (17), "GR", compGr, juce::Colour (0xffffb15c));
+    drawGr (area.removeFromTop (17), "EQ", dynamicEqGr, juce::Colour (0xff8cc8ff));
+    drawGr (area.removeFromTop (17), "LIM", limiterGr, VocalRackLookAndFeel::danger());
 }
 
 PitchPanel::PitchPanel (Engine& engineIn) : engine (engineIn)

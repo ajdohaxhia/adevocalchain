@@ -472,6 +472,8 @@ void VocalRackEditor::configureDetailTabs()
                             "deq2.ratio", "deq2.range", "deq2.attack", "deq2.release" })
         addKnob (*deq, id);
 
+    deq->setTopComponent (new DynamicEQGraph (processor.getAPVTS(), processor.getEngine()), 172);
+
     auto* color = makeGrid ("Color", "COLOR", 3);
     addPower (*color, "sat.bypass", "Enabled");
     addCombo (*color, "sat.mode", "Mode");

@@ -20,6 +20,17 @@ public:
     void setTitle (const juce::String& newTitle) { title = newTitle; repaint(); }
     void setModuleStrip (bool shouldBeStrip) { moduleStrip = shouldBeStrip; repaint(); }
 
+    void setTopComponent (juce::Component* component, int preferredHeight = 150)
+    {
+        topComponent = component;
+        topHeight = juce::jmax (60, preferredHeight);
+
+        if (topComponent != nullptr)
+            addAndMakeVisible (topComponent);
+
+        resized();
+    }
+
     void paint (juce::Graphics&) override;
     void paintOverChildren (juce::Graphics&) override;
 
@@ -82,6 +93,14 @@ public:
             area.removeFromTop (6);
         }
 
+        if (topComponent != nullptr)
+        {
+            const int graphHeight = juce::jlimit (90, topHeight,
+                                                  juce::jmax (90, area.getHeight() * 32 / 100));
+            topComponent->setBounds (area.removeFromTop (graphHeight));
+            area.removeFromTop (10);
+        }
+
         if (gridControls.empty())
             return;
 
@@ -109,6 +128,8 @@ private:
     bool moduleStrip = false;
     std::vector<juce::Component*> headerControls;
     std::vector<juce::Component*> gridControls;
+    juce::Component* topComponent = nullptr;
+    int topHeight = 150;
 };
 
 class VocalRackEditor final : public juce::AudioProcessorEditor,

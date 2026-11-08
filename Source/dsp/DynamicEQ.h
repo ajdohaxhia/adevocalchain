@@ -108,6 +108,10 @@ public:
     }
 
     float getGainReductionDb() const noexcept { return lastGainReductionDb; }
+    float getBandGainReductionDb (int band) const noexcept
+    {
+        return bands[(size_t) juce::jlimit (0, 1, band)].gainReductionDb;
+    }
 
 private:
     struct Band

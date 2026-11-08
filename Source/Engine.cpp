@@ -544,6 +544,8 @@ void Engine::processChunk (int numSamples, const RackParams& params, const Trans
     compGrDb.store (compressor.getGainReductionDb(), std::memory_order_relaxed);
     deEsserGrDb.store (deEsser.getReductionDb(), std::memory_order_relaxed);
     dynamicEqGrDb.store (dynamicEq.getGainReductionDb(), std::memory_order_relaxed);
+    dynamicEqBandGrDb[0].store (dynamicEq.getBandGainReductionDb (0), std::memory_order_relaxed);
+    dynamicEqBandGrDb[1].store (dynamicEq.getBandGainReductionDb (1), std::memory_order_relaxed);
     limiterGrDb.store (limiter.getGainReductionDb(), std::memory_order_relaxed);
     delayMs.store (delay.getDelayMs(), std::memory_order_relaxed);
 

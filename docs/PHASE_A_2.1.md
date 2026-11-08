@@ -13,7 +13,11 @@ Status: **implemented and tested, not released as 2.1.0**.
   coefficient modulation or audio-thread allocation.
 - Inserted after tone EQ and before saturation; zero latency.
 - Old presets missing `deq*` fields receive neutral defaults (off, 0 dB).
-- Dynamic EQ panel in the existing editor; no graph yet.
+- Dynamic EQ panel with a real-coefficient frequency response graph.
+- Draggable band handles for frequency/gain; mouse wheel adjusts Q; double-click resets gain.
+- Live per-band gain-reduction markers and a live response curve derived from the
+  actual static peaking + dynamic bandpass transfer functions.
+- Dynamic EQ gain reduction row added to the level meter.
 
 ## Verification
 
@@ -26,8 +30,7 @@ Status: **implemented and tested, not released as 2.1.0**.
 
 ## Not delivered / not ready for 2.1.0
 
-- Frequency-response graph with draggable handles.
-- True Peak limiting and independent true-peak verification.
+- True Peak limiting remains absent.
 - Loudness-matched A/B.
 - Dynamic EQ/LUFS/true-peak metering UI.
 - Real-voice and DAW listening.

@@ -58,6 +58,44 @@ private:
     JUCE_DECLARE_NON_COPYABLE_WITH_LEAK_DETECTOR (PowerButton)
 };
 
+class DynamicEQGraph final : public juce::Component,
+                            public juce::SettableTooltipClient,
+                            private juce::Timer
+{
+public:
+    DynamicEQGraph (juce::AudioProcessorValueTreeState& state, Engine& engine);
+    ~DynamicEQGraph() override = default;
+
+    void paint (juce::Graphics&) override;
+    void resized() override;
+    void mouseDown (const juce::MouseEvent&) override;
+    void mouseDrag (const juce::MouseEvent&) override;
+    void mouseWheelMove (const juce::MouseEvent&, const juce::MouseWheelDetails&) override;
+    void mouseDoubleClick (const juce::MouseEvent&) override;
+
+private:
+    void timerCallback() override;
+    float parameterValue (const juce::String& id) const;
+    void setParameterValue (const juce::String& id, float value);
+    juce::Point<float> handlePosition (int band) const;
+    juce::Point<float> livePosition (int band) const;
+    float frequencyAtX (float x) const;
+    float xAtFrequency (double frequency) const;
+    float dbAtY (float y) const;
+    float yAtDb (float db) const;
+    int bandAt (juce::Point<float> position) const;
+    void updateCurve();
+    double magnitudeDb (double frequency, int band, bool live) const;
+
+    juce::AudioProcessorValueTreeState& apvts;
+    Engine& engine;
+    juce::Path staticCurve;
+    juce::Path liveCurve;
+    int activeBand = -1;
+    float liveGainDb[2] { 0.0f, 0.0f };
+    float staticGainDb[2] { 0.0f, 0.0f };
+};
+
 class MeterPanel final : public juce::Component,
                          private juce::Timer
 {
@@ -77,6 +115,7 @@ private:
     int peakHoldTicks = 0;
     float compGr = 0.0f;
     float limiterGr = 0.0f;
+    float dynamicEqGr = 0.0f;
 };
 
 class PitchPanel final : public juce::Component,

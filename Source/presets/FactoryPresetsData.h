@@ -114,6 +114,7 @@ inline constexpr const char* kFactoryPresetJson = R"VRJSON([
       "rev.level": -14.0,
       "rev.duck": 0.0,
       "lim.bypass": 1,
+      "lim.truePeak": 0,
       "lim.ceiling": -0.3,
       "lim.release": 80.0
     }
@@ -228,6 +229,7 @@ inline constexpr const char* kFactoryPresetJson = R"VRJSON([
       "rev.level": -14.0,
       "rev.duck": 0.0,
       "lim.bypass": 0,
+      "lim.truePeak": 0,
       "lim.ceiling": -0.5,
       "lim.release": 50.0
     }
@@ -342,6 +344,7 @@ inline constexpr const char* kFactoryPresetJson = R"VRJSON([
       "rev.level": -14.0,
       "rev.duck": 0.0,
       "lim.bypass": 0,
+      "lim.truePeak": 0,
       "lim.ceiling": -0.4,
       "lim.release": 80.0
     }
@@ -456,6 +459,7 @@ inline constexpr const char* kFactoryPresetJson = R"VRJSON([
       "rev.level": -14.0,
       "rev.duck": 0.0,
       "lim.bypass": 0,
+      "lim.truePeak": 0,
       "lim.ceiling": -0.4,
       "lim.release": 80.0
     }
@@ -570,6 +574,7 @@ inline constexpr const char* kFactoryPresetJson = R"VRJSON([
       "rev.level": -14.0,
       "rev.duck": 0.0,
       "lim.bypass": 0,
+      "lim.truePeak": 0,
       "lim.ceiling": -0.5,
       "lim.release": 80.0
     }
@@ -684,6 +689,7 @@ inline constexpr const char* kFactoryPresetJson = R"VRJSON([
       "rev.level": -14.0,
       "rev.duck": 0.0,
       "lim.bypass": 0,
+      "lim.truePeak": 0,
       "lim.ceiling": -0.5,
       "lim.release": 80.0
     }
@@ -798,6 +804,7 @@ inline constexpr const char* kFactoryPresetJson = R"VRJSON([
       "rev.level": -22.0,
       "rev.duck": 45.0,
       "lim.bypass": 0,
+      "lim.truePeak": 0,
       "lim.ceiling": -0.3,
       "lim.release": 80.0
     }
@@ -912,6 +919,7 @@ inline constexpr const char* kFactoryPresetJson = R"VRJSON([
       "rev.level": -22.0,
       "rev.duck": 55.0,
       "lim.bypass": 0,
+      "lim.truePeak": 0,
       "lim.ceiling": -0.4,
       "lim.release": 80.0
     }
@@ -1026,6 +1034,7 @@ inline constexpr const char* kFactoryPresetJson = R"VRJSON([
       "rev.level": -14.0,
       "rev.duck": 0.0,
       "lim.bypass": 0,
+      "lim.truePeak": 0,
       "lim.ceiling": -0.5,
       "lim.release": 80.0
     }
@@ -1140,6 +1149,7 @@ inline constexpr const char* kFactoryPresetJson = R"VRJSON([
       "rev.level": -14.0,
       "rev.duck": 0.0,
       "lim.bypass": 0,
+      "lim.truePeak": 0,
       "lim.ceiling": -0.4,
       "lim.release": 80.0
     }
@@ -1254,6 +1264,7 @@ inline constexpr const char* kFactoryPresetJson = R"VRJSON([
       "rev.level": -24.0,
       "rev.duck": 40.0,
       "lim.bypass": 0,
+      "lim.truePeak": 0,
       "lim.ceiling": -0.4,
       "lim.release": 80.0
     }
@@ -1368,6 +1379,7 @@ inline constexpr const char* kFactoryPresetJson = R"VRJSON([
       "rev.level": -18.0,
       "rev.duck": 35.0,
       "lim.bypass": 0,
+      "lim.truePeak": 0,
       "lim.ceiling": -0.4,
       "lim.release": 80.0
     }
@@ -1482,6 +1494,7 @@ inline constexpr const char* kFactoryPresetJson = R"VRJSON([
       "rev.level": -18.0,
       "rev.duck": 45.0,
       "lim.bypass": 0,
+      "lim.truePeak": 0,
       "lim.ceiling": -0.3,
       "lim.release": 80.0
     }
@@ -1596,6 +1609,7 @@ inline constexpr const char* kFactoryPresetJson = R"VRJSON([
       "rev.level": -20.0,
       "rev.duck": 45.0,
       "lim.bypass": 0,
+      "lim.truePeak": 0,
       "lim.ceiling": -0.4,
       "lim.release": 80.0
     }
@@ -1710,6 +1724,7 @@ inline constexpr const char* kFactoryPresetJson = R"VRJSON([
       "rev.level": -24.0,
       "rev.duck": 55.0,
       "lim.bypass": 0,
+      "lim.truePeak": 0,
       "lim.ceiling": -0.4,
       "lim.release": 80.0
     }
@@ -1824,6 +1839,7 @@ inline constexpr const char* kFactoryPresetJson = R"VRJSON([
       "rev.level": -26.0,
       "rev.duck": 50.0,
       "lim.bypass": 0,
+      "lim.truePeak": 0,
       "lim.ceiling": -0.3,
       "lim.release": 80.0
     }
@@ -1938,6 +1954,7 @@ inline constexpr const char* kFactoryPresetJson = R"VRJSON([
       "rev.level": -19.0,
       "rev.duck": 40.0,
       "lim.bypass": 0,
+      "lim.truePeak": 0,
       "lim.ceiling": -0.3,
       "lim.release": 80.0
     }
@@ -2052,6 +2069,7 @@ inline constexpr const char* kFactoryPresetJson = R"VRJSON([
       "rev.level": -22.0,
       "rev.duck": 40.0,
       "lim.bypass": 0,
+      "lim.truePeak": 0,
       "lim.ceiling": -0.4,
       "lim.release": 80.0
     }
@@ -2166,6 +2184,7 @@ inline constexpr const char* kFactoryPresetJson = R"VRJSON([
       "rev.level": -17.0,
       "rev.duck": 45.0,
       "lim.bypass": 0,
+      "lim.truePeak": 0,
       "lim.ceiling": -0.4,
       "lim.release": 80.0
     }
@@ -2280,6 +2299,7 @@ inline constexpr const char* kFactoryPresetJson = R"VRJSON([
       "rev.level": -24.0,
       "rev.duck": 50.0,
       "lim.bypass": 0,
+      "lim.truePeak": 0,
       "lim.ceiling": -0.4,
       "lim.release": 80.0
     }
@@ -2394,6 +2414,7 @@ inline constexpr const char* kFactoryPresetJson = R"VRJSON([
       "rev.level": -21.0,
       "rev.duck": 45.0,
       "lim.bypass": 0,
+      "lim.truePeak": 0,
       "lim.ceiling": -0.4,
       "lim.release": 80.0
     }
@@ -2508,6 +2529,7 @@ inline constexpr const char* kFactoryPresetJson = R"VRJSON([
       "rev.level": -30.0,
       "rev.duck": 30.0,
       "lim.bypass": 0,
+      "lim.truePeak": 0,
       "lim.ceiling": -0.5,
       "lim.release": 80.0
     }
@@ -2622,6 +2644,7 @@ inline constexpr const char* kFactoryPresetJson = R"VRJSON([
       "rev.level": -22.0,
       "rev.duck": 40.0,
       "lim.bypass": 0,
+      "lim.truePeak": 0,
       "lim.ceiling": -0.4,
       "lim.release": 80.0
     }
@@ -2736,6 +2759,7 @@ inline constexpr const char* kFactoryPresetJson = R"VRJSON([
       "rev.level": -18.0,
       "rev.duck": 40.0,
       "lim.bypass": 0,
+      "lim.truePeak": 0,
       "lim.ceiling": -0.4,
       "lim.release": 80.0
     }
@@ -2850,6 +2874,7 @@ inline constexpr const char* kFactoryPresetJson = R"VRJSON([
       "rev.level": -32.0,
       "rev.duck": 30.0,
       "lim.bypass": 0,
+      "lim.truePeak": 0,
       "lim.ceiling": -0.5,
       "lim.release": 80.0
     }
@@ -2964,6 +2989,7 @@ inline constexpr const char* kFactoryPresetJson = R"VRJSON([
       "rev.level": -24.0,
       "rev.duck": 40.0,
       "lim.bypass": 0,
+      "lim.truePeak": 0,
       "lim.ceiling": -0.5,
       "lim.release": 80.0
     }
@@ -3078,6 +3104,7 @@ inline constexpr const char* kFactoryPresetJson = R"VRJSON([
       "rev.level": -22.0,
       "rev.duck": 40.0,
       "lim.bypass": 0,
+      "lim.truePeak": 0,
       "lim.ceiling": -0.5,
       "lim.release": 80.0
     }
@@ -3192,6 +3219,7 @@ inline constexpr const char* kFactoryPresetJson = R"VRJSON([
       "rev.level": -28.0,
       "rev.duck": 40.0,
       "lim.bypass": 0,
+      "lim.truePeak": 0,
       "lim.ceiling": -0.5,
       "lim.release": 80.0
     }
@@ -3306,6 +3334,7 @@ inline constexpr const char* kFactoryPresetJson = R"VRJSON([
       "rev.level": -30.0,
       "rev.duck": 30.0,
       "lim.bypass": 0,
+      "lim.truePeak": 0,
       "lim.ceiling": -0.5,
       "lim.release": 80.0
     }
@@ -3420,6 +3449,7 @@ inline constexpr const char* kFactoryPresetJson = R"VRJSON([
       "rev.level": -26.0,
       "rev.duck": 40.0,
       "lim.bypass": 0,
+      "lim.truePeak": 0,
       "lim.ceiling": -0.5,
       "lim.release": 80.0
     }
@@ -3534,6 +3564,7 @@ inline constexpr const char* kFactoryPresetJson = R"VRJSON([
       "rev.level": -32.0,
       "rev.duck": 40.0,
       "lim.bypass": 0,
+      "lim.truePeak": 0,
       "lim.ceiling": -0.4,
       "lim.release": 80.0
     }
@@ -3648,6 +3679,7 @@ inline constexpr const char* kFactoryPresetJson = R"VRJSON([
       "rev.level": -36.0,
       "rev.duck": 30.0,
       "lim.bypass": 0,
+      "lim.truePeak": 0,
       "lim.ceiling": -0.5,
       "lim.release": 80.0
     }
@@ -3762,6 +3794,7 @@ inline constexpr const char* kFactoryPresetJson = R"VRJSON([
       "rev.level": -30.0,
       "rev.duck": 40.0,
       "lim.bypass": 0,
+      "lim.truePeak": 0,
       "lim.ceiling": -0.6,
       "lim.release": 80.0
     }
@@ -3876,6 +3909,7 @@ inline constexpr const char* kFactoryPresetJson = R"VRJSON([
       "rev.level": -22.0,
       "rev.duck": 25.0,
       "lim.bypass": 0,
+      "lim.truePeak": 0,
       "lim.ceiling": -0.4,
       "lim.release": 80.0
     }
@@ -3990,6 +4024,7 @@ inline constexpr const char* kFactoryPresetJson = R"VRJSON([
       "rev.level": -26.0,
       "rev.duck": 45.0,
       "lim.bypass": 0,
+      "lim.truePeak": 0,
       "lim.ceiling": -0.4,
       "lim.release": 80.0
     }
@@ -4104,6 +4139,7 @@ inline constexpr const char* kFactoryPresetJson = R"VRJSON([
       "rev.level": -15.0,
       "rev.duck": 40.0,
       "lim.bypass": 0,
+      "lim.truePeak": 0,
       "lim.ceiling": -0.4,
       "lim.release": 80.0
     }
@@ -4218,6 +4254,7 @@ inline constexpr const char* kFactoryPresetJson = R"VRJSON([
       "rev.level": -17.0,
       "rev.duck": 45.0,
       "lim.bypass": 0,
+      "lim.truePeak": 0,
       "lim.ceiling": -0.4,
       "lim.release": 80.0
     }
@@ -4332,6 +4369,7 @@ inline constexpr const char* kFactoryPresetJson = R"VRJSON([
       "rev.level": -24.0,
       "rev.duck": 40.0,
       "lim.bypass": 0,
+      "lim.truePeak": 0,
       "lim.ceiling": -0.6,
       "lim.release": 80.0
     }
@@ -4446,6 +4484,7 @@ inline constexpr const char* kFactoryPresetJson = R"VRJSON([
       "rev.level": -26.0,
       "rev.duck": 40.0,
       "lim.bypass": 0,
+      "lim.truePeak": 0,
       "lim.ceiling": -0.5,
       "lim.release": 80.0
     }
@@ -4560,6 +4599,7 @@ inline constexpr const char* kFactoryPresetJson = R"VRJSON([
       "rev.level": -24.0,
       "rev.duck": 45.0,
       "lim.bypass": 0,
+      "lim.truePeak": 0,
       "lim.ceiling": -0.3,
       "lim.release": 80.0
     }
@@ -4674,6 +4714,7 @@ inline constexpr const char* kFactoryPresetJson = R"VRJSON([
       "rev.level": -26.0,
       "rev.duck": 35.0,
       "lim.bypass": 0,
+      "lim.truePeak": 0,
       "lim.ceiling": -0.5,
       "lim.release": 80.0
     }
@@ -4788,6 +4829,7 @@ inline constexpr const char* kFactoryPresetJson = R"VRJSON([
       "rev.level": -20.0,
       "rev.duck": 40.0,
       "lim.bypass": 0,
+      "lim.truePeak": 0,
       "lim.ceiling": -0.4,
       "lim.release": 80.0
     }
@@ -4902,6 +4944,7 @@ inline constexpr const char* kFactoryPresetJson = R"VRJSON([
       "rev.level": -23.0,
       "rev.duck": 45.0,
       "lim.bypass": 0,
+      "lim.truePeak": 0,
       "lim.ceiling": -0.5,
       "lim.release": 80.0
     }
@@ -5016,6 +5059,7 @@ inline constexpr const char* kFactoryPresetJson = R"VRJSON([
       "rev.level": -27.0,
       "rev.duck": 45.0,
       "lim.bypass": 0,
+      "lim.truePeak": 0,
       "lim.ceiling": -0.6,
       "lim.release": 80.0
     }
@@ -5130,6 +5174,7 @@ inline constexpr const char* kFactoryPresetJson = R"VRJSON([
       "rev.level": -20.0,
       "rev.duck": 35.0,
       "lim.bypass": 0,
+      "lim.truePeak": 0,
       "lim.ceiling": -0.5,
       "lim.release": 80.0
     }
@@ -5244,6 +5289,7 @@ inline constexpr const char* kFactoryPresetJson = R"VRJSON([
       "rev.level": -20.0,
       "rev.duck": 35.0,
       "lim.bypass": 0,
+      "lim.truePeak": 0,
       "lim.ceiling": -0.7,
       "lim.release": 80.0
     }
@@ -5358,6 +5404,7 @@ inline constexpr const char* kFactoryPresetJson = R"VRJSON([
       "rev.level": -22.0,
       "rev.duck": 40.0,
       "lim.bypass": 0,
+      "lim.truePeak": 0,
       "lim.ceiling": -0.4,
       "lim.release": 80.0
     }
@@ -5472,6 +5519,7 @@ inline constexpr const char* kFactoryPresetJson = R"VRJSON([
       "rev.level": -24.0,
       "rev.duck": 40.0,
       "lim.bypass": 0,
+      "lim.truePeak": 0,
       "lim.ceiling": -0.4,
       "lim.release": 80.0
     }
@@ -5586,6 +5634,7 @@ inline constexpr const char* kFactoryPresetJson = R"VRJSON([
       "rev.level": -20.0,
       "rev.duck": 40.0,
       "lim.bypass": 0,
+      "lim.truePeak": 0,
       "lim.ceiling": -0.3,
       "lim.release": 80.0
     }
@@ -5700,6 +5749,7 @@ inline constexpr const char* kFactoryPresetJson = R"VRJSON([
       "rev.level": -24.0,
       "rev.duck": 40.0,
       "lim.bypass": 0,
+      "lim.truePeak": 0,
       "lim.ceiling": -0.4,
       "lim.release": 80.0
     }
@@ -5814,6 +5864,7 @@ inline constexpr const char* kFactoryPresetJson = R"VRJSON([
       "rev.level": -24.0,
       "rev.duck": 35.0,
       "lim.bypass": 0,
+      "lim.truePeak": 0,
       "lim.ceiling": -0.5,
       "lim.release": 80.0
     }
@@ -5928,6 +5979,7 @@ inline constexpr const char* kFactoryPresetJson = R"VRJSON([
       "rev.level": -20.0,
       "rev.duck": 30.0,
       "lim.bypass": 0,
+      "lim.truePeak": 0,
       "lim.ceiling": -0.5,
       "lim.release": 80.0
     }
@@ -6042,6 +6094,7 @@ inline constexpr const char* kFactoryPresetJson = R"VRJSON([
       "rev.level": -20.0,
       "rev.duck": 40.0,
       "lim.bypass": 0,
+      "lim.truePeak": 0,
       "lim.ceiling": -0.3,
       "lim.release": 80.0
     }
@@ -6156,6 +6209,7 @@ inline constexpr const char* kFactoryPresetJson = R"VRJSON([
       "rev.level": -30.0,
       "rev.duck": 30.0,
       "lim.bypass": 0,
+      "lim.truePeak": 0,
       "lim.ceiling": -0.5,
       "lim.release": 80.0
     }
@@ -6270,6 +6324,7 @@ inline constexpr const char* kFactoryPresetJson = R"VRJSON([
       "rev.level": -14.0,
       "rev.duck": 0.0,
       "lim.bypass": 0,
+      "lim.truePeak": 0,
       "lim.ceiling": -1.0,
       "lim.release": 60.0
     }
@@ -6384,6 +6439,7 @@ inline constexpr const char* kFactoryPresetJson = R"VRJSON([
       "rev.level": -14.0,
       "rev.duck": 0.0,
       "lim.bypass": 0,
+      "lim.truePeak": 0,
       "lim.ceiling": -1.0,
       "lim.release": 80.0
     }
@@ -6498,6 +6554,7 @@ inline constexpr const char* kFactoryPresetJson = R"VRJSON([
       "rev.level": -24.0,
       "rev.duck": 30.0,
       "lim.bypass": 0,
+      "lim.truePeak": 0,
       "lim.ceiling": -0.5,
       "lim.release": 80.0
     }
@@ -6612,6 +6669,7 @@ inline constexpr const char* kFactoryPresetJson = R"VRJSON([
       "rev.level": -18.0,
       "rev.duck": 40.0,
       "lim.bypass": 0,
+      "lim.truePeak": 0,
       "lim.ceiling": -0.4,
       "lim.release": 80.0
     }
@@ -6726,6 +6784,7 @@ inline constexpr const char* kFactoryPresetJson = R"VRJSON([
       "rev.level": -14.0,
       "rev.duck": 0.0,
       "lim.bypass": 0,
+      "lim.truePeak": 0,
       "lim.ceiling": -1.0,
       "lim.release": 60.0
     }
@@ -6840,6 +6899,7 @@ inline constexpr const char* kFactoryPresetJson = R"VRJSON([
       "rev.level": -14.0,
       "rev.duck": 0.0,
       "lim.bypass": 0,
+      "lim.truePeak": 0,
       "lim.ceiling": -0.8,
       "lim.release": 80.0
     }
@@ -6954,6 +7014,7 @@ inline constexpr const char* kFactoryPresetJson = R"VRJSON([
       "rev.level": -18.0,
       "rev.duck": 40.0,
       "lim.bypass": 0,
+      "lim.truePeak": 0,
       "lim.ceiling": -0.4,
       "lim.release": 80.0
     }
@@ -7068,6 +7129,7 @@ inline constexpr const char* kFactoryPresetJson = R"VRJSON([
       "rev.level": -18.0,
       "rev.duck": 40.0,
       "lim.bypass": 0,
+      "lim.truePeak": 0,
       "lim.ceiling": -0.4,
       "lim.release": 80.0
     }
@@ -7182,6 +7244,7 @@ inline constexpr const char* kFactoryPresetJson = R"VRJSON([
       "rev.level": -18.0,
       "rev.duck": 40.0,
       "lim.bypass": 0,
+      "lim.truePeak": 0,
       "lim.ceiling": -0.4,
       "lim.release": 80.0
     }
@@ -7296,6 +7359,7 @@ inline constexpr const char* kFactoryPresetJson = R"VRJSON([
       "rev.level": -18.0,
       "rev.duck": 40.0,
       "lim.bypass": 0,
+      "lim.truePeak": 0,
       "lim.ceiling": -0.4,
       "lim.release": 80.0
     }
@@ -7410,6 +7474,7 @@ inline constexpr const char* kFactoryPresetJson = R"VRJSON([
       "rev.level": -18.0,
       "rev.duck": 40.0,
       "lim.bypass": 0,
+      "lim.truePeak": 0,
       "lim.ceiling": -0.4,
       "lim.release": 80.0
     }
@@ -7524,6 +7589,7 @@ inline constexpr const char* kFactoryPresetJson = R"VRJSON([
       "rev.level": -18.0,
       "rev.duck": 40.0,
       "lim.bypass": 0,
+      "lim.truePeak": 0,
       "lim.ceiling": -0.4,
       "lim.release": 80.0
     }
@@ -7638,6 +7704,7 @@ inline constexpr const char* kFactoryPresetJson = R"VRJSON([
       "rev.level": -20.0,
       "rev.duck": 40.0,
       "lim.bypass": 0,
+      "lim.truePeak": 0,
       "lim.ceiling": -0.3,
       "lim.release": 80.0
     }
@@ -7752,6 +7819,7 @@ inline constexpr const char* kFactoryPresetJson = R"VRJSON([
       "rev.level": -20.0,
       "rev.duck": 40.0,
       "lim.bypass": 0,
+      "lim.truePeak": 0,
       "lim.ceiling": -0.3,
       "lim.release": 80.0
     }
@@ -7866,6 +7934,7 @@ inline constexpr const char* kFactoryPresetJson = R"VRJSON([
       "rev.level": -20.0,
       "rev.duck": 40.0,
       "lim.bypass": 0,
+      "lim.truePeak": 0,
       "lim.ceiling": -0.3,
       "lim.release": 80.0
     }
@@ -7980,6 +8049,7 @@ inline constexpr const char* kFactoryPresetJson = R"VRJSON([
       "rev.level": -20.0,
       "rev.duck": 40.0,
       "lim.bypass": 0,
+      "lim.truePeak": 0,
       "lim.ceiling": -0.3,
       "lim.release": 80.0
     }
@@ -8094,6 +8164,7 @@ inline constexpr const char* kFactoryPresetJson = R"VRJSON([
       "rev.level": -20.0,
       "rev.duck": 40.0,
       "lim.bypass": 0,
+      "lim.truePeak": 0,
       "lim.ceiling": -0.3,
       "lim.release": 80.0
     }
@@ -8208,6 +8279,7 @@ inline constexpr const char* kFactoryPresetJson = R"VRJSON([
       "rev.level": -20.0,
       "rev.duck": 40.0,
       "lim.bypass": 0,
+      "lim.truePeak": 0,
       "lim.ceiling": -0.3,
       "lim.release": 80.0
     }
@@ -8322,6 +8394,7 @@ inline constexpr const char* kFactoryPresetJson = R"VRJSON([
       "rev.level": -20.0,
       "rev.duck": 45.0,
       "lim.bypass": 0,
+      "lim.truePeak": 0,
       "lim.ceiling": -0.4,
       "lim.release": 80.0
     }
@@ -8436,6 +8509,7 @@ inline constexpr const char* kFactoryPresetJson = R"VRJSON([
       "rev.level": -20.0,
       "rev.duck": 45.0,
       "lim.bypass": 0,
+      "lim.truePeak": 0,
       "lim.ceiling": -0.4,
       "lim.release": 80.0
     }
@@ -8550,6 +8624,7 @@ inline constexpr const char* kFactoryPresetJson = R"VRJSON([
       "rev.level": -26.0,
       "rev.duck": 45.0,
       "lim.bypass": 0,
+      "lim.truePeak": 0,
       "lim.ceiling": -0.4,
       "lim.release": 80.0
     }
@@ -8664,6 +8739,7 @@ inline constexpr const char* kFactoryPresetJson = R"VRJSON([
       "rev.level": -20.0,
       "rev.duck": 45.0,
       "lim.bypass": 0,
+      "lim.truePeak": 0,
       "lim.ceiling": -0.4,
       "lim.release": 80.0
     }
@@ -8778,6 +8854,7 @@ inline constexpr const char* kFactoryPresetJson = R"VRJSON([
       "rev.level": -20.0,
       "rev.duck": 45.0,
       "lim.bypass": 0,
+      "lim.truePeak": 0,
       "lim.ceiling": -0.4,
       "lim.release": 80.0
     }
@@ -8892,6 +8969,7 @@ inline constexpr const char* kFactoryPresetJson = R"VRJSON([
       "rev.level": -20.0,
       "rev.duck": 45.0,
       "lim.bypass": 0,
+      "lim.truePeak": 0,
       "lim.ceiling": -0.4,
       "lim.release": 80.0
     }
@@ -9006,6 +9084,7 @@ inline constexpr const char* kFactoryPresetJson = R"VRJSON([
       "rev.level": -16.0,
       "rev.duck": 30.0,
       "lim.bypass": 0,
+      "lim.truePeak": 0,
       "lim.ceiling": -0.6,
       "lim.release": 80.0
     }
@@ -9120,6 +9199,7 @@ inline constexpr const char* kFactoryPresetJson = R"VRJSON([
       "rev.level": -16.0,
       "rev.duck": 30.0,
       "lim.bypass": 0,
+      "lim.truePeak": 0,
       "lim.ceiling": -0.6,
       "lim.release": 80.0
     }
@@ -9234,6 +9314,7 @@ inline constexpr const char* kFactoryPresetJson = R"VRJSON([
       "rev.level": -16.0,
       "rev.duck": 30.0,
       "lim.bypass": 0,
+      "lim.truePeak": 0,
       "lim.ceiling": -0.6,
       "lim.release": 80.0
     }
@@ -9348,6 +9429,7 @@ inline constexpr const char* kFactoryPresetJson = R"VRJSON([
       "rev.level": -16.0,
       "rev.duck": 30.0,
       "lim.bypass": 0,
+      "lim.truePeak": 0,
       "lim.ceiling": -0.6,
       "lim.release": 80.0
     }
@@ -9462,6 +9544,7 @@ inline constexpr const char* kFactoryPresetJson = R"VRJSON([
       "rev.level": -28.0,
       "rev.duck": 30.0,
       "lim.bypass": 0,
+      "lim.truePeak": 0,
       "lim.ceiling": -0.6,
       "lim.release": 80.0
     }
@@ -9576,6 +9659,7 @@ inline constexpr const char* kFactoryPresetJson = R"VRJSON([
       "rev.level": -16.0,
       "rev.duck": 30.0,
       "lim.bypass": 0,
+      "lim.truePeak": 0,
       "lim.ceiling": -0.6,
       "lim.release": 80.0
     }
@@ -9690,6 +9774,7 @@ inline constexpr const char* kFactoryPresetJson = R"VRJSON([
       "rev.level": -28.0,
       "rev.duck": 40.0,
       "lim.bypass": 0,
+      "lim.truePeak": 0,
       "lim.ceiling": -0.4,
       "lim.release": 80.0
     }
@@ -9804,6 +9889,7 @@ inline constexpr const char* kFactoryPresetJson = R"VRJSON([
       "rev.level": -20.0,
       "rev.duck": 40.0,
       "lim.bypass": 0,
+      "lim.truePeak": 0,
       "lim.ceiling": -0.4,
       "lim.release": 80.0
     }
@@ -9918,6 +10004,7 @@ inline constexpr const char* kFactoryPresetJson = R"VRJSON([
       "rev.level": -20.0,
       "rev.duck": 40.0,
       "lim.bypass": 0,
+      "lim.truePeak": 0,
       "lim.ceiling": -0.4,
       "lim.release": 80.0
     }
@@ -10032,6 +10119,7 @@ inline constexpr const char* kFactoryPresetJson = R"VRJSON([
       "rev.level": -20.0,
       "rev.duck": 40.0,
       "lim.bypass": 0,
+      "lim.truePeak": 0,
       "lim.ceiling": -0.4,
       "lim.release": 80.0
     }
@@ -10146,6 +10234,7 @@ inline constexpr const char* kFactoryPresetJson = R"VRJSON([
       "rev.level": -20.0,
       "rev.duck": 40.0,
       "lim.bypass": 0,
+      "lim.truePeak": 0,
       "lim.ceiling": -0.4,
       "lim.release": 80.0
     }
@@ -10260,6 +10349,7 @@ inline constexpr const char* kFactoryPresetJson = R"VRJSON([
       "rev.level": -20.0,
       "rev.duck": 40.0,
       "lim.bypass": 0,
+      "lim.truePeak": 0,
       "lim.ceiling": -0.4,
       "lim.release": 80.0
     }
@@ -10374,6 +10464,7 @@ inline constexpr const char* kFactoryPresetJson = R"VRJSON([
       "rev.level": -20.0,
       "rev.duck": 40.0,
       "lim.bypass": 0,
+      "lim.truePeak": 0,
       "lim.ceiling": -0.4,
       "lim.release": 80.0
     }
@@ -10488,6 +10579,7 @@ inline constexpr const char* kFactoryPresetJson = R"VRJSON([
       "rev.level": -18.0,
       "rev.duck": 40.0,
       "lim.bypass": 0,
+      "lim.truePeak": 0,
       "lim.ceiling": -0.4,
       "lim.release": 80.0
     }
@@ -10602,6 +10694,7 @@ inline constexpr const char* kFactoryPresetJson = R"VRJSON([
       "rev.level": -20.0,
       "rev.duck": 40.0,
       "lim.bypass": 0,
+      "lim.truePeak": 0,
       "lim.ceiling": -0.4,
       "lim.release": 80.0
     }
@@ -10716,6 +10809,7 @@ inline constexpr const char* kFactoryPresetJson = R"VRJSON([
       "rev.level": -20.0,
       "rev.duck": 40.0,
       "lim.bypass": 0,
+      "lim.truePeak": 0,
       "lim.ceiling": -0.4,
       "lim.release": 80.0
     }
@@ -10830,6 +10924,7 @@ inline constexpr const char* kFactoryPresetJson = R"VRJSON([
       "rev.level": -17.0,
       "rev.duck": 40.0,
       "lim.bypass": 0,
+      "lim.truePeak": 0,
       "lim.ceiling": -0.4,
       "lim.release": 80.0
     }
@@ -10944,6 +11039,7 @@ inline constexpr const char* kFactoryPresetJson = R"VRJSON([
       "rev.level": -20.0,
       "rev.duck": 40.0,
       "lim.bypass": 0,
+      "lim.truePeak": 0,
       "lim.ceiling": -0.4,
       "lim.release": 80.0
     }

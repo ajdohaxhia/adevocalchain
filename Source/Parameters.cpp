@@ -125,6 +125,7 @@ const std::vector<ParamSpec>& specTable()
         { "rev.duck",      "Ducking",    "%",    0.0f, 100.0f,   0.0f, 1.0f, PT::floating, 0, nullptr, PG::reverb, "Duck the return from the dry vocal." },
 
         { "lim.bypass",    "Limiter",    "",     0.0f,   1.0f,   0.0f, 1.0f, PT::boolean,  0, nullptr, PG::limiter, "Bypass the final limiter." },
+        { "lim.truePeak",  "True Peak",  "",     0.0f,   1.0f,   0.0f, 1.0f, PT::boolean,  0, nullptr, PG::limiter, "Enable the 4x oversampled True Peak limiter (Mix only)." },
         { "lim.ceiling",   "Ceiling",    "dBFS", -6.0f,   0.0f,  -0.3f, 1.0f, PT::floating, 0, nullptr, PG::limiter, "Sample-peak ceiling, enforced with lookahead." },
         { "lim.release",   "Release",    "ms",   1.0f, 500.0f,  80.0f, 0.5f, PT::floating, 0, nullptr, PG::limiter, "Limiter release." },
     };
@@ -332,6 +333,7 @@ ParamCache::ParamCache (juce::AudioProcessorValueTreeState& state)
     p.revDuck = get ("rev.duck");
 
     p.limBypass = get ("lim.bypass");
+    p.limTruePeak = get ("lim.truePeak");
     p.limCeiling = get ("lim.ceiling");
     p.limRelease = get ("lim.release");
 }
@@ -454,6 +456,7 @@ void ParamCache::snapshot (RackParams& out) const noexcept
     out.revDuck = f (p.revDuck);
 
     out.limBypass = b (p.limBypass);
+    out.limTruePeak = b (p.limTruePeak);
     out.limCeiling = f (p.limCeiling);
     out.limRelease = f (p.limRelease);
 }

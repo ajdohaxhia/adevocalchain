@@ -9,18 +9,18 @@ VALIDATING AUDIO UNIT: 'aufx' - 'Vrck' - 'Adms'
 --------------------------------------------------
 Manufacturer String: ademusic
 AudioUnit Name: ademusic Vocal Rack
-Component Version: 2.0.0 (0x20000)
+Component Version: 2.1.0 (0x20100)
 
 * * PASS
 --------------------------------------------------
 TESTING OPEN TIMES:
 COLD:
-Time to open AudioUnit:         348.373 ms
+Time to open AudioUnit:         365.070 ms
 WARM:
-Time to open AudioUnit:         7.756  ms
+Time to open AudioUnit:         7.650  ms
 This AudioUnit is a version 2 implementation.
 FIRST TIME:
-Time for initialization:        0.115 ms
+Time for initialization:        0.089 ms
 
 * * PASS
 --------------------------------------------------
@@ -59,7 +59,7 @@ VERIFYING SPECIAL PROPERTIES:
 
 VERIFYING CUSTOM UI
 Cocoa Views Available: 1
-  JUCE_AUCocoaViewClass_6b1c135cfd327f97
+  JUCE_AUCocoaViewClass_6ac6506585e98d8a
     PASS
 
 HAS FACTORY PRESETS
@@ -75,7 +75,7 @@ TESTING HOST CALLBACKS
 --------------------------------------------------
 PUBLISHED PARAMETER INFO:
 
-# # # 84 Global Scope Parameters:
+# # # 103 Global Scope Parameters:
 Parameter ID:1488291
 Name: Cut 1 Q
 Parameter Type: Generic
@@ -208,6 +208,14 @@ Values: Minimum = -12.0000000, Default = 0.0000000, Maximum = 12.0000000
 Flags: Values Have Strings, High Resolution, Can Ramp, Readable, Writable 
   -parameter PASS
 
+Parameter ID:203136693
+Name: B1 Attack
+Parameter Type: Generic
+Values: Minimum = 0.1000000, Default = 9.9999990, Maximum = 100.0000000
+Flags: Values Have Strings, High Resolution, Can Ramp, Readable, Writable 
+WARNING: retrievedValue = 0.099099 (was 0.099099), Parameter did not retain default value when set
+  -parameter PASS
+
 Parameter ID:255150761
 Name: Release
 Parameter Type: Generic
@@ -231,6 +239,35 @@ Flags: Values Have Strings, High Resolution, Can Ramp, Readable, Writable
 
 Parameter ID:349426573
 Name: Formant Shift
+Parameter Type: Generic
+Values: Minimum = -12.0000000, Default = 0.0000000, Maximum = 12.0000000
+Flags: Values Have Strings, High Resolution, Can Ramp, Readable, Writable 
+  -parameter PASS
+
+Parameter ID:378011173
+Name: B1 Freq
+Parameter Type: Generic
+Values: Minimum = 40.0000000, Default = 299.9999695, Maximum = 16000.0000000
+Flags: Values Have Strings, High Resolution, Can Ramp, Readable, Writable 
+WARNING: retrievedValue = 0.290792 (was 0.290792), Parameter did not retain default value when set
+  -parameter PASS
+
+Parameter ID:378024748
+Name: B1 Gain
+Parameter Type: Generic
+Values: Minimum = -12.0000000, Default = 0.0000000, Maximum = 12.0000000
+Flags: Values Have Strings, High Resolution, Can Ramp, Readable, Writable 
+  -parameter PASS
+
+Parameter ID:406640324
+Name: B2 Freq
+Parameter Type: Generic
+Values: Minimum = 40.0000000, Default = 3000.0002441, Maximum = 16000.0000000
+Flags: Values Have Strings, High Resolution, Can Ramp, Readable, Writable 
+  -parameter PASS
+
+Parameter ID:406653899
+Name: B2 Gain
 Parameter Type: Generic
 Values: Minimum = -12.0000000, Default = 0.0000000, Maximum = 12.0000000
 Flags: Values Have Strings, High Resolution, Can Ramp, Readable, Writable 
@@ -304,6 +341,20 @@ Name: Formant
 Parameter Type: Boolean
 Values: Minimum = Off, Default = Off, Maximum = On
 Flags: Values Have Strings, High Resolution, Readable, Writable 
+  -parameter PASS
+
+Parameter ID:812122084
+Name: B1 Q
+Parameter Type: Generic
+Values: Minimum = 0.2000000, Default = 1.0000000, Maximum = 10.0000000
+Flags: Values Have Strings, High Resolution, Can Ramp, Readable, Writable 
+  -parameter PASS
+
+Parameter ID:812123045
+Name: B2 Q
+Parameter Type: Generic
+Values: Minimum = 0.2000000, Default = 1.0000000, Maximum = 10.0000000
+Flags: Values Have Strings, High Resolution, Can Ramp, Readable, Writable 
   -parameter PASS
 
 Parameter ID:818824131
@@ -388,6 +439,20 @@ Values: Minimum = 0.0000000, Default = 35.0000000, Maximum = 100.0000000
 Flags: Values Have Strings, High Resolution, Can Ramp, Readable, Writable 
   -parameter PASS
 
+Parameter ID:991512368
+Name: B1 Range
+Parameter Type: Generic
+Values: Minimum = 0.0000000, Default = 8.0000000, Maximum = 24.0000000
+Flags: Values Have Strings, High Resolution, Can Ramp, Readable, Writable 
+  -parameter PASS
+
+Parameter ID:991518206
+Name: B1 Ratio
+Parameter Type: Generic
+Values: Minimum = 1.0000000, Default = 2.0000000, Maximum = 10.0000000
+Flags: Values Have Strings, High Resolution, Can Ramp, Readable, Writable 
+  -parameter PASS
+
 Parameter ID:1022605004
 Name: Denoise
 Parameter Type: Boolean
@@ -414,6 +479,13 @@ Name: Delay
 Parameter Type: Boolean
 Values: Minimum = Off, Default = On, Maximum = On
 Flags: Values Have Strings, High Resolution, Readable, Writable 
+  -parameter PASS
+
+Parameter ID:1117307102
+Name: B1 Threshold
+Parameter Type: Generic
+Values: Minimum = -60.0000000, Default = -30.0000000, Maximum = 0.0000000
+Flags: Values Have Strings, High Resolution, Can Ramp, Readable, Writable 
   -parameter PASS
 
 Parameter ID:1130833063
@@ -542,6 +614,13 @@ Values: Minimum = 10.0000000, Default = 119.9999924, Maximum = 1000.0000000
 Flags: Values Have Strings, High Resolution, Can Ramp, Readable, Writable 
   -parameter PASS
 
+Parameter ID:1467839391
+Name: B2 Threshold
+Parameter Type: Generic
+Values: Minimum = -60.0000000, Default = -30.0000000, Maximum = 0.0000000
+Flags: Values Have Strings, High Resolution, Can Ramp, Readable, Writable 
+  -parameter PASS
+
 Parameter ID:1473710790
 Name: Amount
 Parameter Type: Generic
@@ -578,6 +657,27 @@ Values: Minimum = 0.0000000, Default = 100.0000000, Maximum = 100.0000000
 Flags: Values Have Strings, High Resolution, Can Ramp, Readable, Writable 
   -parameter PASS
 
+Parameter ID:1553464524
+Name: B1 On
+Parameter Type: Boolean
+Values: Minimum = Off, Default = Off, Maximum = On
+Flags: Values Have Strings, High Resolution, Readable, Writable 
+  -parameter PASS
+
+Parameter ID:1553494315
+Name: B2 On
+Parameter Type: Boolean
+Values: Minimum = Off, Default = Off, Maximum = On
+Flags: Values Have Strings, High Resolution, Readable, Writable 
+  -parameter PASS
+
+Parameter ID:1620739386
+Name: B1 Release
+Parameter Type: Generic
+Values: Minimum = 10.0000000, Default = 120.0000000, Maximum = 1000.0000000
+Flags: Values Have Strings, High Resolution, Can Ramp, Readable, Writable 
+  -parameter PASS
+
 Parameter ID:1635276770
 Name: Feedback
 Parameter Type: Generic
@@ -590,6 +690,13 @@ Name: Threshold
 Parameter Type: Generic
 Values: Minimum = -80.0000000, Default = -50.0000000, Maximum = -20.0000000
 Flags: Values Have Strings, High Resolution, Can Ramp, Readable, Writable 
+  -parameter PASS
+
+Parameter ID:1715148075
+Name: True Peak
+Parameter Type: Boolean
+Values: Minimum = Off, Default = Off, Maximum = On
+Flags: Values Have Strings, High Resolution, Readable, Writable 
   -parameter PASS
 
 Parameter ID:1732897494
@@ -652,6 +759,20 @@ Value: 0,  String: Room
 Value: 1,  String: Plate
   -parameter PASS
 
+Parameter ID:1879016049
+Name: B2 Range
+Parameter Type: Generic
+Values: Minimum = 0.0000000, Default = 8.0000000, Maximum = 24.0000000
+Flags: Values Have Strings, High Resolution, Can Ramp, Readable, Writable 
+  -parameter PASS
+
+Parameter ID:1879021887
+Name: B2 Ratio
+Parameter Type: Generic
+Values: Minimum = 1.0000000, Default = 2.0000000, Maximum = 10.0000000
+Flags: Values Have Strings, High Resolution, Can Ramp, Readable, Writable 
+  -parameter PASS
+
 Parameter ID:1887907169
 Name: A4
 Parameter Type: Generic
@@ -673,10 +794,24 @@ Values: Minimum = 1.0000000, Default = 79.9999924, Maximum = 500.0000000
 Flags: Values Have Strings, High Resolution, Can Ramp, Readable, Writable 
   -parameter PASS
 
+Parameter ID:1945947028
+Name: B2 Attack
+Parameter Type: Generic
+Values: Minimum = 0.1000000, Default = 5.0000000, Maximum = 100.0000000
+Flags: Values Have Strings, High Resolution, Can Ramp, Readable, Writable 
+  -parameter PASS
+
 Parameter ID:1953167129
 Name: Retune
 Parameter Type: Generic
 Values: Minimum = 0.5000000, Default = 80.0000153, Maximum = 1000.0000000
+Flags: Values Have Strings, High Resolution, Can Ramp, Readable, Writable 
+  -parameter PASS
+
+Parameter ID:1960768571
+Name: B2 Release
+Parameter Type: Generic
+Values: Minimum = 10.0000000, Default = 80.0000000, Maximum = 1000.0000000
 Flags: Values Have Strings, High Resolution, Can Ramp, Readable, Writable 
   -parameter PASS
 

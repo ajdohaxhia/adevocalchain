@@ -8,6 +8,7 @@
 #include <juce_audio_formats/juce_audio_formats.h>
 #include <juce_audio_processors/juce_audio_processors.h>
 #include <juce_gui_basics/juce_gui_basics.h>
+#include <juce_dsp/juce_dsp.h>
 
 #include <algorithm>
 #include <chrono>
@@ -307,7 +308,7 @@ RackParams bypassAllParams()
 void testParameterSchema()
 {
     const auto& specs = vr::getParamSpecs();
-    check (specs.size() == 102, "parameter schema has 102 parameters");
+    check (specs.size() == 103, "parameter schema has 103 parameters");
 
     std::set<juce::String> ids;
 
@@ -1031,6 +1032,111 @@ void testDynamicEq()
            "dynamic EQ remains finite");
 }
 
+static double measuredTruePeak (const juce::AudioBuffer<float>& buffer, int n)
+{
+    juce::dsp::Oversampling<float> oversampling ((size_t) 2, 3,
+        juce::dsp::Oversampling<float>::filterHalfBandPolyphaseIIR, true, false);
+    oversampling.initProcessing ((size_t) juce::jmax (32, n));
+    juce::AudioBuffer<float> copy (buffer);
+    juce::dsp::AudioBlock<float> block (copy);
+    auto up = oversampling.processSamplesUp (block.getSubBlock (0, (size_t) n));
+    double peak = 0.0;
+
+    for (size_t ch = 0; ch < up.getNumChannels(); ++ch)
+        for (size_t i = 0; i < up.getNumSamples(); ++i)
+            peak = juce::jmax (peak, (double) std::abs (up.getChannelPointer (ch)[i]));
+
+    return peak;
+}
+
+void testTruePeakLimiter()
+{
+    constexpr double sr = 48000.0;
+    constexpr int block = 512;
+    const int length = (int) (1.5 * sr);
+    juce::AudioBuffer<float> buffer (2, length);
+    juce::AudioBuffer<float> original (2, length);
+
+    for (int ch = 0; ch < 2; ++ch)
+    {
+        for (int i = 0; i < length; ++i)
+        {
+            const float sample = 1.5f * (float) std::sin (juce::MathConstants<double>::twoPi * 997.0
+                                                           * (double) i / sr);
+            buffer.setSample (ch, i, sample);
+            original.setSample (ch, i, sample);
+        }
+    }
+
+    vr::TruePeakLimiter limiter;
+    limiter.prepare (sr, block, 2);
+    vr::RackParams p = bypassAllParams();
+    p.limBypass = false;
+    p.limTruePeak = true;
+    p.limCeiling = -1.0f;
+    p.limRelease = 80.0f;
+
+    for (int position = 0; position < length; position += block)
+    {
+        const int count = juce::jmin (block, length - position);
+        juce::AudioBuffer<float> chunk (2, count);
+
+        for (int ch = 0; ch < 2; ++ch)
+            chunk.copyFrom (ch, 0, buffer, ch, position, count);
+
+        limiter.process (chunk, count, p);
+
+        for (int ch = 0; ch < 2; ++ch)
+            buffer.copyFrom (ch, position, chunk, ch, 0, count);
+    }
+
+    const double truePeak = measuredTruePeak (buffer, length);
+    const double ceiling = std::pow (10.0, -1.0 / 20.0);
+    check (std::isfinite (truePeak), "true peak limiter produces finite output");
+    check (truePeak <= ceiling * 1.06,
+           "4x true peak limiter stays within 0.5 dB of ceiling");
+    check (limiter.getLatencySamples() > 0, "true peak limiter reports latency");
+
+    std::cout << "TRUE_PEAK ceiling=" << juce::String (20.0 * std::log10 (ceiling), 2)
+              << " measured=" << juce::String (20.0 * std::log10 (juce::jmax (1.0e-9, truePeak)), 2)
+              << " latency=" << limiter.getLatencySamples() << std::endl;
+
+    // High-frequency and phase-offset stress cases.
+    for (double hz : { 11025.0, 12000.0 })
+    {
+        juce::AudioBuffer<float> stress (2, length);
+
+        for (int ch = 0; ch < 2; ++ch)
+            for (int i = 0; i < length; ++i)
+                stress.setSample (ch, i, 1.4f * (float) std::sin (
+                    juce::MathConstants<double>::twoPi * hz * (double) i / sr
+                    + (ch == 0 ? 0.0 : 0.7)));
+
+        vr::TruePeakLimiter stressLimiter;
+        stressLimiter.prepare (sr, block, 2);
+
+        for (int position = 0; position < length; position += block)
+        {
+            const int count = juce::jmin (block, length - position);
+            juce::AudioBuffer<float> chunk (2, count);
+
+            for (int ch = 0; ch < 2; ++ch)
+                chunk.copyFrom (ch, 0, stress, ch, position, count);
+
+            stressLimiter.process (chunk, count, p);
+
+            for (int ch = 0; ch < 2; ++ch)
+                stress.copyFrom (ch, position, chunk, ch, 0, count);
+        }
+
+        const double stressPeak = measuredTruePeak (stress, length);
+        std::cout << "TRUE_PEAK_STRESS hz=" << hz << " db="
+                  << 20.0 * std::log10 (juce::jmax (1.0e-9, stressPeak)) << std::endl;
+        check (stressPeak <= ceiling * 1.08,
+               "true peak stress case stays within 0.7 dB: " + juce::String (hz, 0) + " Hz");
+    }
+}
+
 void testCleanSignalPath()
 {
     constexpr double sr = 48000.0;
@@ -1448,6 +1554,56 @@ void testPresetsAndState()
     }
 
     presetDirectory.deleteRecursively();
+}
+
+void testLoudnessMatchedAB()
+{
+    vr::VocalRackAudioProcessor processor;
+    processor.prepareToPlay (48000.0, 512);
+
+    auto setParameter = [&processor] (const char* id, float value)
+    {
+        if (auto* parameter = processor.getAPVTS().getParameter (id))
+            parameter->setValueNotifyingHost (parameter->convertTo0to1 (value));
+    };
+
+    auto render = [&processor] (int samples)
+    {
+        int position = 0;
+
+        while (position < samples)
+        {
+            const int count = juce::jmin (512, samples - position);
+            juce::AudioBuffer<float> buffer (2, count);
+
+            for (int ch = 0; ch < 2; ++ch)
+                for (int i = 0; i < count; ++i)
+                    buffer.setSample (ch, i, 0.1f * (float) std::sin (
+                        juce::MathConstants<double>::twoPi * 220.0
+                        * (double) (position + i) / 48000.0));
+
+            juce::MidiBuffer midi;
+            processor.processBlock (buffer, midi);
+            position += count;
+        }
+    };
+
+    setParameter ("global.output", 0.0f);
+    render (48000);
+    processor.switchAB (1); // B is cloned from A and becomes active.
+    setParameter ("global.output", 12.0f);
+    render (48000);
+    processor.setLoudnessMatch (true);
+    processor.switchAB (0); // Reference is the louder B; target A should be boosted.
+    render (48000);
+    const float matchedGain = processor.getComparisonGain();
+    check (matchedGain > 1.2f, "loudness match boosts the quieter A/B slot");
+    check (matchedGain <= 4.01f, "loudness match comparison gain is bounded");
+
+    processor.setLoudnessMatch (false);
+    render (48000);
+    check (std::abs (processor.getComparisonGain() - 1.0f) < 0.05f,
+           "disabling loudness match returns comparison gain to unity");
 }
 
 void testAutomationAndBypass()
@@ -2129,7 +2285,9 @@ int main (int argc, char** argv)
     testModules();
     testCleanSignalPath();
     testDynamicEq();
+    testTruePeakLimiter();
     testFormantPreservation();
+    testLoudnessMatchedAB();
     testNoiseAndUnity();
     testPresetsAndState();
     testAutomationAndBypass();

@@ -1,6 +1,6 @@
 # Third-party notices and dependency manifest
 
-ademusic Vocal Rack 2.0.0 is a local native macOS arm64 build. This file records
+ademusic Vocal Rack 2.1.0 is a local native macOS arm64 build. This file records
 the exact dependencies used to build and validate the shipped bundles.
 
 ## Runtime dependencies

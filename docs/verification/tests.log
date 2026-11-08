@@ -1,6 +1,6 @@
 ademusic Vocal Rack validation suite
 ===================================
-PASS  parameter schema has 84 parameters
+PASS  parameter schema has 103 parameters
 PASS  default in range: global.input
 PASS  find spec: global.input
 PASS  default in range: global.output
@@ -49,6 +49,42 @@ PASS  default in range: pitch.formant
 PASS  find spec: pitch.formant
 PASS  default in range: pitch.formantShift
 PASS  find spec: pitch.formantShift
+PASS  default in range: deq1.on
+PASS  find spec: deq1.on
+PASS  default in range: deq1.freq
+PASS  find spec: deq1.freq
+PASS  default in range: deq1.q
+PASS  find spec: deq1.q
+PASS  default in range: deq1.gain
+PASS  find spec: deq1.gain
+PASS  default in range: deq1.threshold
+PASS  find spec: deq1.threshold
+PASS  default in range: deq1.ratio
+PASS  find spec: deq1.ratio
+PASS  default in range: deq1.range
+PASS  find spec: deq1.range
+PASS  default in range: deq1.attack
+PASS  find spec: deq1.attack
+PASS  default in range: deq1.release
+PASS  find spec: deq1.release
+PASS  default in range: deq2.on
+PASS  find spec: deq2.on
+PASS  default in range: deq2.freq
+PASS  find spec: deq2.freq
+PASS  default in range: deq2.q
+PASS  find spec: deq2.q
+PASS  default in range: deq2.gain
+PASS  find spec: deq2.gain
+PASS  default in range: deq2.threshold
+PASS  find spec: deq2.threshold
+PASS  default in range: deq2.ratio
+PASS  find spec: deq2.ratio
+PASS  default in range: deq2.range
+PASS  find spec: deq2.range
+PASS  default in range: deq2.attack
+PASS  find spec: deq2.attack
+PASS  default in range: deq2.release
+PASS  find spec: deq2.release
 PASS  default in range: ceq.bypass
 PASS  find spec: ceq.bypass
 PASS  default in range: ceq.hpf
@@ -165,6 +201,8 @@ PASS  default in range: rev.duck
 PASS  find spec: rev.duck
 PASS  default in range: lim.bypass
 PASS  find spec: lim.bypass
+PASS  default in range: lim.truePeak
+PASS  find spec: lim.truePeak
 PASS  default in range: lim.ceiling
 PASS  find spec: lim.ceiling
 PASS  default in range: lim.release
@@ -270,9 +308,23 @@ PASS  zero-amount spectral cleanup is effectively transparent
 PASS  unity correction preserves level at 110 Hz
 PASS  unity correction preserves level at 220 Hz
 PASS  phase-locked A440 correction keeps level
+PASS  dynamic EQ reduces a signal above threshold
+PASS  dynamic EQ static peaking gain boosts
+PASS  dynamic EQ remains finite
+PASS  true peak limiter produces finite output
+PASS  4x true peak limiter stays within 0.5 dB of ceiling
+PASS  true peak limiter reports latency
+TRUE_PEAK ceiling=-1.00 measured=-1.91 latency=21
+TRUE_PEAK_STRESS hz=11025 db=-1.06953
+PASS  true peak stress case stays within 0.7 dB: 11025 Hz
+TRUE_PEAK_STRESS hz=12000 db=-1.29686
+PASS  true peak stress case stays within 0.7 dB: 12000 Hz
 FORMANT offCentroid=1806.6 onCentroid=1375.2
 PASS  formant-preserving shifter produces measurable output
 PASS  formant preservation keeps the spectral envelope lower than free pitch shift
+PASS  loudness match boosts the quieter A/B slot
+PASS  loudness match comparison gain is bounded
+PASS  disabling loudness match returns comparison gain to unity
 PASS  Track all-stage bypass is unity-ish (ratio 1.000)
 PASS  Mix all-stage bypass is unity-ish (ratio 1.000)
 PASS  spectral cleanup reduces steady noise by > 6 dB (8.18 dB, voice -0.81 dB)

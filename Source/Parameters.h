@@ -188,6 +188,7 @@ struct RackParams
 
     // Limiter
     bool limBypass = false;
+    bool limTruePeak = false;
     float limCeiling = -0.3f;
     float limRelease = 80.0f;
 };
@@ -315,6 +316,7 @@ private:
         std::atomic<float>* revDuck = nullptr;
 
         std::atomic<float>* limBypass = nullptr;
+        std::atomic<float>* limTruePeak = nullptr;
         std::atomic<float>* limCeiling = nullptr;
         std::atomic<float>* limRelease = nullptr;
     };

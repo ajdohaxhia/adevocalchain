@@ -1300,6 +1300,19 @@
     "group": "limiter"
   },
   {
+    "id": "lim.truePeak",
+    "name": "True Peak",
+    "unit": "",
+    "min": 0.0,
+    "max": 1.0,
+    "default": 0.0,
+    "skew": 1.0,
+    "type": "boolean",
+    "numChoices": 0,
+    "choices": "nullptr",
+    "group": "limiter"
+  },
+  {
     "id": "lim.ceiling",
     "name": "Ceiling",
     "unit": "dBFS",

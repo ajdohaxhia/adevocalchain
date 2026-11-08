@@ -14,7 +14,7 @@ cmake -S . -B build-release -G "Unix Makefiles" \
   -DCMAKE_OSX_ARCHITECTURES=arm64
 cmake --build build-release --target VocalRack_VST3 VocalRack_AU VocalRackTests -j8
 ./build-release/VocalRackTests_artefacts/Release/VocalRackTests
-# 96 presets / 16 banks; 418 checks
+# 96 presets / 16 banks; 467 checks
 
 tools/pluginval/pluginval.app/Contents/MacOS/pluginval --strictness-level 7 \
   --validate "build-release/VocalRack_artefacts/Release/VST3/ademusic Vocal Rack.vst3"
@@ -30,11 +30,11 @@ auval -v aufx Vrck Adms
 
 - `build-release/VocalRack_artefacts/Release/VST3/ademusic Vocal Rack.vst3`
 - `build-release/VocalRack_artefacts/Release/AU/ademusic Vocal Rack.component`
-- `dist/ademusic-vocal-rack-2.0.0-macOS-arm64.zip`
-  SHA-256 `88987b37930ff984ec065b3c35f4e3dc0e5676bdf0d201cfb248ce45e3737a64`
+- `dist/ademusic-vocal-rack-2.1.0-macOS-arm64.zip`
+  SHA-256 `4eaf29af41edc31d3a3f4f23c8f6aa8d669751d613ee7e342fc96797880f2c18`
 - `presets/ademusic-vocal-rack-factory.json`
 - `docs/VERIFICATION.md`
-- `docs/verification/tests.log` (418 checks)
+- `docs/verification/tests.log` (467 checks)
 - `docs/verification/pluginval-vst3.log`
 - `docs/verification/pluginval-au.log`
 - `docs/verification/auval.log`

@@ -251,6 +251,12 @@ void VocalRackAudioProcessor::parameterChanged (const juce::String& id, float)
     if (id == "pitch.tonic" || id == "pitch.scale")
         syncMaskFromKey();
 
+    if (id == "lim.truePeak")
+    {
+        engine.setTruePeakEnabled (apvts.getRawParameterValue ("lim.truePeak")->load() > 0.5f);
+        updateHostLatency();
+    }
+
     edited = true;
     apvts.state.setProperty ("edited", true, nullptr);
 

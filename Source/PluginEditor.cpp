@@ -513,6 +513,7 @@ void VocalRackEditor::configureDetailTabs()
 
     auto* limiter = makeGrid ("Limit", "LIMITER", 4);
     addPower (*limiter, "lim.bypass", "Enabled");
+    addToggle (*limiter, "lim.truePeak", "True Peak");
     addKnob (*limiter, "lim.ceiling", "Ceiling");
     addKnob (*limiter, "lim.release", "Release");
     addKnob (*limiter, "global.mix", "Global mix");

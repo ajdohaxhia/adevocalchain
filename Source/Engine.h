@@ -2,6 +2,7 @@
 
 #include "Parameters.h"
 #include "dsp/DynamicEQ.h"
+#include "dsp/TruePeakLimiter.h"
 #include "dsp/Modules.h"
 #include "dsp/PitchDetector.h"
 #include "dsp/PitchSelector.h"
@@ -58,7 +59,12 @@ public:
                   int inputChannels,
                   int outputChannels);
 
-    int getLatencySamples() const noexcept { return latencySamples; }
+    int getLatencySamples() const noexcept
+    {
+        return latencySamples + (quality == QualityMode::mix && truePeakEnabled.load (std::memory_order_relaxed)
+                                     ? truePeakLatency : 0);
+    }
+    void setTruePeakEnabled (bool enabled) noexcept { truePeakEnabled.store (enabled, std::memory_order_relaxed); }
     int getPrelimiterLatencySamples() const noexcept { return prelimiterLatency; }
     int getLimiterLatencySamples() const noexcept { return limiterLatency; }
     int getShifterLatencySamples() const noexcept { return shifter.getLatencySamples(); }
@@ -105,6 +111,8 @@ private:
     int limiterLatency = 16;
     int prelimiterLatency = 704;
     int latencySamples = 720;
+    int truePeakLatency = 0;
+    std::atomic<bool> truePeakEnabled { false };
 
     Expander expander;
     SpectralDenoiser denoiser;
@@ -120,6 +128,7 @@ private:
     StereoDelay delay;
     Reverb reverb;
     LookaheadLimiter limiter;
+    TruePeakLimiter truePeakLimiter;
 
     juce::AudioBuffer<float> workBuffer;
     juce::AudioBuffer<float> denoiseBuffer;

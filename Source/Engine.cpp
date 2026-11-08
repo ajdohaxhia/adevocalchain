@@ -62,6 +62,13 @@ void Engine::prepare (double newSampleRate, int maximumBlockSize, int inputChann
     delay.prepare (sampleRate, maximumBlock);
     reverb.prepare (sampleRate, maximumBlock, activeChannels);
     limiter.prepare (sampleRate, maximumBlock, limiterLatency);
+    truePeakLatency = 0;
+
+    if (quality == QualityMode::mix)
+    {
+        truePeakLimiter.prepare (sampleRate, maximumBlock, activeChannels);
+        truePeakLatency = truePeakLimiter.getLatencySamples();
+    }
 
     for (auto& line : dryRaw)
         line.prepare (prelimiterLatency + maximumBlock + 8);
@@ -71,6 +78,8 @@ void Engine::prepare (double newSampleRate, int maximumBlockSize, int inputChann
 
     for (auto& line : shifterDry)
         line.prepare (shifterDelay + maximumBlock + 8);
+
+    truePeakLimiter.reset();
 
     workBuffer.setSize (2, maximumBlock, false, true, false);
     denoiseBuffer.setSize (2, maximumBlock, false, true, false);
@@ -540,6 +549,9 @@ void Engine::processChunk (int numSamples, const RackParams& params, const Trans
 
     limiter.setForceUnity (params.bypass);
     limiter.process (workBuffer, n, params);
+
+    if (quality == QualityMode::mix && params.limTruePeak)
+        truePeakLimiter.process (workBuffer, n, params);
 
     compGrDb.store (compressor.getGainReductionDb(), std::memory_order_relaxed);
     deEsserGrDb.store (deEsser.getReductionDb(), std::memory_order_relaxed);

@@ -125,7 +125,7 @@ const std::vector<ParamSpec>& specTable()
         { "rev.duck",      "Ducking",    "%",    0.0f, 100.0f,   0.0f, 1.0f, PT::floating, 0, nullptr, PG::reverb, "Duck the return from the dry vocal." },
 
         { "lim.bypass",    "Limiter",    "",     0.0f,   1.0f,   0.0f, 1.0f, PT::boolean,  0, nullptr, PG::limiter, "Bypass the final limiter." },
-        { "lim.truePeak",  "True Peak",  "",     0.0f,   1.0f,   0.0f, 1.0f, PT::boolean,  0, nullptr, PG::limiter, "Enable the 4x oversampled True Peak limiter (Mix only)." },
+        { "lim.truePeak",  "True Peak",  "",     0.0f,   1.0f,   0.0f, 1.0f, PT::boolean,  0, nullptr, PG::limiter, "Enable the 8x oversampled True Peak limiter (Mix only)." },
         { "lim.ceiling",   "Ceiling",    "dBFS", -6.0f,   0.0f,  -0.3f, 1.0f, PT::floating, 0, nullptr, PG::limiter, "Sample-peak ceiling, enforced with lookahead." },
         { "lim.release",   "Release",    "ms",   1.0f, 500.0f,  80.0f, 0.5f, PT::floating, 0, nullptr, PG::limiter, "Limiter release." },
     };
@@ -156,6 +156,7 @@ juce::String paramGroupName (ParamGroup group)
         case ParamGroup::cleanup:    return "Cleanup";
         case ParamGroup::pitch:      return "Pitch";
         case ParamGroup::eq:         return "EQ";
+        case ParamGroup::dynamicEq:  return "Dynamic EQ";
         case ParamGroup::comp:       return "Dynamics";
         case ParamGroup::deesser:    return "De-esser";
         case ParamGroup::saturation: return "Color";

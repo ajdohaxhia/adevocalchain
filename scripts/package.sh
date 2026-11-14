@@ -5,7 +5,7 @@ set -o pipefail
 cd "$(dirname "$0")/.."
 
 BUILD_DIR="${BUILD_DIR:-build-release}"
-VERSION="2.3.0"
+VERSION="2.4.0"
 NAME="ademusic-vocal-rack-${VERSION}-macOS-arm64"
 STAGE="dist/${NAME}"
 VST="${BUILD_DIR}/VocalRack_artefacts/Release/VST3/ademusic Vocal Rack.vst3"

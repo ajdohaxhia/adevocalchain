@@ -129,7 +129,11 @@ void VocalRackAudioProcessor::processBlock (juce::AudioBuffer<float>& buffer,
     auto& measured = abMeasuredRmsDb[slot];
     const float stored = measured.load (std::memory_order_relaxed);
     const float lufs = engine.getOutputLufs();
-    measured.store (stored < -59.0f ? lufs : stored + 0.06f * (lufs - stored),
+    // Block-rate one-pole toward the current loudness, with a fixed ~0.3 s time
+    // constant so the smoothing no longer depends on the host's block size.
+    const float abTau = 0.3f;
+    const float abCoeff = 1.0f - std::exp (-(float) samples / (abTau * (float) currentSampleRate));
+    measured.store (stored < -59.0f ? lufs : stored + abCoeff * (lufs - stored),
                     std::memory_order_relaxed);
     currentOutputRmsDb.store (rmsDb, std::memory_order_relaxed);
 
@@ -252,11 +256,9 @@ void VocalRackAudioProcessor::parameterChanged (const juce::String& id, float)
     if (id == "pitch.tonic" || id == "pitch.scale")
         syncMaskFromKey();
 
-    if (id == "lim.truePeak")
-    {
-        engine.setTruePeakEnabled (apvts.getRawParameterValue ("lim.truePeak")->load() > 0.5f);
-        updateHostLatency();
-    }
+    // Reported latency is constant per quality mode (the true-peak limiter's
+    // delay is always included in Mix), so toggling lim.truePeak no longer
+    // changes host latency and must not call setLatencySamples from here.
 
     edited = true;
     apvts.state.setProperty ("edited", true, nullptr);

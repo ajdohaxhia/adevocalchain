@@ -575,8 +575,11 @@ void Engine::processChunk (int numSamples, const RackParams& params, const Trans
     limiter.setForceUnity (params.bypass);
     limiter.process (workBuffer, n, params);
 
-    if (quality == QualityMode::mix && params.limTruePeak)
-        truePeakLimiter.process (workBuffer, n, params);
+    // Always run the true-peak path in Mix so reported latency stays constant.
+    // When the toggle is off the limiter runs in bypass (unity gain) and only
+    // contributes its fixed delay, keeping dry/wet alignment intact.
+    if (quality == QualityMode::mix)
+        truePeakLimiter.process (workBuffer, n, params, ! params.limTruePeak);
 
     loudnessMeter.process (workBuffer, n);
 

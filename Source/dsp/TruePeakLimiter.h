@@ -9,9 +9,9 @@
 namespace vr
 {
 
-/** Optional 4x oversampled true-peak limiter. The detector, lookahead and
-    ceiling clamp all run at 4x; output is reconstructed by the oversampler.
-    The reported latency includes oversampler and lookahead delay. */
+/** Optional 8x oversampled true-peak limiter (3 halving stages). The detector,
+    lookahead and ceiling clamp all run at 8x; output is reconstructed by the
+    oversampler. The reported latency includes oversampler and lookahead delay. */
 class TruePeakLimiter
 {
 public:
@@ -31,12 +31,18 @@ public:
         for (auto& line : delayLines)
             line.prepare (maximumBlock * 8 + lookahead + 8);
 
+        for (auto& line : bypassDelay)
+            line.prepare (maximumBlock + latencySamples + 8);
+
         reset();
     }
 
     void reset()
     {
         for (auto& line : delayLines)
+            line.reset();
+
+        for (auto& line : bypassDelay)
             line.reset();
 
         gain = 1.0f;
@@ -46,12 +52,37 @@ public:
     int getLatencySamples() const noexcept { return latencySamples; }
     float getGainReductionDb() const noexcept { return lastGainReductionDb; }
 
-    void process (juce::AudioBuffer<float>& buffer, int n, const RackParams& p)
+    void process (juce::AudioBuffer<float>& buffer, int n, const RackParams& p, bool bypassed = false)
     {
         if (oversampling == nullptr || n <= 0)
             return;
 
         const int activeChannels = juce::jmin (channels, buffer.getNumChannels());
+
+        if (bypassed)
+        {
+            // Transparent bypass: the oversampler's reconstruction filter is not
+            // bit-exact, so routing the dry/bypass signal through it would colour
+            // it. Instead apply a plain integer-sample delay equal to the reported
+            // latency, keeping the signal bit-accurate while PDC stays constant.
+            for (int ch = 0; ch < activeChannels; ++ch)
+            {
+                auto* data = buffer.getWritePointer (ch);
+
+                for (int i = 0; i < n; ++i)
+                {
+                    // write() advances the index before read(), so a delay of
+                    // latencySamples would land one sample early; +1 aligns the
+                    // bypass path exactly with the reported latency.
+                    bypassDelay[(size_t) ch].write (data[i]);
+                    data[i] = bypassDelay[(size_t) ch].read ((float) (latencySamples + 1));
+                }
+            }
+
+            lastGainReductionDb = 0.0f;
+            return;
+        }
+
         juce::dsp::AudioBlock<float> block (buffer);
         auto subBlock = block.getSubBlock (0, (size_t) n);
         auto upBlock = oversampling->processSamplesUp (subBlock);
@@ -99,6 +130,7 @@ private:
     int latencySamples = 0;
     std::unique_ptr<juce::dsp::Oversampling<float>> oversampling;
     DelayLine delayLines[2];
+    DelayLine bypassDelay[2];
     float gain = 1.0f;
     float lastGainReductionDb = 0.0f;
 };

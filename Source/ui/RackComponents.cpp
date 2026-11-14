@@ -561,7 +561,7 @@ void MeterPanel::paint (juce::Graphics& g)
         g.setFont (VocalRackLookAndFeel::font (10.0f, true));
         g.drawText (label, labelArea, juce::Justification::centredLeft);
 
-        g.setColour (juce::Colour (0xff2b302b));
+        g.setColour (juce::Colour (0xff2a2d33));
         g.fillRoundedRectangle (bar.toFloat(), 2.0f);
 
         const float leftPosition = meterPosition (leftDb);
@@ -608,7 +608,7 @@ void MeterPanel::paint (juce::Graphics& g)
         g.setFont (VocalRackLookAndFeel::font (9.0f, true));
         g.drawText (label, labelArea, juce::Justification::centredLeft);
 
-        g.setColour (juce::Colour (0xff2b302b));
+        g.setColour (juce::Colour (0xff2a2d33));
         g.fillRoundedRectangle (bar.toFloat(), 2.0f);
 
         const float amount = juce::jlimit (0.0f, 1.0f, -reduction / 24.0f);
@@ -701,7 +701,7 @@ void PitchPanel::paint (juce::Graphics& g)
     auto confidenceRow = area.removeFromTop (14);
     constexpr int confidenceTextWidth = 70;
     auto confidenceBar = confidenceRow.withTrimmedRight (confidenceTextWidth);
-    g.setColour (juce::Colour (0xff2b302b));
+    g.setColour (juce::Colour (0xff2a2d33));
     g.fillRoundedRectangle (confidenceBar.toFloat(), 3.0f);
     g.setColour (VocalRackLookAndFeel::accent().withAlpha (0.8f));
     g.fillRoundedRectangle (confidenceBar.toFloat().withWidth (

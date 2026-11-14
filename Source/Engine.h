@@ -60,12 +60,14 @@ public:
                   int inputChannels,
                   int outputChannels);
 
+    // Latency is constant per quality mode. In Mix the true-peak limiter's
+    // latency is always reported and always introduced internally (the limiter
+    // runs in bypass when the toggle is off), so toggling true-peak never
+    // forces a host PDC re-sync mid-stream.
     int getLatencySamples() const noexcept
     {
-        return latencySamples + (quality == QualityMode::mix && truePeakEnabled.load (std::memory_order_relaxed)
-                                     ? truePeakLatency : 0);
+        return latencySamples + (quality == QualityMode::mix ? truePeakLatency : 0);
     }
-    void setTruePeakEnabled (bool enabled) noexcept { truePeakEnabled.store (enabled, std::memory_order_relaxed); }
     int getPrelimiterLatencySamples() const noexcept { return prelimiterLatency; }
     int getLimiterLatencySamples() const noexcept { return limiterLatency; }
     int getShifterLatencySamples() const noexcept { return shifter.getLatencySamples(); }
@@ -120,7 +122,6 @@ private:
     int prelimiterLatency = 704;
     int latencySamples = 720;
     int truePeakLatency = 0;
-    std::atomic<bool> truePeakEnabled { false };
 
     Expander expander;
     SpectralDenoiser denoiser;

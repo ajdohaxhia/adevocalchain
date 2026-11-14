@@ -17,7 +17,7 @@ VocalRackLookAndFeel::VocalRackLookAndFeel()
     setColour (juce::Slider::textBoxBackgroundColourId, juce::Colours::transparentBlack);
     setColour (juce::Slider::textBoxOutlineColourId, juce::Colours::transparentBlack);
     setColour (juce::Slider::rotarySliderFillColourId, accent());
-    setColour (juce::Slider::rotarySliderOutlineColourId, juce::Colour (0xff383e37));
+    setColour (juce::Slider::rotarySliderOutlineColourId, line());
     setColour (juce::Label::textColourId, text());
     setColour (juce::Label::backgroundColourId, juce::Colours::transparentBlack);
     setColour (juce::TextButton::buttonColourId, panelLight());
@@ -27,25 +27,25 @@ VocalRackLookAndFeel::VocalRackLookAndFeel()
     setColour (juce::ToggleButton::textColourId, text());
     setColour (juce::ToggleButton::tickColourId, accent());
     setColour (juce::ToggleButton::tickDisabledColourId, dimText());
-    setColour (juce::ComboBox::backgroundColourId, juce::Colour (0xff1c201c));
+    setColour (juce::ComboBox::backgroundColourId, juce::Colour (0xff191b1f));
     setColour (juce::ComboBox::outlineColourId, line());
     setColour (juce::ComboBox::textColourId, text());
     setColour (juce::ComboBox::arrowColourId, accent());
-    setColour (juce::ComboBox::buttonColourId, juce::Colour (0xff1c201c));
+    setColour (juce::ComboBox::buttonColourId, juce::Colour (0xff191b1f));
     setColour (juce::PopupMenu::backgroundColourId, card());
     setColour (juce::PopupMenu::textColourId, text());
     setColour (juce::PopupMenu::highlightedBackgroundColourId, accentSoft());
     setColour (juce::PopupMenu::highlightedTextColourId, text());
     setColour (juce::ListBox::backgroundColourId, card());
     setColour (juce::ListBox::outlineColourId, line());
-    setColour (juce::TextEditor::backgroundColourId, juce::Colour (0xff141714));
+    setColour (juce::TextEditor::backgroundColourId, juce::Colour (0xff17191d));
     setColour (juce::TextEditor::textColourId, text());
     setColour (juce::TextEditor::outlineColourId, line());
     setColour (juce::TextEditor::focusedOutlineColourId, accent());
     setColour (juce::TextEditor::highlightColourId, accentSoft());
     setColour (juce::TextEditor::highlightedTextColourId, text());
-    setColour (juce::ScrollBar::thumbColourId, juce::Colour (0xff495049));
-    setColour (juce::ScrollBar::trackColourId, juce::Colour (0xff141714));
+    setColour (juce::ScrollBar::thumbColourId, juce::Colour (0xff454a52));
+    setColour (juce::ScrollBar::trackColourId, juce::Colour (0xff17191d));
 }
 
 juce::Slider::SliderLayout VocalRackLookAndFeel::getSliderLayout (juce::Slider& slider)
@@ -81,7 +81,7 @@ void VocalRackLookAndFeel::drawRotarySlider (juce::Graphics& g, int x, int y, in
 
     juce::Path track;
     track.addCentredArc (centre.x, centre.y, radius, radius, 0.0f, start, end, true);
-    g.setColour (juce::Colour (0xff363c35));
+    g.setColour (juce::Colour (0xff343841));
     g.strokePath (track, juce::PathStrokeType (5.0f, juce::PathStrokeType::curved,
                                                juce::PathStrokeType::rounded));
 
@@ -95,10 +95,10 @@ void VocalRackLookAndFeel::drawRotarySlider (juce::Graphics& g, int x, int y, in
     }
 
     const float knobRadius = radius * 0.62f;
-    g.setColour (juce::Colour (0xff151815));
+    g.setColour (juce::Colour (0xff181a1e));
     g.fillEllipse (centre.x - knobRadius, centre.y - knobRadius,
                    knobRadius * 2.0f, knobRadius * 2.0f);
-    g.setColour (juce::Colour (0xff3a4138));
+    g.setColour (juce::Colour (0xff3a3f47));
     g.drawEllipse (centre.x - knobRadius, centre.y - knobRadius,
                    knobRadius * 2.0f, knobRadius * 2.0f, 1.0f);
 
@@ -158,9 +158,9 @@ void VocalRackLookAndFeel::drawToggleButton (juce::Graphics& g, juce::ToggleButt
     const float boxSize = juce::jmin (19.0f, bounds.getHeight() - 4.0f);
     auto box = bounds.removeFromLeft (boxSize).withSizeKeepingCentre (boxSize, boxSize);
 
-    g.setColour (button.getToggleState() ? accent() : juce::Colour (0xff161916));
+    g.setColour (button.getToggleState() ? accent() : juce::Colour (0xff181a1e));
     g.fillRoundedRectangle (box, 4.0f);
-    g.setColour (button.getToggleState() ? accent() : juce::Colour (0xff4a5149));
+    g.setColour (button.getToggleState() ? accent() : juce::Colour (0xff454a52));
     g.drawRoundedRectangle (box, 4.0f, 1.0f);
 
     if (button.getToggleState())

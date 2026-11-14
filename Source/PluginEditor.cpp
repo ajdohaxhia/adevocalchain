@@ -801,8 +801,17 @@ void VocalRackEditor::resized()
     // Header, row one: identity, preset navigation, A/B and global power.
     const int headerX = 20;
     const int topY = 12;
-    logoLabel.setBounds (headerX, 8, 150, 32);
-    productLabel.setBounds (headerX + 166, 13, 150, 28);
+
+    // Size the identity labels to their actual rendered text width so the
+    // product label can never run into the preset block (which starts at
+    // headerX + 300 on wide windows, and further left when clamped on narrow
+    // ones). A fixed 150 px box previously pushed "VOCAL RACK" to x+336.
+    const int logoW = juce::GlyphArrangement::getStringWidthInt (
+        VocalRackLookAndFeel::font (27.0f, true), logoLabel.getText());
+    const int productW = juce::GlyphArrangement::getStringWidthInt (
+        VocalRackLookAndFeel::font (17.0f, true), productLabel.getText());
+    logoLabel.setBounds (headerX, 8, logoW, 32);
+    productLabel.setBounds (headerX + logoW + 14, 13, productW, 28);
 
     const int rightRail = 108;
     const int globalX = getWidth() - rightRail - 14;
@@ -818,7 +827,9 @@ void VocalRackEditor::resized()
     abAButton.setBounds (aX, topY + 2, 32, 32);
     matchABButton.setBounds (matchX, topY + 2, 32, 32);
 
-    const int presetStart = headerX + 300;
+    // Clamp the preset block's left edge so it keeps a usable minimum width and
+    // can never overlap the right-rail A/B and global controls on narrow windows.
+    const int presetStart = juce::jmin (headerX + 300, presetEnd - 200);
     previousButton.setBounds (presetStart, topY, 30, 32);
     browseButton.setBounds (presetEnd - 82, topY + 2, 82, 32);
     nextButton.setBounds (presetEnd - 82 - 38, topY, 30, 32);

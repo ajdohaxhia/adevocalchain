@@ -1968,7 +1968,7 @@ void renderUserVocal (const juce::File& inputFile, const juce::File& outputDirec
                               + "-" + vr::PresetManager::slugify (entry.name) + ".wav";
         const auto file = outputDirectory.getChildFile (filename);
         file.deleteFile();
-        std::unique_ptr<juce::FileOutputStream> stream (file.createOutputStream());
+        std::unique_ptr<juce::OutputStream> stream (file.createOutputStream());
 
         if (stream == nullptr)
         {
@@ -1978,7 +1978,11 @@ void renderUserVocal (const juce::File& inputFile, const juce::File& outputDirec
 
         juce::WavAudioFormat wav;
         std::unique_ptr<juce::AudioFormatWriter> writer (
-            wav.createWriterFor (stream.release(), 48000.0, 2, 24, {}, 0));
+            wav.createWriterFor (stream,
+                                 juce::AudioFormatWriterOptions{}
+                                     .withSampleRate (48000.0)
+                                     .withNumChannels (2)
+                                     .withBitsPerSample (24)));
 
         if (writer == nullptr)
         {
@@ -2257,7 +2261,7 @@ void runTruePeakBenchmark()
 
             vr::Engine engine;
             engine.prepare (sampleRate, blockSize, 2, 2, vr::QualityMode::mix);
-            engine.setTruePeakEnabled (true);
+            // True-peak is now driven entirely by params.limTruePeak (set above).
             const auto signal = voice (sampleRate, 3.0, 220.0, 0.2, 25.0);
             juce::AudioBuffer<float> buffer (2, blockSize);
             std::vector<double> times;

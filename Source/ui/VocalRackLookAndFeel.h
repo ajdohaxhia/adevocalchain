@@ -10,16 +10,17 @@ class VocalRackLookAndFeel final : public juce::LookAndFeel_V4
 public:
     VocalRackLookAndFeel();
 
-    static juce::Colour background() noexcept { return juce::Colour (0xff101210); }
-    static juce::Colour panel() noexcept { return juce::Colour (0xff171a17); }
-    static juce::Colour panelLight() noexcept { return juce::Colour (0xff202420); }
-    static juce::Colour card() noexcept { return juce::Colour (0xff1b1f1b); }
-    static juce::Colour line() noexcept { return juce::Colour (0xff303630); }
-    static juce::Colour text() noexcept { return juce::Colour (0xffeef1e8); }
-    static juce::Colour dimText() noexcept { return juce::Colour (0xff939a91); }
-    static juce::Colour accent() noexcept { return juce::Colour (0xffc8f45a); }
-    static juce::Colour accentSoft() noexcept { return juce::Colour (0xff728f2d); }
-    static juce::Colour danger() noexcept { return juce::Colour (0xffff7a66); }
+    // Neutral graphite channel-strip palette with a restrained blue accent.
+    static juce::Colour background() noexcept { return juce::Colour (0xff1b1d21); }
+    static juce::Colour panel() noexcept { return juce::Colour (0xff23262b); }
+    static juce::Colour panelLight() noexcept { return juce::Colour (0xff2e323a); }
+    static juce::Colour card() noexcept { return juce::Colour (0xff202329); }
+    static juce::Colour line() noexcept { return juce::Colour (0xff393e46); }
+    static juce::Colour text() noexcept { return juce::Colour (0xffe9ebee); }
+    static juce::Colour dimText() noexcept { return juce::Colour (0xff888e98); }
+    static juce::Colour accent() noexcept { return juce::Colour (0xff4d9be6); }
+    static juce::Colour accentSoft() noexcept { return juce::Colour (0xff2f5d86); }
+    static juce::Colour danger() noexcept { return juce::Colour (0xffff6f61); }
 
     void drawRotarySlider (juce::Graphics&, int x, int y, int width, int height,
                            float sliderPosProportional, float rotaryStartAngle,
